@@ -4,115 +4,92 @@
  *
  * @format
  */
+import React, {Component} from 'react';
+import {FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import moment from "moment";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import MainScreen from "./src/MainScreen";
+import SplashScreen from "./src/SplashScreen";
+import {NavigationContainer} from "@react-navigation/native";
+import {NativeBaseProvider} from "native-base";
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const Stack = createNativeStackNavigator()
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+function MainStack(){
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                headerTintColor: 'white',
+                headerStyle: { backgroundColor: 'tomato' },
+            }}
+            initialRouteName={"SplashScreen"}>
+            <Stack.Screen name={"SplashScreen"} component={SplashScreen}/>
+            <Stack.Screen name={"MainScreen"} component={MainScreen}/>
+        </Stack.Navigator>
+    )
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+// 特点: 动态添加日志类型（拉屎、撒尿、吃奶）
+// 提醒吃伊可新、定时提醒喂奶等时间通知
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
+const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣"] // 拉屎类型
+const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
+const typeMap = {
+    1: "吃奶", // 区分混合喂养还是亲喂还是奶粉，奶粉的品牌可以添加
+    2: "拉屎",
+    3: "撒尿",
+    4: "测黄疸",
+    5: "吐奶",
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+// 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
+const tempJsonData = {
+    dataList: [
+        {
+            type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+            time: moment().valueOf(), // 时间戳
+            remark: "", // 备注
+            tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+            selectedTags: ["母乳"], // 选中的类型
+            dose: 0, // 剂量，母乳多少毫升
+            pictures: [{
+                time: moment().valueOf(), // 时间戳
+                name: "", // 名称：使用类型和时间戳来标记
+                url: "" // 图片在地址/远程地址
+            }], // 图片
+            yellowValue: {
+                header: 0, // 头的黄疸
+                chest: 0 // 胸的黄疸
+            }
+        }
+    ]
+}
 
-export default App;
+export default class App extends React.Component<any, any> {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            dataList: tempJsonData.dataList // 本地的存储的数据列表
+        }
+    }
+
+    componentDidMount() {
+        // 获取本地的数据
+
+    }
+
+    render() {
+        console.log("datalist", this.state.dataList)
+        return (
+            <NativeBaseProvider>
+                <SafeAreaView>
+                    <MainScreen/>
+                </SafeAreaView>
+            </NativeBaseProvider>
+        )
+    }
+}
