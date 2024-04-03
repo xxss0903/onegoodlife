@@ -6,6 +6,8 @@ import React from "react";
 import moment from "moment";
 import {FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {FloatingAction} from "react-native-floating-action";
+import Toast from 'react-native-toast-message';
+import {logi} from "./utils/logutil";
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
@@ -53,6 +55,8 @@ const tempJsonData = {
 }
 
 export default class MainScreen extends React.Component<any, any> {
+    private currentAddType: null; // 当前的添加类型
+    private floatingActionRef: null; // 悬浮按钮引用
 
     constructor(props) {
         super(props);
@@ -60,7 +64,6 @@ export default class MainScreen extends React.Component<any, any> {
             dataList: tempJsonData.dataList, // 本地的存储的数据列表
             showAddModal: false
         }
-        this.floatingActionRef = null;
     }
 
     componentDidMount() {
@@ -74,49 +77,114 @@ export default class MainScreen extends React.Component<any, any> {
         })
     }
 
-    // 新增类型弹窗
-    _renderAddModal() {
+    _renderModalFrame({headerView, contentView, footerView, cancelClick, confirmClick}) {
         return (
-            <Modal visible={this.state.showAddModal}>
-                <View>
-                    <Text>11</Text>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => {
+                    this.setShowModal(!this.state.showAddModal)
+                }}
+                visible={this.state.showAddModal}>
+                <View style={styles.addModalContainer}>
+
+                    <View style={styles.addContentContainer}>
+                        {headerView ? headerView : null}
+                        {contentView ? <View style={{flex: 1}}>
+                            {contentView}
+                        </View> : null}
+                        {footerView ? <View style={styles.line}></View> : null}
+                        {footerView ? <View style={styles.modalFooter}>
+                            <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
+                                if (cancelClick) {
+                                    cancelClick()
+                                }
+                            }}>
+                                <Text>取消</Text>
+                            </TouchableOpacity>
+                            <View style={{width: 1, backgroundColor: "#bbbbbb"}}></View>
+                            <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
+                                if (confirmClick) {
+                                    confirmClick()
+                                }
+                            }}>
+                                <Text>确认</Text>
+                            </TouchableOpacity>
+                        </View> : null}
+                    </View>
                 </View>
             </Modal>
         )
     }
 
-
+    // 新增类型弹窗
+    _renderAddModal() {
+        if (!this.currentAddType) {
+            return
+        }
+        let contentView =
+            <View>
+                <Text>222</Text>
+            </View>
+        let headerView =
+            <View style={{height: 40, display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <Text>添加{this.currentAddType.name}</Text>
+            </View>
+        return this._renderModalFrame(
+            {
+                headerView: headerView,
+                contentView: contentView,
+                footerView: true,
+                cancelClick: () => {
+                    this.setShowModal(false)
+                },
+                confirmClick: () => {
+                    this.setShowModal(false)
+                }
+            }
+        )
+    }
 
     // 添加牛奶
     private _addMilk(item) {
-        // 根据之前添加的量默认添加dose剂量
+        this.currentAddType = item
+        // 添加牛奶的弹窗
+        this.setShowModal(true)
 
-        let newData = {
-            name: item.name,
-            type: item.id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-            time: moment().valueOf(), // 时间戳
-            remark: "", // 备注
-            tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-            selectedTags: [], // 选中的类型
-            dose: 50, // 剂量，母乳多少毫升
-            pictures: [{
-                time: moment().valueOf(), // 时间戳
-                name: "", // 名称：使用类型和时间戳来标记
-                url: "" // 图片在地址/远程地址
-            }], // 图片
-            yellowValue: {
-                header: 0, // 头的黄疸
-                chest: 0 // 胸的黄疸
-            }
-        }
-
-        this.state.dataList.push(newData)
-        this.forceUpdate()
+        // // 根据之前添加的量默认添加dose剂量
+        // let newData = {
+        //     name: item.name,
+        //     type: item.id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+        //     time: moment().valueOf(), // 时间戳
+        //     remark: "", // 备注
+        //     tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+        //     selectedTags: [], // 选中的类型
+        //     dose: 50, // 剂量，母乳多少毫升
+        //     pictures: [{
+        //         time: moment().valueOf(), // 时间戳
+        //         name: "", // 名称：使用类型和时间戳来标记
+        //         url: "" // 图片在地址/远程地址
+        //     }], // 图片
+        //     yellowValue: {
+        //         header: 0, // 头的黄疸
+        //         chest: 0 // 胸的黄疸
+        //     }
+        // }
+        //
+        // this.state.dataList.push(newData)
+        // this.forceUpdate()
     }
 
     // 添加拉屎
-    private _addPoop() {
+    private _addPoop(item) {
+        this.currentAddType = item
+        this.setShowModal(true)
+    }
 
+    // 添加撒尿
+    private _addPee(item) {
+        this.currentAddType = item
+        this.setShowModal(true)
     }
 
     // 添加新的时间线
@@ -127,15 +195,15 @@ export default class MainScreen extends React.Component<any, any> {
                 this._addMilk(typeMapList[0])
                 break;
             case typeMapList[1].name:
-                this._addMilk(typeMapList[1])
+                this._addPoop(typeMapList[1])
                 break;
             case typeMapList[2].name:
-                this._addMilk(typeMapList[2])
+                this._addPee(typeMapList[2])
                 break;
         }
     }
 
-    _renderTypeItem(item){
+    _renderTypeItem(item) {
         let typeName = item.name
         let time = moment(item.time).format("yyyy-MM-DD HH:mm")
         let tags = item.selectedTags
@@ -161,9 +229,10 @@ export default class MainScreen extends React.Component<any, any> {
                 </View>
                 <View style={styles.timelineItemContent}>
                     <Text>{time}</Text>
-                    {tagView && tagView.length > 0 ? <View style={{display: "flex", flexDirection: "row", marginTop: 12}}>
-                        {tagView}
-                    </View> : null}
+                    {tagView && tagView.length > 0 ?
+                        <View style={{display: "flex", flexDirection: "row", marginTop: 12}}>
+                            {tagView}
+                        </View> : null}
                     {item.dose ? <Text>{item.dose}</Text> : null}
                     {item.remark ? <Text style={{marginTop: 12}}>{item.remark}</Text> : null}
                 </View>
@@ -182,13 +251,13 @@ export default class MainScreen extends React.Component<any, any> {
                         </View>
                         <View style={styles.timelineContainer}>
                             <FlatList data={this.state.dataList} renderItem={({item, index}) => {
-                               return this._renderTypeItem(item)
+                                return this._renderTypeItem(item)
                             }}/>
                         </View>
                     </View>
                     <FloatingAction
                         distanceToEdge={{vertical: 100, horizontal: 40}}
-                        buttonSize={80}
+                        buttonSize={60}
                         ref={(ref) => {
                             this.floatingActionRef = ref;
                         }}
@@ -215,10 +284,11 @@ const styles = StyleSheet.create({
     },
     timelineContainer: {
         flex: 1,
-        backgroundColor: "#0000ff"
+        Color: "#0000ff"
     },
     timelineItemContainer: {
-        margin: 12,
+        marginBottom: 12,
+        marginHorizontal: 12,
         display: "flex",
         flexDirection: "row",
         backgroundColor: "#ffffff",
@@ -251,5 +321,34 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40
+    },
+    addModalContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
+        backgroundColor: "#00000033"
+    },
+    addContentContainer: {
+        width: 200,
+        height: 200,
+        backgroundColor: "#ffffff",
+        shadowColor: "#bbbbbb",
+        borderRadius: 12,
+    },
+    modalFooter: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center"
+    },
+    btnModalFooter: {
+        height: 48,
+        flex: 1,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    line: {
+        height: 1,
+        backgroundColor: "#bbbbbb"
     }
 })
