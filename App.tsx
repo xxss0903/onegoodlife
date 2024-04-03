@@ -10,8 +10,6 @@ import moment from "moment";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import MainScreen from "./src/MainScreen";
 import SplashScreen from "./src/SplashScreen";
-import {NavigationContainer} from "@react-navigation/native";
-import {NativeBaseProvider} from "native-base";
 
 const Stack = createNativeStackNavigator()
 
@@ -33,6 +31,8 @@ function MainStack(){
 
 // 特点: 动态添加日志类型（拉屎、撒尿、吃奶）
 // 提醒吃伊可新、定时提醒喂奶等时间通知
+
+
 
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
 const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣"] // 拉屎类型
@@ -85,11 +85,9 @@ export default class App extends React.Component<any, any> {
     render() {
         console.log("datalist", this.state.dataList)
         return (
-            <NativeBaseProvider>
-                <SafeAreaView>
-                    <MainScreen/>
-                </SafeAreaView>
-            </NativeBaseProvider>
+            <SafeAreaView>
+                <MainScreen/>
+            </SafeAreaView>
         )
     }
 }
