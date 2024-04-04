@@ -112,8 +112,11 @@ export default class MainScreen extends React.Component<any, any> {
     private oldMilkData = null // 已经有的最新的喝牛奶的数据，用来保存默认数据
     private milkDoseList = [] // 牛奶的最新3个量数据列表
     private oldPoopData = null // 已经有的最新的拉屎的数据，用来保存默认数据
+    private poopTagList = [] // 拉屎的最新3个量数据列表
     private oldPeeData = null // 已经有的最新的撒尿的数据，用来保存默认数据
+    private peeTagList = [] // 撒尿的最新3个量数据列表
     private oldJaundiceData = null // 已经有的最新的黄疸的数据，用来保存默认数据
+    private jaundiceList = [] // 黄疸的最新3个量数据列表
 
     constructor(props) {
         super(props);
@@ -146,17 +149,16 @@ export default class MainScreen extends React.Component<any, any> {
     // 获取最近使用的3个牛奶量来组成常用的
     _getCommonMilkDose(dataList: any) {
         if (dataList) {
-            let milkList = []
+            let oldDataList = []
             dataList.forEach(value => {
                 if (value.typeId === typeMapList[0].id) {
-                    // 牛奶
-                    milkList.push(value)
+                    oldDataList.push(value)
                 }
             })
-            if (milkList.length > 0) {
-                this.oldMilkData = JSON.parse(JSON.stringify(milkList[0]))
+            if (oldDataList.length > 0) {
+                this.oldMilkData = JSON.parse(JSON.stringify(oldDataList[0]))
                 // 拿到最新的3个
-                let subList = milkList.slice(0, 3)
+                let subList = oldDataList.slice(0, 3)
                 subList.forEach(value => {
                     this.milkDoseList.push(value.dose)
                 })
@@ -165,8 +167,50 @@ export default class MainScreen extends React.Component<any, any> {
         }
     }
 
+    _getCommonPoopDose(dataList: any) {
+        if (dataList) {
+            let oldDataList = []
+            dataList.forEach(value => {
+                if (value.typeId === typeMapList[1].id) {
+                    oldDataList.push(value)
+                }
+            })
+            if (oldDataList.length > 0) {
+                this.oldPoopData = JSON.parse(JSON.stringify(oldDataList[0]))
+                // 拿到最新的3个
+                let subList = oldDataList.slice(0, 3)
+                subList.forEach(value => {
+                    this.poopTagList.push(value.dose)
+                })
+            }
+            logi("dose list", this.poopTagList)
+        }
+    }
+
+    _getCommonPeeDose(dataList: any) {
+        if (dataList) {
+            let oldDataList = []
+            dataList.forEach(value => {
+                if (value.typeId === typeMapList[2].id) {
+                    oldDataList.push(value)
+                }
+            })
+            if (oldDataList.length > 0) {
+                this.oldPeeData = JSON.parse(JSON.stringify(oldDataList[0]))
+                // 拿到最新的3个
+                let subList = oldDataList.slice(0, 3)
+                subList.forEach(value => {
+                    this.peeTagList.push(value.dose)
+                })
+            }
+            logi("dose list", this.oldPeeData)
+        }
+    }
+
     _refreshDataList(dataList) {
         this._getCommonMilkDose(dataList)
+        this._getCommonPoopDose(dataList)
+        this._getCommonPeeDose(dataList)
         this.setState({
             dataList: dataList
         })
@@ -256,6 +300,7 @@ export default class MainScreen extends React.Component<any, any> {
                 this.cloneType.name = typeData.name
             }
         }
+        this.cloneType.time = moment().valueOf()
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
@@ -335,9 +380,14 @@ export default class MainScreen extends React.Component<any, any> {
     _renderPoopContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
-            this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
-            this.cloneType.name = typeData.name
+            if (this.oldPoopData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldPoopData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
+                this.cloneType.name = typeData.name
+            }
         }
+        this.cloneType.time = moment().valueOf()
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
@@ -387,9 +437,14 @@ export default class MainScreen extends React.Component<any, any> {
     _renderPeeContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
-            this.cloneType = JSON.parse(JSON.stringify(peeTemplateData))
-            this.cloneType.name = typeData.name
+            if (this.oldPeeData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldPeeData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(peeTemplateData))
+                this.cloneType.name = typeData.name
+            }
         }
+        this.cloneType.time = moment().valueOf()
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
