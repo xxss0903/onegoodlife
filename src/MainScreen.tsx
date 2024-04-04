@@ -33,6 +33,7 @@ const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", po
 }] // 类型列表
 const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2]] // 放在主页的主要使用的类型action
 const templateData = {
+    name: "牛奶",
     type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
@@ -125,6 +126,7 @@ export default class MainScreen extends React.Component<any, any> {
         // 拷贝一个新的数据
         if (!this.cloneType){
             this.cloneType = JSON.parse(JSON.stringify(templateData))
+            this.cloneType.name = type.name
         }
         let tagView = milkTags.map(value => {
             let isSelect = false // 是否选中过
@@ -277,6 +279,8 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     _renderTypeItem(item) {
+        logi("render item", item)
+
         let typeName = item.name
         let time = moment(item.time).format("yyyy-MM-DD HH:mm")
         let tags = item.selectedTags
