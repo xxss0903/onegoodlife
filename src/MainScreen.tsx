@@ -36,6 +36,7 @@ const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", po
 }] // 类型列表
 const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2]] // 放在主页的主要使用的类型action
 // 牛奶的模板数据
+// 喝牛奶的模板数据
 const milkTemplateData = {
     name: typeMapList[0].name,
     typeId: typeMapList[0].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
@@ -109,6 +110,7 @@ export default class MainScreen extends React.Component<any, any> {
     private floatingActionRef: null; // 悬浮按钮引用
     private cloneType: null; // 临时保存type的数据
     private oldMilkData = null // 已经有的最新的喝牛奶的数据，用来保存默认数据
+    private milkDoseList = [] // 牛奶的最新3个量数据列表
     private oldPoopData = null // 已经有的最新的拉屎的数据，用来保存默认数据
     private oldPeeData = null // 已经有的最新的撒尿的数据，用来保存默认数据
     private oldJaundiceData = null // 已经有的最新的黄疸的数据，用来保存默认数据
@@ -141,7 +143,30 @@ export default class MainScreen extends React.Component<any, any> {
         })
     }
 
-    _refreshDataList(dataList){
+    // 获取最近使用的3个牛奶量来组成常用的
+    _getCommonMilkDose(dataList: any) {
+        if (dataList) {
+            let milkList = []
+            dataList.forEach(value => {
+                if (value.typeId === typeMapList[0].id) {
+                    // 牛奶
+                    milkList.push(value)
+                }
+            })
+            if (milkList.length > 0) {
+                this.oldMilkData = JSON.parse(JSON.stringify(milkList[0]))
+                // 拿到最新的3个
+                let subList = milkList.slice(0, 3)
+                subList.forEach(value => {
+                    this.milkDoseList.push(value.dose)
+                })
+            }
+            logi("dose list", this.oldMilkData)
+        }
+    }
+
+    _refreshDataList(dataList) {
+        this._getCommonMilkDose(dataList)
         this.setState({
             dataList: dataList
         })
@@ -224,8 +249,12 @@ export default class MainScreen extends React.Component<any, any> {
     _renderMilkContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
-            this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
-            this.cloneType.name = typeData.name
+            if (this.oldMilkData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldMilkData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
+                this.cloneType.name = typeData.name
+            }
         }
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
@@ -241,6 +270,12 @@ export default class MainScreen extends React.Component<any, any> {
             this.forceUpdate()
         })
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表
+        let commonDoseTagView = this._renderTagViewList(this.milkDoseList, [], (dose) => {
+            logi("select milk dose", dose)
+            this.cloneType.dose = dose
+            this.forceUpdate()
+        })
         logi("formattime ", formatTime)
         return (
             <View>
@@ -259,7 +294,7 @@ export default class MainScreen extends React.Component<any, any> {
                             backgroundColor: "#eeeeee",
                             color: "#333333",
                         }]}
-                        value={this.cloneType.dose}
+                        value={this.cloneType.dose.toString()}
                         onChangeText={(text) => {
                             let dose = parseInt(text)
                             this.cloneType.dose = dose
@@ -267,6 +302,9 @@ export default class MainScreen extends React.Component<any, any> {
                         keyboardType={'number-pad'}
                         placeholderTextColor={"#bbbbbb"}
                         placeholder={"请输入喝奶量"}/>
+                </View>
+                <View>
+                    {commonDoseTagView}
                 </View>
                 <View>
                     {tagView}
@@ -349,7 +387,7 @@ export default class MainScreen extends React.Component<any, any> {
     _renderPeeContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
-            this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
+            this.cloneType = JSON.parse(JSON.stringify(peeTemplateData))
             this.cloneType.name = typeData.name
         }
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
