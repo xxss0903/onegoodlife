@@ -12,7 +12,7 @@ import DatePicker from "react-native-date-picker";
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
-const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣"] // 拉屎类型
+const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣", "稀便", "干便", "正常"] // 拉屎类型
 const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
 const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", position: 1}, {
     id: 2,
@@ -32,7 +32,8 @@ const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", po
     value: "type_5", text: "吐奶", position: 5
 }] // 类型列表
 const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2]] // 放在主页的主要使用的类型action
-const templateData = {
+// 牛奶的模板数据
+const milkTemplateData = {
     name: "牛奶",
     type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
@@ -48,12 +49,30 @@ const templateData = {
     yellowValue: {
         header: 0, // 头的黄疸
         chest: 0 // 胸的黄疸
-    },
-    datetimeOpen: false, // 选择时间是否打开
+    }
+}
+// 拉屎的模板数据
+const poopTemplateData = {
+    name: "拉屎",
+    type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: poopTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: ["黄色"], // 选中的类型
+    dose: 0, // 剂量，母乳多少毫升
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
+    yellowValue: {
+        header: 0, // 头的黄疸
+        chest: 0 // 胸的黄疸
+    }
 }
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {
-    dataList: [templateData]
+    dataList: [milkTemplateData]
 }
 
 export default class MainScreen extends React.Component<any, any> {
@@ -91,10 +110,9 @@ export default class MainScreen extends React.Component<any, any> {
                 }}
                 visible={this.state.showAddModal}>
                 <View style={styles.addModalContainer}>
-
                     <View style={styles.addContentContainer}>
                         {headerView ? headerView : null}
-                        {contentView ? <View style={{flex: 1}}>
+                        {contentView ? <View style={{flex: 1, padding: 12}}>
                             {contentView}
                         </View> : null}
                         {footerView ? <View style={styles.line}></View> : null}
@@ -121,36 +139,121 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
-    // 添加喝牛奶
-    _renderMilkContent(type) {
-        // 拷贝一个新的数据
-        if (!this.cloneType){
-            this.cloneType = JSON.parse(JSON.stringify(templateData))
-            this.cloneType.name = type.name
-        }
-        let tagView = milkTags.map(value => {
-            let isSelect = false // 是否选中过
+    // 标签列表
+    _renderTagViewList(tags, selectedTags, callback) {
+        let tagView = tags.map((value, index) => {
             return (
                 <TouchableOpacity
                     onPress={() => {
-                        let tagIndex = this.cloneType.tags.indexOf(value)
-                        if (tagIndex >= 0) {
-                            // 选中了要去掉
-                            this.cloneType.selectedTags.slice(tagIndex, 1)
-                        } else {
-                            // 需要添加
-                            this.cloneType.selectedTags.push(value)
+                        if (callback) {
+                            callback(value)
                         }
-                        // 选中标签
-                        this.cloneType.selectedTags.push(value)
                     }}
                     key={value}
-                    style={{padding: 8, backgroundColor: "#ff0000", borderRadius: 12}}>
+                    style={{padding: 8, backgroundColor: "#ff0000", borderRadius: 12, marginRight: 12, marginTop: 12}}>
                     <Text>{
                         value
                     }</Text>
                 </TouchableOpacity>
             )
+        })
+
+        return (
+            <View style={{display: "flex", flexDirection: "row", flexWrap: "wrap"}}>
+                {tagView}
+            </View>
+        )
+    }
+
+    // 添加喝牛奶
+    _renderMilkContent(type) {
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
+            this.cloneType.name = type.name
+        }
+        let tagView = this._renderTagViewList(milkTags, this.cloneType.tags, (tag) => {
+            let tagIndex = this.cloneType.tags.indexOf(tag)
+            if (tagIndex >= 0) {
+                // 选中了要去掉
+                this.cloneType.selectedTags.slice(tagIndex, 1)
+            } else {
+                // 需要添加
+                this.cloneType.selectedTags.push(tag)
+            }
+            // 选中标签
+            this.cloneType.selectedTags.push(tag)
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        logi("formattime ", formatTime)
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View style={{height: 40, backgroundColor: "#ff00ff", marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        value={this.cloneType.dose}
+                        onChangeText={(text) => {
+                            let dose = parseInt(text)
+                            this.cloneType.dose = dose
+                        }}
+                        keyboardType={'number-pad'}
+                        placeholderTextColor={"#ff0000"}
+                        placeholder={"请输入喝奶量"}/>
+                </View>
+                <View>
+                    {tagView}
+                </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
+    // 拉屎的添加view
+    _renderPoopContent(type) {
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
+            this.cloneType.name = type.name
+        }
+        let tagView = this._renderTagViewList(poopTags, this.cloneType.tags, (tag) => {
+            let tagIndex = this.cloneType.tags.indexOf(tag)
+            if (tagIndex >= 0) {
+                // 选中了要去掉
+                this.cloneType.selectedTags.slice(tagIndex, 1)
+            } else {
+                // 需要添加
+                this.cloneType.selectedTags.push(tag)
+            }
+            // 选中标签
+            this.cloneType.selectedTags.push(tag)
         })
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         logi("formattime ", formatTime)
@@ -163,22 +266,6 @@ export default class MainScreen extends React.Component<any, any> {
                     <Text>{formatTime}</Text>
                 </TouchableOpacity>
                 <View>
-                    <TextInput
-                        style={[{
-                            textAlign: 'left',
-                            fontSize: 16,
-                            flex: 1,
-                            paddingLeft: 60,
-                        }]}
-                        value={this.cloneType.dose}
-                        onChangeText={(text) => {
-                            let dose = parseInt(text)
-                            this.cloneType.dose = dose
-                        }}
-                        keyboardType={'number'}
-                        placeholder={"请输入喝奶量"}/>
-                </View>
-                <View style={{display: "flex", flexDirection: "row", marginTop: 12}}>
                     {tagView}
                 </View>
                 <View>
@@ -216,6 +303,9 @@ export default class MainScreen extends React.Component<any, any> {
         switch (this.currentAddType.id) {
             case typeMapList[0].id:
                 contentView = this._renderMilkContent(this.currentAddType)
+                break;
+            case typeMapList[1].id:
+                contentView = this._renderPoopContent(this.currentAddType)
                 break;
             default:
                 contentView = this._renderOtherContent(this.currentAddType)
@@ -434,8 +524,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#00000033"
     },
     addContentContainer: {
-        width: 200,
-        height: 200,
+        width: "80%",
+        minHeight: 400,
         backgroundColor: "#ffffff",
         shadowColor: "#bbbbbb",
         borderRadius: 12,
