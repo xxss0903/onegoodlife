@@ -70,6 +70,25 @@ const poopTemplateData = {
         chest: 0 // 胸的黄疸
     }
 }
+// 撒尿的模板
+const peeTemplateData = {
+    name: "拉屎",
+    type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: peeTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: [], // 选中的类型
+    dose: 0, // 剂量，母乳多少毫升
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
+    yellowValue: {
+        header: 0, // 头的黄疸
+        chest: 0 // 胸的黄疸
+    }
+}
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {
     dataList: [milkTemplateData]
@@ -174,9 +193,9 @@ export default class MainScreen extends React.Component<any, any> {
             this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
             this.cloneType.name = type.name
         }
-        let tagView = this._renderTagViewList(milkTags, this.cloneType.selectedTags, (tag) => {
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index" , tagIndex + " # " + tag)
+            logi("tag index", tagIndex + " # " + tag)
             if (tagIndex >= 0) {
                 // 选中了要去掉
                 this.cloneType.selectedTags.splice(tagIndex, 1)
@@ -246,9 +265,60 @@ export default class MainScreen extends React.Component<any, any> {
             this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
             this.cloneType.name = type.name
         }
-        let tagView = this._renderTagViewList(poopTags, this.cloneType.selectedTags, (tag) => {
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index" , tagIndex + " # " + tag)
+            logi("tag index", tagIndex + " # " + tag)
+            if (tagIndex >= 0) {
+                // 选中了要去掉
+                this.cloneType.selectedTags.splice(tagIndex, 1)
+            } else {
+                // 需要添加
+                this.cloneType.selectedTags.push(tag)
+            }
+            this.forceUpdate()
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        logi("formattime ", formatTime)
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View>
+                    {tagView}
+                </View>
+                <View>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            paddingLeft: 60,
+                        }]}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                        }}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
+
+    _renderPeeContent(type) {
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
+            this.cloneType.name = type.name
+        }
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index", tagIndex + " # " + tag)
             if (tagIndex >= 0) {
                 // 选中了要去掉
                 this.cloneType.selectedTags.splice(tagIndex, 1)
@@ -309,6 +379,9 @@ export default class MainScreen extends React.Component<any, any> {
                 break;
             case typeMapList[1].id:
                 contentView = this._renderPoopContent(this.currentAddType)
+                break;
+            case typeMapList[2].id:
+                contentView = this._renderPeeContent(this.currentAddType)
                 break;
             default:
                 contentView = this._renderOtherContent(this.currentAddType)
