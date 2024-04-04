@@ -4,10 +4,11 @@
 
 import React from "react";
 import moment from "moment";
-import {FlatList, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Modal, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {FloatingAction} from "react-native-floating-action";
 import Toast from 'react-native-toast-message';
 import {logi} from "./utils/logutil";
+import DatePicker from "react-native-date-picker";
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
@@ -31,38 +32,40 @@ const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", po
     value: "type_5", text: "吐奶", position: 5
 }] // 类型列表
 const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2]] // 放在主页的主要使用的类型action
+const templateData = {
+    type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: ["母乳"], // 选中的类型
+    dose: 0, // 剂量，母乳多少毫升
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
+    yellowValue: {
+        header: 0, // 头的黄疸
+        chest: 0 // 胸的黄疸
+    },
+    datetimeOpen: false, // 选择时间是否打开
+}
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {
-    dataList: [
-        {
-            type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-            time: moment().valueOf(), // 时间戳
-            remark: "", // 备注
-            tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-            selectedTags: ["母乳"], // 选中的类型
-            dose: 0, // 剂量，母乳多少毫升
-            pictures: [{
-                time: moment().valueOf(), // 时间戳
-                name: "", // 名称：使用类型和时间戳来标记
-                url: "" // 图片在地址/远程地址
-            }], // 图片
-            yellowValue: {
-                header: 0, // 头的黄疸
-                chest: 0 // 胸的黄疸
-            }
-        }
-    ]
+    dataList: [templateData]
 }
 
 export default class MainScreen extends React.Component<any, any> {
     private currentAddType: null; // 当前的添加类型
     private floatingActionRef: null; // 悬浮按钮引用
+    private cloneType: null; // 临时保存type的数据
 
     constructor(props) {
         super(props);
         this.state = {
             dataList: tempJsonData.dataList, // 本地的存储的数据列表
-            showAddModal: false
+            showAddModal: false,
+            datepickerOpen: false
         }
     }
 
@@ -117,15 +120,106 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
+    // 添加喝牛奶
+    _renderMilkContent(type) {
+        // 拷贝一个新的数据
+        if (!this.cloneType){
+            this.cloneType = JSON.parse(JSON.stringify(templateData))
+        }
+        let tagView = milkTags.map(value => {
+            let isSelect = false // 是否选中过
+            return (
+                <TouchableOpacity
+                    onPress={() => {
+                        let tagIndex = this.cloneType.tags.indexOf(value)
+                        if (tagIndex >= 0) {
+                            // 选中了要去掉
+                            this.cloneType.selectedTags.slice(tagIndex, 1)
+                        } else {
+                            // 需要添加
+                            this.cloneType.selectedTags.push(value)
+                        }
+                        // 选中标签
+                        this.cloneType.selectedTags.push(value)
+                    }}
+                    key={value}
+                    style={{padding: 8, backgroundColor: "#ff0000", borderRadius: 12}}>
+                    <Text>{
+                        value
+                    }</Text>
+                </TouchableOpacity>
+            )
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        logi("formattime ", formatTime)
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            paddingLeft: 60,
+                        }]}
+                        value={this.cloneType.dose}
+                        onChangeText={(text) => {
+                            let dose = parseInt(text)
+                            this.cloneType.dose = dose
+                        }}
+                        keyboardType={'number'}
+                        placeholder={"请输入喝奶量"}/>
+                </View>
+                <View style={{display: "flex", flexDirection: "row", marginTop: 12}}>
+                    {tagView}
+                </View>
+                <View>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            paddingLeft: 60,
+                        }]}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                        }}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
+    _renderOtherContent(type) {
+        return (
+            <View></View>
+        );
+    }
+
     // 新增类型弹窗
     _renderAddModal() {
         if (!this.currentAddType) {
             return
         }
-        let contentView =
-            <View>
-                <Text>222</Text>
-            </View>
+        let contentView = null;
+        // 根据类型id渲染不同的内容界面
+        switch (this.currentAddType.id) {
+            case typeMapList[0].id:
+                contentView = this._renderMilkContent(this.currentAddType)
+                break;
+            default:
+                contentView = this._renderOtherContent(this.currentAddType)
+                break;
+        }
+
         let headerView =
             <View style={{height: 40, display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <Text>添加{this.currentAddType.name}</Text>
@@ -140,6 +234,7 @@ export default class MainScreen extends React.Component<any, any> {
                 },
                 confirmClick: () => {
                     this.setShowModal(false)
+                    this.state.dataList.push(this.cloneType)
                 }
             }
         )
@@ -150,29 +245,6 @@ export default class MainScreen extends React.Component<any, any> {
         this.currentAddType = item
         // 添加牛奶的弹窗
         this.setShowModal(true)
-
-        // // 根据之前添加的量默认添加dose剂量
-        // let newData = {
-        //     name: item.name,
-        //     type: item.id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-        //     time: moment().valueOf(), // 时间戳
-        //     remark: "", // 备注
-        //     tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-        //     selectedTags: [], // 选中的类型
-        //     dose: 50, // 剂量，母乳多少毫升
-        //     pictures: [{
-        //         time: moment().valueOf(), // 时间戳
-        //         name: "", // 名称：使用类型和时间戳来标记
-        //         url: "" // 图片在地址/远程地址
-        //     }], // 图片
-        //     yellowValue: {
-        //         header: 0, // 头的黄疸
-        //         chest: 0 // 胸的黄疸
-        //     }
-        // }
-        //
-        // this.state.dataList.push(newData)
-        // this.forceUpdate()
     }
 
     // 添加拉屎
@@ -189,7 +261,8 @@ export default class MainScreen extends React.Component<any, any> {
 
     // 添加新的时间线
     private _addNewLifeline(item) {
-        console.log("add life line ", item)
+        logi("add life line ", item)
+        this.cloneType = null
         switch (item) {
             case typeMapList[0].name:
                 this._addMilk(typeMapList[0])
@@ -220,8 +293,6 @@ export default class MainScreen extends React.Component<any, any> {
             })
         }
 
-        console.log("list tagview", tagView)
-
         return (
             <View key={item.time} style={styles.timelineItemContainer}>
                 <View style={styles.timelineItemType}>
@@ -240,8 +311,37 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
+    _toggleDatetimePicker(open) {
+        this.setState({
+            datepickerOpen: open
+        })
+    }
+
+    _renderDatetimePicker() {
+        let datetime = this.cloneType ? new Date(this.cloneType.time) : new Date()
+        return (
+            <DatePicker
+                open={this.state.datepickerOpen}
+                date={datetime}
+                modal={true}
+                mode={"datetime"}
+                onConfirm={(date) => {
+                    // 确认选择，将日期转为时间戳
+                    this.cloneType.time = moment(date).valueOf()
+                    let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+                    logi("confirm date", date + " # " + formatTime)
+                    this._toggleDatetimePicker(false)
+
+                }}
+                onCancel={() => {
+                    this.setState({
+                        datepickerOpen: false
+                    })
+                }}/>
+        )
+    }
+
     render() {
-        console.log("datalist", this.state.dataList)
         return (
             <SafeAreaView>
                 <View style={styles.container}>
@@ -267,6 +367,7 @@ export default class MainScreen extends React.Component<any, any> {
                         }}
                     />
                     {this._renderAddModal()}
+                    {this._renderDatetimePicker()}
                 </View>
             </SafeAreaView>
         )
