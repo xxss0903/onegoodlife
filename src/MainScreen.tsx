@@ -246,17 +246,17 @@ export default class MainScreen extends React.Component<any, any> {
             this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
             this.cloneType.name = type.name
         }
-        let tagView = this._renderTagViewList(poopTags, this.cloneType.tags, (tag) => {
-            let tagIndex = this.cloneType.tags.indexOf(tag)
+        let tagView = this._renderTagViewList(poopTags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index" , tagIndex + " # " + tag)
             if (tagIndex >= 0) {
                 // 选中了要去掉
-                this.cloneType.selectedTags.slice(tagIndex, 1)
+                this.cloneType.selectedTags.splice(tagIndex, 1)
             } else {
                 // 需要添加
                 this.cloneType.selectedTags.push(tag)
             }
-            // 选中标签
-            this.cloneType.selectedTags.push(tag)
+            this.forceUpdate()
         })
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         logi("formattime ", formatTime)
