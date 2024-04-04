@@ -39,7 +39,7 @@ const milkTemplateData = {
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
     tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: ["母乳"], // 选中的类型
+    selectedTags: [], // 选中的类型
     dose: 0, // 剂量，母乳多少毫升
     pictures: [{
         time: moment().valueOf(), // 时间戳
@@ -58,7 +58,7 @@ const poopTemplateData = {
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
     tags: poopTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: ["黄色"], // 选中的类型
+    selectedTags: [], // 选中的类型
     dose: 0, // 剂量，母乳多少毫升
     pictures: [{
         time: moment().valueOf(), // 时间戳
@@ -142,6 +142,8 @@ export default class MainScreen extends React.Component<any, any> {
     // 标签列表
     _renderTagViewList(tags, selectedTags, callback) {
         let tagView = tags.map((value, index) => {
+            let selected = selectedTags.indexOf(value) >= 0
+            let bgColor = selected ? "#ff0000" : "#ffffff"
             return (
                 <TouchableOpacity
                     onPress={() => {
@@ -150,7 +152,7 @@ export default class MainScreen extends React.Component<any, any> {
                         }
                     }}
                     key={value}
-                    style={{padding: 8, backgroundColor: "#ff0000", borderRadius: 12, marginRight: 12, marginTop: 12}}>
+                    style={{padding: 8, backgroundColor: bgColor, borderRadius: 12, marginRight: 12, marginTop: 12}}>
                     <Text>{
                         value
                     }</Text>
@@ -172,17 +174,18 @@ export default class MainScreen extends React.Component<any, any> {
             this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
             this.cloneType.name = type.name
         }
-        let tagView = this._renderTagViewList(milkTags, this.cloneType.tags, (tag) => {
-            let tagIndex = this.cloneType.tags.indexOf(tag)
+        let tagView = this._renderTagViewList(milkTags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index" , tagIndex + " # " + tag)
             if (tagIndex >= 0) {
                 // 选中了要去掉
-                this.cloneType.selectedTags.slice(tagIndex, 1)
+                this.cloneType.selectedTags.splice(tagIndex, 1)
             } else {
                 // 需要添加
                 this.cloneType.selectedTags.push(tag)
             }
-            // 选中标签
-            this.cloneType.selectedTags.push(tag)
+            logi("selected tags", this.cloneType.selectedTags)
+            this.forceUpdate()
         })
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         logi("formattime ", formatTime)
