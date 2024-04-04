@@ -9,6 +9,7 @@ import {FloatingAction} from "react-native-floating-action";
 import Toast from 'react-native-toast-message';
 import {logi} from "./utils/logutil";
 import DatePicker from "react-native-date-picker";
+import {showToast} from "./utils/toastUtil";
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
@@ -35,7 +36,7 @@ const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2]] // 放在
 // 牛奶的模板数据
 const milkTemplateData = {
     name: "牛奶",
-    type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    typeId: typeMapList[0].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
     tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -54,7 +55,7 @@ const milkTemplateData = {
 // 拉屎的模板数据
 const poopTemplateData = {
     name: "拉屎",
-    type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    typeId: typeMapList[1].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
     tags: poopTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -73,7 +74,7 @@ const poopTemplateData = {
 // 撒尿的模板
 const peeTemplateData = {
     name: "拉屎",
-    type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    typeId: typeMapList[2].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
     tags: peeTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -187,11 +188,11 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     // 添加喝牛奶
-    _renderMilkContent(type) {
+    _renderMilkContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
             this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
-            this.cloneType.name = type.name
+            this.cloneType.name = typeData.name
         }
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
@@ -231,7 +232,7 @@ export default class MainScreen extends React.Component<any, any> {
                             this.cloneType.dose = dose
                         }}
                         keyboardType={'number-pad'}
-                        placeholderTextColor={"#ff0000"}
+                        placeholderTextColor={"#bbbbbb"}
                         placeholder={"请输入喝奶量"}/>
                 </View>
                 <View>
@@ -251,6 +252,7 @@ export default class MainScreen extends React.Component<any, any> {
                             this.cloneType.remark = text
                             this.forceUpdate()
                         }}
+                        placeholderTextColor={"#bbbbbb"}
                         keyboardType={'default'}
                         placeholder={"请输入备注"}/>
                 </View>
@@ -259,11 +261,11 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     // 拉屎的添加view
-    _renderPoopContent(type) {
+    _renderPoopContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
             this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
-            this.cloneType.name = type.name
+            this.cloneType.name = typeData.name
         }
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
@@ -303,6 +305,7 @@ export default class MainScreen extends React.Component<any, any> {
                             this.cloneType.remark = text
                         }}
                         keyboardType={'default'}
+                        placeholderTextColor={"#bbbbbb"}
                         placeholder={"请输入备注"}/>
                 </View>
             </View>
@@ -310,11 +313,11 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
 
-    _renderPeeContent(type) {
+    _renderPeeContent(typeData) {
         // 拷贝一个新的数据
         if (!this.cloneType) {
             this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
-            this.cloneType.name = type.name
+            this.cloneType.name = typeData.name
         }
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
@@ -354,16 +357,41 @@ export default class MainScreen extends React.Component<any, any> {
                             this.cloneType.remark = text
                         }}
                         keyboardType={'default'}
+                        placeholderTextColor={"#bbbbbb"}
                         placeholder={"请输入备注"}/>
                 </View>
             </View>
         );
     }
 
-    _renderOtherContent(type) {
+    _renderOtherContent(typeData) {
         return (
             <View></View>
         );
+    }
+
+    // 检查是否填写必须的数据
+    _checkAddTypeData(typeData){
+        logi("check type ", typeData)
+        logi("type id", typeData.typeId + " # " + typeMapList[0].id)
+        switch (typeData.typeId) {
+            case typeMapList[0].id:
+                // 牛奶必须输入毫升数量
+                return typeData.dose > 0
+        }
+        return true
+    }
+
+    _confirmAddNewLife(callback) {
+        if (this._checkAddTypeData(this.cloneType)) {
+            logi("add milk check true")
+            this.state.dataList.push(this.cloneType)
+            if (callback) {
+                callback()
+            }
+        } else {
+            logi("add milk check false")
+        }
     }
 
     // 新增类型弹窗
@@ -401,8 +429,9 @@ export default class MainScreen extends React.Component<any, any> {
                     this.setShowModal(false)
                 },
                 confirmClick: () => {
-                    this.setShowModal(false)
-                    this.state.dataList.push(this.cloneType)
+                    this._confirmAddNewLife(() => {
+                        this.setShowModal(false)
+                    })
                 }
             }
         )
@@ -445,8 +474,6 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     _renderTypeItem(item) {
-        logi("render item", item)
-
         let typeName = item.name
         let time = moment(item.time).format("yyyy-MM-DD HH:mm")
         let tags = item.selectedTags
@@ -469,12 +496,12 @@ export default class MainScreen extends React.Component<any, any> {
                     <Text>{typeName}</Text>
                 </View>
                 <View style={styles.timelineItemContent}>
-                    <Text>{time}</Text>
+                    <Text>时间：{time}</Text>
+                    {item.dose ? <Text>剂量：{item.dose}ml</Text> : null}
                     {tagView && tagView.length > 0 ?
                         <View style={{display: "flex", flexDirection: "row", marginTop: 12}}>
                             {tagView}
                         </View> : null}
-                    {item.dose ? <Text>{item.dose}</Text> : null}
                     {item.remark ? <Text style={{marginTop: 12}}>{item.remark}</Text> : null}
                 </View>
             </View>
@@ -491,6 +518,7 @@ export default class MainScreen extends React.Component<any, any> {
         let datetime = this.cloneType ? new Date(this.cloneType.time) : new Date()
         return (
             <DatePicker
+                is24hourSource="locale"
                 open={this.state.datepickerOpen}
                 date={datetime}
                 modal={true}
