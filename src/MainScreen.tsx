@@ -903,10 +903,13 @@ export default class MainScreen extends React.Component<any, any> {
                 for (let i = 0; i < dataList.length; i++) {
                     let value = dataList[i]
                     if (value.time < newData.time) {
+                        logi("insert to index 1 ", dataList.length)
+                        logi("insert to index 2 ", i)
                         dataList.splice(i, 0, newData)
                         return dataList
                     }
                 }
+                dataList.push(newData)
             }
 
 
@@ -1040,8 +1043,10 @@ export default class MainScreen extends React.Component<any, any> {
 
     // 刷新统计数据图标
     _refreshStaticsCharts() {
-        this._refreshLast24HourCharts()
-        this._refreshTodayCharts()
+        setTimeout(() => {
+            this._refreshLast24HourCharts()
+            this._refreshTodayCharts()
+        }, 0)
     }
 
     // 统计数据
