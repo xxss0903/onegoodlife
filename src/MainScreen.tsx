@@ -34,8 +34,12 @@ const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", po
     id: 5,
     name: "吐奶",
     value: "type_5", text: "吐奶", position: 5
+}, {
+    id: 6,
+    name: "其他",
+    value: "type_6", text: "其他", position: 6
 }] // 类型列表
-const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2]] // 放在主页的主要使用的类型action
+const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2], typeMapList[5]] // 放在主页的主要使用的类型action
 // 牛奶的模板数据
 // 喝牛奶的模板数据
 const milkTemplateData = {
@@ -101,6 +105,21 @@ const jaundiceTemplateData = {
         header: 0, // 头的黄疸
         chest: 0 // 胸的黄疸
     }
+}
+// 其他记录模板，比如其他的一些记录
+const otherTemplateData = {
+    name: typeMapList[3].name,
+    typeId: typeMapList[3].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: [], // 选中的类型
+    dose: 0, // 剂量，母乳多少毫升
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
 }
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {dataList: []}
@@ -737,6 +756,13 @@ export default class MainScreen extends React.Component<any, any> {
                                     return (
                                         <View style={styles.rowBack}>
                                             <TouchableOpacity
+                                                onPress={() => {
+                                                    // 拍照
+                                                }}
+                                                style={[styles.photoLeftBtn]}>
+                                                <Text>拍照</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
                                                 style={[styles.backRightBtn, styles.backRightBtnLeft]}
                                                 onPress={() => {
                                                     logi("item key 1", data.item.key)
@@ -757,6 +783,7 @@ export default class MainScreen extends React.Component<any, any> {
                                         </View>
                                     )
                                 }}
+                                leftOpenValue={75}
                                 rightOpenValue={-150}
                                 previewOpenValue={-40}
                                 previewOpenDelay={1000}
@@ -797,7 +824,7 @@ const styles = StyleSheet.create({
         height: 200,
     },
     timelineContainer: {
-        backgroundColor: 'white',
+        backgroundColor: '#dddddd',
         flex: 1,
     },
     timelineItemContainer: {
@@ -874,11 +901,20 @@ const styles = StyleSheet.create({
     },
     rowBack: {
         alignItems: 'center',
-        backgroundColor: '#DDD',
+        backgroundColor: '#dddddd',
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingLeft: 15,
+    },
+    photoLeftBtn: {
+        alignItems: 'center',
+        bottom: 0,
+        left: 0,
+        top: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        width: 75,
     },
     backRightBtn: {
         alignItems: 'center',
