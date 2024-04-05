@@ -118,8 +118,8 @@ const jaundiceTemplateData = {
 }
 // 其他记录模板，比如其他的一些记录
 const otherTemplateData = {
-    name: typeMapList[3].name,
-    typeId: typeMapList[3].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    name: typeMapList[5].name,
+    typeId: typeMapList[5].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
     remark: "", // 备注
     tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -464,20 +464,22 @@ export default class MainScreen extends React.Component<any, any> {
                 <View>
                     {tagView}
                 </View>
-                <View>
+                <View style={{minHeight: 80, marginTop: 12}}>
                     <TextInput
                         style={[{
-                            textAlign: 'left',
-                            fontSize: 16,
+                            fontSize: 14,
                             flex: 1,
-                            paddingLeft: 60,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
                         }]}
+                        multiline={true}
                         value={this.cloneType.remark}
                         onChangeText={(text) => {
                             this.cloneType.remark = text
+                            this.forceUpdate()
                         }}
-                        keyboardType={'default'}
                         placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
                         placeholder={"请输入备注"}/>
                 </View>
             </View>
@@ -521,20 +523,22 @@ export default class MainScreen extends React.Component<any, any> {
                 <View>
                     {tagView}
                 </View>
-                <View>
+                <View style={{minHeight: 80, marginTop: 12}}>
                     <TextInput
                         style={[{
-                            textAlign: 'left',
-                            fontSize: 16,
+                            fontSize: 14,
                             flex: 1,
-                            paddingLeft: 60,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
                         }]}
+                        multiline={true}
                         value={this.cloneType.remark}
                         onChangeText={(text) => {
                             this.cloneType.remark = text
+                            this.forceUpdate()
                         }}
-                        keyboardType={'default'}
                         placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
                         placeholder={"请输入备注"}/>
                 </View>
             </View>
@@ -542,8 +546,40 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     _renderOtherContent(typeData) {
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            this.cloneType = JSON.parse(JSON.stringify(otherTemplateData))
+            this.cloneType.name = typeData.name
+            this.cloneType.time = moment().valueOf()
+        }
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         return (
-            <View></View>
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
         );
     }
 
@@ -605,6 +641,9 @@ export default class MainScreen extends React.Component<any, any> {
             case typeMapList[2].id:
                 contentView = this._renderPeeContent(this.currentAddType)
                 break;
+            case typeMapList[5].id:
+                contentView = this._renderOtherContent(this.currentAddType)
+                break;
             default:
                 contentView = this._renderOtherContent(this.currentAddType)
                 break;
@@ -665,6 +704,11 @@ export default class MainScreen extends React.Component<any, any> {
         }
     }
 
+    _addOther(item) {
+        this.currentAddType = item
+        this.setShowModal(true)
+    }
+
     // 添加新的时间线
     private _addNewLifeline(item) {
         logi("add life line ", item)
@@ -678,6 +722,9 @@ export default class MainScreen extends React.Component<any, any> {
                 break;
             case typeMapList[2].name:
                 this._addPee(typeMapList[2])
+                break;
+            case typeMapList[5].name:
+                this._addOther(typeMapList[5])
                 break;
         }
     }
@@ -765,7 +812,6 @@ export default class MainScreen extends React.Component<any, any> {
     };
 
 
-
     closeRow = (rowMap, rowKey) => {
         if (rowMap[rowKey]) {
             logi("close row ", rowMap[rowKey].closeRow())
@@ -785,6 +831,24 @@ export default class MainScreen extends React.Component<any, any> {
         })
         this._refreshLocalData()
     };
+
+    _exportData() {
+        // 将数据保存为文件，然后再分享
+    }
+
+    _renderExportAction() {
+        return (
+            <View style={styles.exportActionsContainer}>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._exportData()
+                    }}
+                    style={styles.btnExportAction}>
+                    <Text>导出</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
 
     render() {
         return (
@@ -838,11 +902,6 @@ export default class MainScreen extends React.Component<any, any> {
                                 previewOpenValue={-40}
                                 previewOpenDelay={1000}
                                 onRowDidOpen={(rowKey, rowMap, toValue) => this.onRowDidOpen(rowKey, rowMap)}/>
-                            {/*<FlatList*/}
-                            {/*    ListEmptyComponent={this._renderListEmptyView()}*/}
-                            {/*    data={this.state.dataList} renderItem={({item, index}) => {*/}
-                            {/*    return this._renderTypeItem(item)*/}
-                            {/*}}/>*/}
                         </View>
                     </View>
                     <FloatingAction
@@ -859,6 +918,7 @@ export default class MainScreen extends React.Component<any, any> {
                     />
                     {this._renderAddModal()}
                     {this._renderDatetimePicker()}
+                    {/*{this._renderExportAction()}*/}
                 </View>
             </SafeAreaView>
         )
@@ -982,7 +1042,7 @@ const styles = StyleSheet.create({
         right: 0,
     },
     backTextWhite: {
-       color: '#ffffff',
+        color: '#ffffff',
     },
     rowFront: {
         alignItems: 'center',
@@ -992,4 +1052,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: 50,
     },
+    exportActionsContainer: {
+        position: "absolute",
+        bottom: 180,
+        right: 48,
+        width: 60,
+        height: 148,
+        display: "flex",
+        flexDirection: "column"
+    },
+    btnExportAction: {
+        width: 60,
+        color: "white",
+        height: 60,
+        borderRadius: 30,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: "blue"
+    }
 })
