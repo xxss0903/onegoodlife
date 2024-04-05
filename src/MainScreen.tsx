@@ -24,6 +24,13 @@ import {DeviceStorage} from "./utils/deviceStorage";
 import {AndroidPermissions} from "./utils/permissionUtils";
 import {SwipeListView} from "react-native-swipe-list-view";
 import {Share} from "react-native/Libraries/Share/Share";
+import {BarChart, LineChart} from 'echarts/charts';
+import * as echarts from 'echarts/core';
+import SvgChart, {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
+import {EChartsType} from "echarts/core";
+import {GridComponent, TitleComponent, TooltipComponent} from "echarts/components";
+import {screenW} from "./utils/until";
+
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
@@ -137,6 +144,11 @@ const tempJsonData = {dataList: []}
 // 存储本地数据的key
 const KEY_LOCAL_DATA = "key_local_key"
 
+echarts.use([SVGRenderer, LineChart, BarChart, TitleComponent,
+    TooltipComponent,
+    GridComponent])
+
+
 export default class MainScreen extends React.Component<any, any> {
     private currentAddType: null; // 当前的添加类型
     private floatingActionRef: null; // 悬浮按钮引用
@@ -150,6 +162,8 @@ export default class MainScreen extends React.Component<any, any> {
     private oldJaundiceData = null // 已经有的最新的黄疸的数据，用来保存默认数据
     private jaundiceList = [] // 黄疸的最新3个量数据列表
     private isTypeEdit: boolean = false // 是否是编辑模式
+    private svgChartRef: any; // 统计数据的渲染引用
+    private charts: EChartsType; // 统计图表
 
     constructor(props) {
         super(props);
@@ -161,6 +175,7 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     componentDidMount() {
+        this._initEcharts()
         AndroidPermissions.checkStoragePermissions(() => {
             // 获取本地的数据
             DeviceStorage.get(KEY_LOCAL_DATA)
@@ -169,6 +184,7 @@ export default class MainScreen extends React.Component<any, any> {
                     if (data) {
                         logi("get my datalist ", data)
                         this._refreshDataList(data)
+                        this._refreshStaticsCharts()
                     }
                 })
                 .catch(error => {
@@ -673,6 +689,7 @@ export default class MainScreen extends React.Component<any, any> {
                 confirmClick: () => {
                     this._confirmAddNewLife(() => {
                         this.setShowModal(false)
+                        this._refreshStaticsCharts()
                     })
                 }
             }
@@ -680,25 +697,56 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     // 添加牛奶
-    private _addMilk(item) {
+    _addMilk(item) {
         this.currentAddType = item
         // 添加牛奶的弹窗
         this.setShowModal(true)
     }
 
     // 添加拉屎
-    private _addPoop(item) {
+    _addPoop(item) {
         this.currentAddType = item
         this.setShowModal(true)
     }
 
     // 添加撒尿
-    private _addPee(item) {
+    _addPee(item) {
         this.currentAddType = item
         this.setShowModal(true)
     }
 
-    private _editLifeLine(item) {
+    // 获取过去24小时的数据
+    _getLast24HoursData() {
+        let dataList = this.state.dataList
+        let tempDataList = []
+        // 过去24小时的时间戳
+        let last24HourMoment = moment().subtract(1, "day").valueOf()
+        for (let i = 0; i < dataList.length; i++) {
+            let data = dataList[i]
+            if (data.time > last24HourMoment) {
+                tempDataList.push(data)
+            }
+        }
+        logi("last 24 hour data ", tempDataList)
+        return JSON.parse(JSON.stringify(tempDataList))
+    }
+
+    // 获取今天的数据
+    _getTodayData() {
+        let dataList = this.state.dataList
+        let tempDataList = []
+        let todayMoment = moment().startOf('day').valueOf()
+        for (let i = 0; i < dataList.length; i++) {
+            let data = dataList[i]
+            if (data.time > todayMoment) {
+                tempDataList.push(data)
+            }
+        }
+        logi("last day data ", tempDataList)
+        return JSON.parse(JSON.stringify(tempDataList))
+    }
+
+    _editLifeLine(item) {
         this.cloneType = item
         switch (item.name) {
             case typeMapList[0].name:
@@ -719,7 +767,7 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     // 添加新的时间线
-    private _addNewLifeline(item) {
+    _addNewLifeline(item) {
         logi("add life line ", item)
         this.cloneType = null
         switch (item) {
@@ -839,10 +887,11 @@ export default class MainScreen extends React.Component<any, any> {
             dataList: dataList
         })
         this._refreshLocalData()
+        this._refreshStaticsCharts()
     };
 
     // 重新排序记录，根据时间插入
-    _insertItemByResortTime(dataList, newData){
+    _insertItemByResortTime(dataList, newData) {
         if (!newData) {
             return dataList
         }
@@ -870,9 +919,7 @@ export default class MainScreen extends React.Component<any, any> {
         // 将数据保存为文件，然后再分享
         Share.open({
             title: "分享文件"
-        }, {
-
-        })
+        }, {})
     }
 
     _renderExportAction() {
@@ -889,13 +936,70 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
+    // 刷新统计数据图标
+    _refreshStaticsCharts() {
+        let dataList = this._getLast24HoursData()
+        logi("chart ref", this.svgChartRef)
+        if (this.svgChartRef && dataList) {
+            // 获取分类数据
+            let dataMap = new Map()
+            for (let i = 0; i < dataList.length; i++) {
+                let data = dataList[i]
+                if (dataMap.has(data.name)) {
+                    let value = dataMap.get(data.name)
+                    value += 1
+                    dataMap.set(data.name, value)
+                } else {
+                    dataMap.set(data.name, 1)
+                }
+            }
+            let titleList = Array.from(dataMap.keys())
+            let valueList = Array.from(dataMap.values())
+
+
+            const option = {
+                xAxis: {
+                    type: 'category',
+                    data: titleList,
+                },
+                yAxis: {
+                    type: 'value',
+                },
+                series: [
+                    {
+                        data: valueList,
+                        type: 'bar',
+                    },
+                ],
+            };
+            this.charts.setOption(option);
+        }
+    }
+
+    // 统计数据
+    _renderSvgCharts() {
+        return (
+            <SvgChart ref={ref => this.svgChartRef = ref}/>
+        )
+    }
+
+    _initEcharts() {
+        if (this.svgChartRef) {
+            this.charts = echarts.init(this.svgChartRef, "light", {
+                renderer: "svg",
+                width: screenW,
+                height: screenW * 0.55
+            })
+        }
+    }
+
     render() {
         return (
             <SafeAreaView>
                 <View style={styles.container}>
                     <View style={styles.scrollContainer}>
-                        <View style={styles.staticsContainer}>
-
+                        <View style={[styles.staticsContainer, {height: screenW * 0.5}]}>
+                            {this._renderSvgCharts()}
                         </View>
                         <View style={styles.line}/>
                         <View style={styles.timelineContainer}>
