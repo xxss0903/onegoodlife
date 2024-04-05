@@ -958,6 +958,9 @@ export default class MainScreen extends React.Component<any, any> {
 
 
             const option = {
+                title: {
+                    text: "过去24小时数据"
+                },
                 xAxis: {
                     type: 'category',
                     data: titleList,
@@ -988,7 +991,7 @@ export default class MainScreen extends React.Component<any, any> {
             this.charts = echarts.init(this.svgChartRef, "light", {
                 renderer: "svg",
                 width: screenW,
-                height: screenW * 0.55
+                height: screenW * 0.6
             })
         }
     }
@@ -998,7 +1001,7 @@ export default class MainScreen extends React.Component<any, any> {
             <SafeAreaView>
                 <View style={styles.container}>
                     <View style={styles.scrollContainer}>
-                        <View style={[styles.staticsContainer, {height: screenW * 0.5}]}>
+                        <View style={[styles.staticsContainer, {height: screenW * 0.5, paddingHorizontal: 12}]}>
                             {this._renderSvgCharts()}
                         </View>
                         <View style={styles.line}/>
