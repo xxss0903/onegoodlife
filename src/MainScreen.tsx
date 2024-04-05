@@ -953,8 +953,14 @@ export default class MainScreen extends React.Component<any, any> {
                     dataMap.set(data.name, 1)
                 }
             }
-            let titleList = Array.from(dataMap.keys())
-            let valueList = Array.from(dataMap.values())
+            let sortedMap = new Map()
+            typeMapList.forEach(value => {
+                if (dataMap.has(value.name)) {
+                    sortedMap.set(value.name, dataMap.get(value.name))
+                }
+            })
+            let titleList = Array.from(sortedMap.keys())
+            let valueList = Array.from(sortedMap.values())
 
 
             const option = {
@@ -966,12 +972,15 @@ export default class MainScreen extends React.Component<any, any> {
                     data: titleList,
                 },
                 yAxis: {
+                    minInterval: 1,
                     type: 'value',
                 },
                 series: [
                     {
                         data: valueList,
                         type: 'bar',
+                        barWidth: 40,
+                        sort: 'ascending'
                     },
                 ],
             };
