@@ -288,12 +288,20 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     // 标签列表
-    _renderTagViewList(tags, selectedTags, callback) {
+    _renderTagViewList(tags, selectedTags, callback, isView = false) {
         let tagView = tags.map((value, index) => {
-            let selected = selectedTags.indexOf(value) >= 0
+            let selected = false
+            if (isView) {
+                selected = true
+            } else {
+                if (selectedTags && selectedTags.length > 0) {
+                    selected = selectedTags.indexOf(value) >= 0
+                }
+            }
             let bgColor = selected ? "#ff0000" : "#ffffff"
             return (
                 <TouchableOpacity
+                    disabled={!callback}
                     onPress={() => {
                         if (callback) {
                             callback(value)
@@ -301,7 +309,7 @@ export default class MainScreen extends React.Component<any, any> {
                     }}
                     key={value}
                     style={{padding: 8, backgroundColor: bgColor, borderRadius: 12, marginRight: 12, marginTop: 12}}>
-                    <Text>{
+                    <Text style={{color: "#333333"}}>{
                         value
                     }</Text>
                 </TouchableOpacity>
@@ -647,31 +655,31 @@ export default class MainScreen extends React.Component<any, any> {
 
         let tagView = null
         if (tags && tags.length > 0) {
-            tagView = tags.map(value => {
-                return (
-                    <View key={value}
-                          style={{padding: 8, backgroundColor: "#ff0000", borderRadius: 12}}>
-                        <Text style={{fontSize: 12}}>{value}</Text>
-                    </View>
-                )
-            })
+            logi("item tags ", tags)
+            tagView = this._renderTagViewList(tags, [], null, true)
         }
+        logi("tagview ", tagView)
 
         return (
-            <View key={item.time} style={styles.timelineItemContainer}>
+            <TouchableOpacity
+                onPress={() => {
+                    // 进入详情
+                    this._gotoItemDetail(item)
+                }}
+                key={item.time} style={styles.timelineItemContainer}>
                 <View style={styles.timelineItemType}>
                     <Text>{typeName}</Text>
                 </View>
                 <View style={styles.timelineItemContent}>
                     <Text>时间：{time}</Text>
-                    {item.dose ? <Text>剂量：{item.dose}ml</Text> : null}
-                    {tagView && tagView.length > 0 ?
-                        <View style={{display: "flex", flexDirection: "row", marginTop: 12}}>
+                    {item.dose ? <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text> : null}
+                    {tagView ?
+                        <View style={{display: "flex", flexDirection: "row"}}>
                             {tagView}
                         </View> : null}
                     {item.remark ? <Text style={{marginTop: 12}}>{item.remark}</Text> : null}
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 
@@ -706,6 +714,12 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
+    // 进入详情
+    _gotoItemDetail(item) {
+        logi("detail item", item)
+        this.props.navigation.navigate("")
+    }
+
     _renderListEmptyView() {
         return (
             <View style={styles.emptyViewContainer}><Text>空白数据</Text></View>
@@ -716,6 +730,8 @@ export default class MainScreen extends React.Component<any, any> {
 
         console.log('This row opened', rowMap[rowKey]);
     };
+
+
 
     closeRow = (rowMap, rowKey) => {
         if (rowMap[rowKey]) {
