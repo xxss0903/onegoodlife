@@ -4,7 +4,17 @@
 
 import React from "react";
 import moment from "moment";
-import {FlatList, Modal, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {
+    FlatList,
+    Modal,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 import {FloatingAction} from "react-native-floating-action";
 import Toast from 'react-native-toast-message';
 import {logi} from "./utils/logutil";
@@ -138,6 +148,7 @@ export default class MainScreen extends React.Component<any, any> {
     private peeTagList = [] // 撒尿的最新3个量数据列表
     private oldJaundiceData = null // 已经有的最新的黄疸的数据，用来保存默认数据
     private jaundiceList = [] // 黄疸的最新3个量数据列表
+    private isTypeEdit: boolean = false // 是否是编辑模式
 
     constructor(props) {
         super(props);
@@ -556,16 +567,24 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     _confirmAddNewLife(callback) {
-        if (this._checkAddTypeData(this.cloneType)) {
-            logi("add milk check true")
-            this.cloneType.key = this.cloneType.time
-            this.state.dataList.unshift(this.cloneType)
-            this._refreshLocalData()
-            if (callback) {
-                callback()
+        if (this.isTypeEdit) {
+            if (this._checkAddTypeData(this.cloneType)) {
+                if (callback) {
+                    callback()
+                }
             }
         } else {
-            logi("add milk check false")
+            if (this._checkAddTypeData(this.cloneType)) {
+                logi("add milk check true")
+                this.cloneType.key = this.cloneType.time
+                this.state.dataList.unshift(this.cloneType)
+                this._refreshLocalData()
+                if (callback) {
+                    callback()
+                }
+            } else {
+                logi("add milk check false")
+            }
         }
     }
 
@@ -631,6 +650,21 @@ export default class MainScreen extends React.Component<any, any> {
         this.setShowModal(true)
     }
 
+    private _editLifeLine(item) {
+        this.cloneType = item
+        switch (item.name) {
+            case typeMapList[0].name:
+                this._addMilk(typeMapList[0])
+                break;
+            case typeMapList[1].name:
+                this._addPoop(typeMapList[1])
+                break;
+            case typeMapList[2].name:
+                this._addPee(typeMapList[2])
+                break;
+        }
+    }
+
     // 添加新的时间线
     private _addNewLifeline(item) {
         logi("add life line ", item)
@@ -662,6 +696,7 @@ export default class MainScreen extends React.Component<any, any> {
 
         return (
             <TouchableOpacity
+                activeOpacity={1}
                 onPress={() => {
                     // 进入详情
                     this._gotoItemDetail(item)
@@ -717,7 +752,7 @@ export default class MainScreen extends React.Component<any, any> {
     // 进入详情
     _gotoItemDetail(item) {
         logi("detail item", item)
-        this.props.navigation.navigate("")
+        // this.props.navigation.navigate("")
     }
 
     _renderListEmptyView() {
@@ -727,8 +762,6 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     onRowDidOpen = (rowKey, rowMap) => {
-
-        console.log('This row opened', rowMap[rowKey]);
     };
 
 
@@ -781,9 +814,10 @@ export default class MainScreen extends React.Component<any, any> {
                                             <TouchableOpacity
                                                 style={[styles.backRightBtn, styles.backRightBtnLeft]}
                                                 onPress={() => {
-                                                    logi("item key 1", data.item.key)
-                                                    logi("item key 2", typeof rowMap[data.item.key].closeRow)
                                                     rowMap[data.item.key].closeRow()
+                                                    // 打开弹窗，然后将当前的数据进行修改
+                                                    this.isTypeEdit = true
+                                                    this._editLifeLine(data.item)
                                                 }}
                                             >
                                                 <Text style={styles.backTextWhite}>编辑</Text>
@@ -819,6 +853,7 @@ export default class MainScreen extends React.Component<any, any> {
                         }}
                         actions={commonActions}
                         onPressItem={(item) => {
+                            this.isTypeEdit = false
                             this._addNewLifeline(item)
                         }}
                     />
