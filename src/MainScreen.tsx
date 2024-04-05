@@ -30,6 +30,7 @@ import SvgChart, {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
 import {EChartsType} from "echarts/core";
 import {GridComponent, TitleComponent, TooltipComponent} from "echarts/components";
 import {screenW} from "./utils/until";
+import PagerView from 'react-native-pager-view';
 
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
@@ -162,8 +163,10 @@ export default class MainScreen extends React.Component<any, any> {
     private oldJaundiceData = null // 已经有的最新的黄疸的数据，用来保存默认数据
     private jaundiceList = [] // 黄疸的最新3个量数据列表
     private isTypeEdit: boolean = false // 是否是编辑模式
-    private svgChartRef: any; // 统计数据的渲染引用
-    private charts: EChartsType; // 统计图表
+    private last24HourChartRef: any; // 统计数据的渲染引用
+    private last24HourCharts: EChartsType; // 统计图表
+    private todayChartRef: any; // 统计数据的渲染引用
+    private todayCharts: EChartsType; // 统计图表
 
     constructor(props) {
         super(props);
@@ -793,10 +796,8 @@ export default class MainScreen extends React.Component<any, any> {
 
         let tagView = null
         if (tags && tags.length > 0) {
-            logi("item tags ", tags)
             tagView = this._renderTagViewList(tags, [], null, true)
         }
-        logi("tagview ", tagView)
 
         return (
             <TouchableOpacity
@@ -936,11 +937,10 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
-    // 刷新统计数据图标
-    _refreshStaticsCharts() {
+    _refreshLast24HourCharts(){
         let dataList = this._getLast24HoursData()
-        logi("chart ref", this.svgChartRef)
-        if (this.svgChartRef && dataList) {
+        logi("chart ref", this.last24HourChartRef)
+        if (this.last24HourChartRef && dataList) {
             // 获取分类数据
             let dataMap = new Map()
             for (let i = 0; i < dataList.length; i++) {
@@ -984,20 +984,90 @@ export default class MainScreen extends React.Component<any, any> {
                     },
                 ],
             };
-            this.charts.setOption(option);
+            this.last24HourCharts.setOption(option);
         }
+    }
+
+    _refreshTodayCharts(){
+        let dataList = this._getTodayData()
+        if (this.todayChartRef && dataList) {
+            // 获取分类数据
+            let dataMap = new Map()
+            for (let i = 0; i < dataList.length; i++) {
+                let data = dataList[i]
+                if (dataMap.has(data.name)) {
+                    let value = dataMap.get(data.name)
+                    value += 1
+                    dataMap.set(data.name, value)
+                } else {
+                    dataMap.set(data.name, 1)
+                }
+            }
+            let sortedMap = new Map()
+            typeMapList.forEach(value => {
+                if (dataMap.has(value.name)) {
+                    sortedMap.set(value.name, dataMap.get(value.name))
+                }
+            })
+            let titleList = Array.from(sortedMap.keys())
+            let valueList = Array.from(sortedMap.values())
+
+
+            const option = {
+                title: {
+                    text: "今天的数据"
+                },
+                xAxis: {
+                    type: 'category',
+                    data: titleList,
+                },
+                yAxis: {
+                    minInterval: 1,
+                    type: 'value',
+                },
+                series: [
+                    {
+                        data: valueList,
+                        type: 'bar',
+                        barWidth: 40,
+                        sort: 'ascending'
+                    },
+                ],
+            };
+            this.todayCharts.setOption(option);
+        }
+    }
+
+    // 刷新统计数据图标
+    _refreshStaticsCharts() {
+        this._refreshLast24HourCharts()
+        this._refreshTodayCharts()
     }
 
     // 统计数据
     _renderSvgCharts() {
         return (
-            <SvgChart ref={ref => this.svgChartRef = ref}/>
+            <PagerView style={{width: screenW, height: screenW * 0.6, flex: 1}} initialPage={0}>
+                <View style={{flex: 1, width: "100%", height: "100%"}} key="1">
+                    <SvgChart ref={ref => this.todayChartRef = ref}/>
+                </View>
+                <View key="2">
+                    <SvgChart ref={ref => this.last24HourChartRef = ref}/>
+                </View>
+            </PagerView>
         )
     }
 
     _initEcharts() {
-        if (this.svgChartRef) {
-            this.charts = echarts.init(this.svgChartRef, "light", {
+        if (this.todayChartRef) {
+            this.todayCharts = echarts.init(this.todayChartRef, "light", {
+                renderer: "svg",
+                width: screenW,
+                height: screenW * 0.6
+            })
+        }
+        if (this.last24HourChartRef) {
+            this.last24HourCharts = echarts.init(this.last24HourChartRef, "light", {
                 renderer: "svg",
                 width: screenW,
                 height: screenW * 0.6
@@ -1010,7 +1080,7 @@ export default class MainScreen extends React.Component<any, any> {
             <SafeAreaView>
                 <View style={styles.container}>
                     <View style={styles.scrollContainer}>
-                        <View style={[styles.staticsContainer, {height: screenW * 0.5, paddingHorizontal: 12}]}>
+                        <View style={[styles.staticsContainer, {height: screenW * 0.6}]}>
                             {this._renderSvgCharts()}
                         </View>
                         <View style={styles.line}/>
