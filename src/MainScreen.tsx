@@ -12,6 +12,7 @@ import DatePicker from "react-native-date-picker";
 import {showToast} from "./utils/toastUtil";
 import {DeviceStorage} from "./utils/deviceStorage";
 import {AndroidPermissions} from "./utils/permissionUtils";
+import {SwipeListView} from "react-native-swipe-list-view";
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
@@ -41,10 +42,11 @@ const milkTemplateData = {
     name: typeMapList[0].name,
     typeId: typeMapList[0].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
     time: moment().valueOf(), // 时间戳
+    key: moment().valueOf(),
     remark: "", // 备注
     tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
     selectedTags: [], // 选中的类型
-    dose: 0, // 剂量，母乳多少毫升
+    dose: 30, // 剂量，母乳多少毫升
     pictures: [{
         time: moment().valueOf(), // 时间戳
         name: "", // 名称：使用类型和时间戳来标记
@@ -208,6 +210,11 @@ export default class MainScreen extends React.Component<any, any> {
     }
 
     _refreshDataList(dataList) {
+        dataList.forEach(value => {
+            if (!value.key) {
+                value.key = value.time
+            }
+        })
         this._getCommonMilkDose(dataList)
         this._getCommonPoopDose(dataList)
         this._getCommonPeeDose(dataList)
@@ -299,8 +306,8 @@ export default class MainScreen extends React.Component<any, any> {
                 this.cloneType = JSON.parse(JSON.stringify(milkTemplateData))
                 this.cloneType.name = typeData.name
             }
+            this.cloneType.time = moment().valueOf()
         }
-        this.cloneType.time = moment().valueOf()
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
@@ -341,8 +348,14 @@ export default class MainScreen extends React.Component<any, any> {
                         }]}
                         value={this.cloneType.dose.toString()}
                         onChangeText={(text) => {
-                            let dose = parseInt(text)
+                            let dose
+                            if (text) {
+                                dose = parseInt(text)
+                            } else {
+                                dose = ""
+                            }
                             this.cloneType.dose = dose
+                            this.forceUpdate()
                         }}
                         keyboardType={'number-pad'}
                         placeholderTextColor={"#bbbbbb"}
@@ -386,8 +399,8 @@ export default class MainScreen extends React.Component<any, any> {
                 this.cloneType = JSON.parse(JSON.stringify(poopTemplateData))
                 this.cloneType.name = typeData.name
             }
+            this.cloneType.time = moment().valueOf()
         }
-        this.cloneType.time = moment().valueOf()
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
@@ -443,8 +456,8 @@ export default class MainScreen extends React.Component<any, any> {
                 this.cloneType = JSON.parse(JSON.stringify(peeTemplateData))
                 this.cloneType.name = typeData.name
             }
+            this.cloneType.time = moment().valueOf()
         }
-        this.cloneType.time = moment().valueOf()
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
@@ -518,7 +531,8 @@ export default class MainScreen extends React.Component<any, any> {
     _confirmAddNewLife(callback) {
         if (this._checkAddTypeData(this.cloneType)) {
             logi("add milk check true")
-            this.state.dataList.push(this.cloneType)
+            this.cloneType.key = this.cloneType.time
+            this.state.dataList.unshift(this.cloneType)
             this._refreshLocalData()
             if (callback) {
                 callback()
@@ -679,6 +693,31 @@ export default class MainScreen extends React.Component<any, any> {
         )
     }
 
+    onRowDidOpen = (rowKey, rowMap) => {
+
+        console.log('This row opened', rowMap[rowKey]);
+    };
+
+    closeRow = (rowMap, rowKey) => {
+        if (rowMap[rowKey]) {
+            logi("close row ", rowMap[rowKey].closeRow())
+            rowMap[rowKey].closeRow()
+        }
+    };
+
+    deleteRow = (rowMap, rowKey) => {
+        this.closeRow(rowMap, rowKey)
+        logi("delete index ")
+        let index = this.state.dataList.findIndex(value => value.key === rowKey)
+        // 删除数据
+        let dataList = this.state.dataList
+        dataList.splice(index, 1)
+        this.setState({
+            dataList: dataList
+        })
+        this._refreshLocalData()
+    };
+
     render() {
         return (
             <SafeAreaView>
@@ -689,11 +728,44 @@ export default class MainScreen extends React.Component<any, any> {
                         </View>
                         <View style={styles.line}/>
                         <View style={styles.timelineContainer}>
-                            <FlatList
-                                ListEmptyComponent={this._renderListEmptyView()}
-                                data={this.state.dataList} renderItem={({item, index}) => {
-                                return this._renderTypeItem(item)
-                            }}/>
+                            <SwipeListView
+                                data={this.state.dataList}
+                                renderItem={({item, index}) => {
+                                    return this._renderTypeItem(item)
+                                }}
+                                renderHiddenItem={(data, rowMap) => {
+                                    return (
+                                        <View style={styles.rowBack}>
+                                            <TouchableOpacity
+                                                style={[styles.backRightBtn, styles.backRightBtnLeft]}
+                                                onPress={() => {
+                                                    logi("item key 1", data.item.key)
+                                                    logi("item key 2", typeof rowMap[data.item.key].closeRow)
+                                                    rowMap[data.item.key].closeRow()
+                                                }}
+                                            >
+                                                <Text style={styles.backTextWhite}>编辑</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[styles.backRightBtn, styles.backRightBtnRight]}
+                                                onPress={() => {
+                                                    this.deleteRow(rowMap, data.item.key)
+                                                }}
+                                            >
+                                                <Text style={styles.backTextWhite}>删除</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }}
+                                rightOpenValue={-150}
+                                previewOpenValue={-40}
+                                previewOpenDelay={1000}
+                                onRowDidOpen={(rowKey, rowMap, toValue) => this.onRowDidOpen(rowKey, rowMap)}/>
+                            {/*<FlatList*/}
+                            {/*    ListEmptyComponent={this._renderListEmptyView()}*/}
+                            {/*    data={this.state.dataList} renderItem={({item, index}) => {*/}
+                            {/*    return this._renderTypeItem(item)*/}
+                            {/*}}/>*/}
                         </View>
                     </View>
                     <FloatingAction
@@ -725,8 +797,8 @@ const styles = StyleSheet.create({
         height: 200,
     },
     timelineContainer: {
+        backgroundColor: 'white',
         flex: 1,
-        Color: "#0000ff"
     },
     timelineItemContainer: {
         marginBottom: 12,
@@ -799,5 +871,38 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         height: 100
-    }
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: '#DDD',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backRightBtn: {
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        width: 75,
+    },
+    backRightBtnLeft: {
+        right: 75,
+    },
+    backRightBtnRight: {
+        right: 0,
+    },
+    backTextWhite: {
+       color: '#ffffff',
+    },
+    rowFront: {
+        alignItems: 'center',
+        backgroundColor: '#CCC',
+        borderBottomColor: 'black',
+        borderBottomWidth: 1,
+        justifyContent: 'center',
+        height: 50,
+    },
 })

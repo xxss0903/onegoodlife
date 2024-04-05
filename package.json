@@ -28,6 +28,7 @@
     "react-native-safe-area-context": "^3.4.1",
     "react-native-screens": "^3.30.1",
     "react-native-svg": "^12.1.1",
+    "react-native-swipe-list-view": "^3.2.9",
     "react-native-tab-view": "^3.5.2",
     "react-native-toast-message": "^2.2.0"
   },
