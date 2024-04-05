@@ -606,6 +606,9 @@ export default class MainScreen extends React.Component<any, any> {
     _confirmAddNewLife(callback) {
         if (this.isTypeEdit) {
             if (this._checkAddTypeData(this.cloneType)) {
+                // 根据时间排序
+                this.state.dataList.sort((a, b) => b.time - a.time)
+                this._refreshLocalData()
                 if (callback) {
                     callback()
                 }
