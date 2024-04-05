@@ -23,6 +23,7 @@ import {showToast} from "./utils/toastUtil";
 import {DeviceStorage} from "./utils/deviceStorage";
 import {AndroidPermissions} from "./utils/permissionUtils";
 import {SwipeListView} from "react-native-swipe-list-view";
+import {Share} from "react-native/Libraries/Share/Share";
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
@@ -613,7 +614,12 @@ export default class MainScreen extends React.Component<any, any> {
             if (this._checkAddTypeData(this.cloneType)) {
                 logi("add milk check true")
                 this.cloneType.key = this.cloneType.time
-                this.state.dataList.unshift(this.cloneType)
+                // 插入到最新的数据，这里还是根据时间进行设置
+                let dataList = this._insertItemByResortTime(this.state.dataList, this.cloneType)
+                this.setState({
+                    dataList: dataList
+                })
+                // this.state.dataList.unshift(this.cloneType)
                 this._refreshLocalData()
                 if (callback) {
                     callback()
@@ -832,8 +838,38 @@ export default class MainScreen extends React.Component<any, any> {
         this._refreshLocalData()
     };
 
+    // 重新排序记录，根据时间插入
+    _insertItemByResortTime(dataList, newData){
+        if (!newData) {
+            return dataList
+        }
+        if (dataList && dataList.length > 0) {
+            if (dataList[0].time < newData.time) {
+                dataList.unshift(newData)
+            } else {
+                for (let i = 0; i < dataList.length; i++) {
+                    let value = dataList[i]
+                    if (value.time < newData.time) {
+                        dataList.splice(i, 0, newData)
+                        return dataList
+                    }
+                }
+            }
+
+
+        } else {
+            dataList = [newData]
+        }
+        return dataList
+    }
+
     _exportData() {
         // 将数据保存为文件，然后再分享
+        Share.open({
+            title: "分享文件"
+        }, {
+
+        })
     }
 
     _renderExportAction() {
