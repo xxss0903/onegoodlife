@@ -37,7 +37,7 @@ import PagerView from 'react-native-pager-view';
 const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
 const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣", "稀便", "干便", "正常"] // 拉屎类型
 const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
-const typeMapList = [{id: 1, name: "牛奶", value: "type_1", text: "牛奶", position: 1}, {
+const typeMapList = [{id: 1, name: "喝奶", value: "type_1", text: "牛奶", position: 1}, {
     id: 2,
     name: "拉屎",
     value: "type_2", text: "拉屎", position: 2
@@ -950,10 +950,20 @@ export default class MainScreen extends React.Component<any, any> {
                 let data = dataList[i]
                 if (dataMap.has(data.name)) {
                     let value = dataMap.get(data.name)
-                    value += 1
+                    // 统计次数
+                    value.value += 1
+                    // 如果是牛奶就添加牛奶总量
+                    if (data.name.indexOf("奶") >= 0) {
+                        value.dose += data.dose
+                    }
+
                     dataMap.set(data.name, value)
                 } else {
-                    dataMap.set(data.name, 1)
+                    let obj = {value: 1, name: data.name}
+                    if (data.name.indexOf("奶") >= 0) {
+                        obj.dose = data.dose
+                    }
+                    dataMap.set(data.name,  obj)
                 }
             }
             let sortedMap = new Map()
@@ -964,7 +974,6 @@ export default class MainScreen extends React.Component<any, any> {
             })
             let titleList = Array.from(sortedMap.keys())
             let valueList = Array.from(sortedMap.values())
-
 
             const option = {
                 title: {
@@ -983,7 +992,20 @@ export default class MainScreen extends React.Component<any, any> {
                         data: valueList,
                         type: 'bar',
                         barWidth: 40,
-                        sort: 'ascending'
+                        sort: 'ascending',
+                        label: {
+                            show: true,
+                            position: 'top',
+                            color: "black",
+                            fontSize: 12,
+                            formatter: function(d) {
+                                // 牛奶显示总量
+                                if (d.name.indexOf("奶") >= 0) {
+                                    return d.dose + "ml"
+                                }
+                                return ""
+                            }
+                        }
                     },
                 ],
             };
