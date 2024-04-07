@@ -15,7 +15,6 @@ import MineScreen from "./MineScreen";
 import {Icon} from "native-base";
 
 
-const Stack = createNativeStackNavigator()
 const MainTab = createBottomTabNavigator()
 
 function CustomTabBar({state, descriptors, navigation}) {
@@ -25,10 +24,15 @@ function CustomTabBar({state, descriptors, navigation}) {
         return null;
     }
 
+
     const homeOptions = descriptors[state.routes[0].key].options;
-    const mineOptions = descriptors[state.routes[1].key].options;
+    const momentOptions = descriptors[state.routes[1].key].options
+    const knowedgeOptions = descriptors[state.routes[2].key].options
+    const mineOptions = descriptors[state.routes[3].key].options;
     const homeFocused = state.index === 0;
-    const mineFocused = state.index === 1;
+    const momentFocused = state.index === 1;
+    const knowedgeFocused = state.index === 2;
+    const mineFocused = state.index === 3;
 
     return (
         <View style={[{flexDirection: 'row', height: 60, justifyContent: "center", alignItems: "center"}]}>
@@ -53,10 +57,46 @@ function CustomTabBar({state, descriptors, navigation}) {
             <TouchableWithoutFeedback
                 style={{flex: 1}}
                 onPress={() => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: state.routes[1].key,
+                        canPreventDefault: true,
+                    });
 
+                    if (!momentFocused && !event.defaultPrevented) {
+                        navigation.navigate(state.routes[1].name);
+                    }
                 }}>
                 <View style={[{flex: 1}, commonStyles.center]}>
-                    <Image style={{width: 55, height: 55, marginBottom: 10}} source={require('./assets/ic_scan.png')}/>
+                    {momentOptions.tabBarIcon({focused: momentFocused})}
+                    <Text style={{fontSize: 12, color: momentFocused ? Colors.loginTouch : Colors.black333}}>瞬间</Text>
+                </View>
+            </TouchableWithoutFeedback>
+            {/*<TouchableWithoutFeedback*/}
+            {/*    style={{flex: 1}}*/}
+            {/*    onPress={() => {*/}
+            {/*        // 添加新增的类型*/}
+            {/*    }}>*/}
+            {/*    <View style={[{flex: 1}, commonStyles.center]}>*/}
+            {/*        <Image style={{width: 55, height: 55, marginBottom: 10}} source={require('./assets/ic_plus.png')}/>*/}
+            {/*    </View>*/}
+            {/*</TouchableWithoutFeedback>*/}
+            <TouchableWithoutFeedback
+                style={{flex: 1}}
+                onPress={() => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: state.routes[2].key,
+                        canPreventDefault: true,
+                    });
+
+                    if (!knowedgeFocused && !event.defaultPrevented) {
+                        navigation.navigate(state.routes[2].name);
+                    }
+                }}>
+                <View style={[{flex: 1}, commonStyles.center]}>
+                    {knowedgeOptions.tabBarIcon({focused: knowedgeFocused})}
+                    <Text style={{fontSize: 12, color: knowedgeFocused ? Colors.loginTouch : Colors.black333}}>知识</Text>
                 </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
@@ -64,12 +104,12 @@ function CustomTabBar({state, descriptors, navigation}) {
                 onPress={() => {
                     const event = navigation.emit({
                         type: 'tabPress',
-                        target: state.routes[1].key,
+                        target: state.routes[3].key,
                         canPreventDefault: true,
                     });
 
                     if (!mineFocused && !event.defaultPrevented) {
-                        navigation.navigate(state.routes[1].name);
+                        navigation.navigate(state.routes[3].name);
                     }
                 }}>
                 <View style={[{flex: 1}, commonStyles.center]}>
@@ -81,39 +121,60 @@ function CustomTabBar({state, descriptors, navigation}) {
     );
 }
 
-function BottomTabs() {
-    return (
-        <MainTab.Navigator>
-            {/*首页，添加喂奶等记录，主要功能*/}
-            <MainTab.Screen name={"Home"} component={HomeScreen}/>
-            {/*养娃常用知识*/}
-            <MainTab.Screen name={"CommonKnowedge"} component={CommonKnowedgeScreen}/>
-            {/*回忆点滴界面，保存图片视频等*/}
-            <MainTab.Screen name={"Memory"} component={MemoryScreen}/>
-            {/*我的界面，用来登录，设置等*/}
-            <MainTab.Screen name={"Mine"} component={MineScreen}/>
-        </MainTab.Navigator>
-    )
-}
-
-
 export default class MainScreen extends React.Component<any, any> {
 
     render(){
         return (
             <MainTab.Navigator
                 screenOptions={{
-                    headerShown: false
+                    headerShown: false,
+                    tabBarActiveTintColor: "#0c7ffc",
+                    tabBarInactiveTintColor: "#333333",
+                    tabBarStyle: [
+                        {
+                            display: "flex"
+                        },
+                        null
+                    ]
                 }}
                 tabBar={props => <CustomTabBar {...props} />}
-                tabBarOptions={{
-                    activeTintColor: Colors.loginTouch,
-                    inactiveTintColor: Colors.black333,
-                }}>
+            >
                 <MainTab.Screen
                     name={'首页'} component={HomeScreen}
                     options={{
                         tabBarLabel: '首页',
+                        tabBarIcon: ({focused, color, size}) => {
+                            if (focused) {
+                                return (
+                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.loginTouch}}/>
+                                );
+                            } else {
+                                return (
+                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.black333}}/>
+                                );
+                            }
+                        },
+                    }}/>
+                <MainTab.Screen
+                    name={'瞬间'} component={MemoryScreen}
+                    options={{
+                        tabBarLabel: '瞬间',
+                        tabBarIcon: ({focused, color, size}) => {
+                            if (focused) {
+                                return (
+                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.loginTouch}}/>
+                                );
+                            } else {
+                                return (
+                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.black333}}/>
+                                );
+                            }
+                        },
+                    }}/>
+                <MainTab.Screen
+                    name={'知识'} component={CommonKnowedgeScreen}
+                    options={{
+                        tabBarLabel: '知识',
                         tabBarIcon: ({focused, color, size}) => {
                             if (focused) {
                                 return (
