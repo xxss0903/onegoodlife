@@ -72,15 +72,6 @@ function CustomTabBar({state, descriptors, navigation}) {
                     <Text style={{fontSize: 12, color: momentFocused ? Colors.loginTouch : Colors.black333}}>瞬间</Text>
                 </View>
             </TouchableWithoutFeedback>
-            {/*<TouchableWithoutFeedback*/}
-            {/*    style={{flex: 1}}*/}
-            {/*    onPress={() => {*/}
-            {/*        // 添加新增的类型*/}
-            {/*    }}>*/}
-            {/*    <View style={[{flex: 1}, commonStyles.center]}>*/}
-            {/*        <Image style={{width: 55, height: 55, marginBottom: 10}} source={require('./assets/ic_plus.png')}/>*/}
-            {/*    </View>*/}
-            {/*</TouchableWithoutFeedback>*/}
             <TouchableWithoutFeedback
                 style={{flex: 1}}
                 onPress={() => {
@@ -123,7 +114,7 @@ function CustomTabBar({state, descriptors, navigation}) {
 
 export default class MainScreen extends React.Component<any, any> {
 
-    render(){
+    render() {
         return (
             <MainTab.Navigator
                 screenOptions={{

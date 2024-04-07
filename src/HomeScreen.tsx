@@ -327,7 +327,7 @@ export default class HomeScreen extends React.Component<any, any> {
         )
     }
 
-    // 标签列表
+    // 标签列表，区分单选和多选
     _renderTagViewList(tags, selectedTags, callback, isView = false) {
         let tagView = tags.map((value, index) => {
             let selected = false
@@ -378,14 +378,9 @@ export default class HomeScreen extends React.Component<any, any> {
         let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
-            if (tagIndex >= 0) {
-                // 选中了要去掉
-                this.cloneType.selectedTags.splice(tagIndex, 1)
-            } else {
-                // 需要添加
-                this.cloneType.selectedTags.push(tag)
-            }
-            logi("selected tags", this.cloneType.selectedTags)
+            // 单选
+            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
+            this.cloneType.selectedTags.push(tag)
             this.forceUpdate()
         })
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
