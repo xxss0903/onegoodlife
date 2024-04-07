@@ -210,9 +210,18 @@ export default class MainScreen extends React.Component<any, any> {
             if (oldDataList.length > 0) {
                 this.oldMilkData = JSON.parse(JSON.stringify(oldDataList[0]))
                 // 拿到最新的3个
-                let subList = oldDataList.slice(0, 3)
-                subList.forEach(value => {
-                    this.milkDoseList.push(value.dose)
+                if (this.milkDoseList.length > 5) {
+
+                }
+                oldDataList.forEach(value => {
+                    // 取最近的5个数据
+                    if (this.milkDoseList.length < 5) {
+                        if (this.milkDoseList.indexOf(value.dose) >= 0) {
+
+                        } else {
+                            this.milkDoseList.push(value.dose)
+                        }
+                    }
                 })
             }
             logi("dose list", this.oldMilkData)
