@@ -5,21 +5,109 @@
  * @format
  */
 import React, {Component} from 'react';
-import {FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import moment from "moment";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import MainScreen from "./src/MainScreen";
 import SplashScreen from "./src/SplashScreen";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import HomeScreen from "./src/HomeScreen";
+import {NavigationContainer} from "@react-navigation/native";
+import MineScreen from "./src/MineScreen";
+import CommonKnowedgeScreen from "./src/CommonKnowedgeScreen";
+import MemoryScreen from "./src/MemoryScreen";
+import {Image, TouchableWithoutFeedback, View} from "react-native";
+import {logi} from "./src/utils/logutil";
+import {Colors} from "./src/colors";
+import {commonStyles} from "./src/commonStyle";
+import {NativeBaseProvider} from "native-base";
 
 const Stack = createNativeStackNavigator()
+const BottomTab = createBottomTabNavigator()
+
+function CustomTabBar({state, descriptors, navigation}) {
+    const focusedOptions = descriptors[state.routes[state.index].key].options;
+
+    if (focusedOptions.tabBarVisible === false) {
+        return null;
+    }
+
+    const homeOptions = descriptors[state.routes[0].key].options;
+    const mineOptions = descriptors[state.routes[1].key].options;
+    const homeFocused = state.index === 0;
+    const mineFocused = state.index === 1;
+
+    return (
+        <View style={[{flexDirection: 'row', height: 60, justifyContent: "center", alignItems: "center"}]}>
+            <TouchableWithoutFeedback
+                style={{flex: 1}}
+                onPress={() => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: state.routes[0].key,
+                        canPreventDefault: true,
+                    });
+
+                    if (!homeFocused && !event.defaultPrevented) {
+                        navigation.navigate(state.routes[0].name);
+                    }
+                }}>
+                <View style={[{flex: 1}, commonStyles.center]}>
+                    {homeOptions.tabBarIcon({focused: homeFocused})}
+                    <Text style={{fontSize: 12, color: homeFocused ? Colors.loginTouch : Colors.black333}}>首页</Text>
+                </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+                style={{flex: 1}}
+                onPress={() => {
+
+                }}>
+                <View style={[{flex: 1}, commonStyles.center]}>
+                    <Image style={{width: 55, height: 55, marginBottom: 10}} source={require('./src/assets/ic_scan.png')}/>
+                </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+                style={{flex: 1}}
+                onPress={() => {
+                    const event = navigation.emit({
+                        type: 'tabPress',
+                        target: state.routes[1].key,
+                        canPreventDefault: true,
+                    });
+
+                    if (!mineFocused && !event.defaultPrevented) {
+                        navigation.navigate(state.routes[1].name);
+                    }
+                }}>
+                <View style={[{flex: 1}, commonStyles.center]}>
+                    {mineOptions.tabBarIcon({focused: mineFocused})}
+                    <Text style={{fontSize: 12, color: mineFocused ? Colors.loginTouch : Colors.black333}}>我的</Text>
+                </View>
+            </TouchableWithoutFeedback>
+        </View>
+    );
+}
+
+function BottomTabs() {
+    return (
+        <BottomTab.Navigator>
+            {/*首页，添加喂奶等记录，主要功能*/}
+            <BottomTab.Screen name={"Home"} component={HomeScreen}/>
+            {/*养娃常用知识*/}
+            <BottomTab.Screen name={"CommonKnowedge"} component={CommonKnowedgeScreen}/>
+            {/*回忆点滴界面，保存图片视频等*/}
+            <BottomTab.Screen name={"Memory"} component={MemoryScreen}/>
+            {/*我的界面，用来登录，设置等*/}
+            <BottomTab.Screen name={"Mine"} component={MineScreen}/>
+        </BottomTab.Navigator>
+    )
+}
 
 
-function MainStack(){
+function MainStack() {
     return (
         <Stack.Navigator
             screenOptions={{
-                headerTintColor: 'white',
-                headerStyle: { backgroundColor: 'tomato' },
+                headerShown: false
             }}
             initialRouteName={"SplashScreen"}>
             <Stack.Screen name={"SplashScreen"} component={SplashScreen}/>
@@ -33,61 +121,15 @@ function MainStack(){
 // 提醒吃伊可新、定时提醒喂奶等时间通知
 
 
-
-const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
-const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣"] // 拉屎类型
-const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
-const typeMap = {
-    1: "吃奶", // 区分混合喂养还是亲喂还是奶粉，奶粉的品牌可以添加
-    2: "拉屎",
-    3: "撒尿",
-    4: "测黄疸",
-    5: "吐奶",
-}
-
-// 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
-const tempJsonData = {
-    dataList: [
-        {
-            type: 1, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-            time: moment().valueOf(), // 时间戳
-            remark: "", // 备注
-            tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-            selectedTags: ["母乳"], // 选中的类型
-            dose: 0, // 剂量，母乳多少毫升
-            pictures: [{
-                time: moment().valueOf(), // 时间戳
-                name: "", // 名称：使用类型和时间戳来标记
-                url: "" // 图片在地址/远程地址
-            }], // 图片
-            yellowValue: {
-                header: 0, // 头的黄疸
-                chest: 0 // 胸的黄疸
-            }
-        }
-    ]
-}
-
 export default class App extends React.Component<any, any> {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataList: tempJsonData.dataList // 本地的存储的数据列表
-        }
-    }
-
-    componentDidMount() {
-        // 获取本地的数据
-
-    }
-
     render() {
-        console.log("datalist", this.state.dataList)
         return (
-            <SafeAreaView>
-                <MainScreen/>
-            </SafeAreaView>
+            <NativeBaseProvider>
+                <NavigationContainer>
+                    {MainStack()}
+                </NavigationContainer>
+            </NativeBaseProvider>
         )
     }
 }
