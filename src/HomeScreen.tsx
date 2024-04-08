@@ -32,115 +32,17 @@ import {GridComponent, TitleComponent, TooltipComponent} from "echarts/component
 import {screenW} from "./utils/until";
 import PagerView from 'react-native-pager-view';
 import {Checkbox} from "native-base";
+import {
+    mainData,
+    milkTemplateData,
+    poopTemplateData,
+    peeTemplateData,
+    otherTemplateData
+} from "./mainData";
 
+const typeMapList = mainData.typeMapList // 类型列表
+const commonActions = mainData.commonActions // 放在主页的主要使用的类型action
 
-// 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
-const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
-const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣", "稀便", "干便", "正常"] // 拉屎类型
-const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
-const typeMapList = [{id: 1, name: "喝奶", value: "type_1", text: "牛奶", position: 1}, {
-    id: 2,
-    name: "拉屎",
-    value: "type_2", text: "拉屎", position: 2
-}, {
-    id: 3,
-    name: "撒尿",
-    value: "type_3", text: "撒尿", position: 3
-}, {
-    id: 4,
-    name: "测黄疸",
-    value: "type_4", text: "测黄疸", position: 4
-}, {
-    id: 5,
-    name: "吐奶",
-    value: "type_5", text: "吐奶", position: 5
-}, {
-    id: 6,
-    name: "其他",
-    value: "type_6", text: "其他", position: 6
-}] // 类型列表
-const commonActions = [typeMapList[0], typeMapList[1], typeMapList[2], typeMapList[5]] // 放在主页的主要使用的类型action
-// 牛奶的模板数据
-// 喝牛奶的模板数据
-const milkTemplateData = {
-    name: typeMapList[0].name,
-    typeId: typeMapList[0].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-    time: moment().valueOf(), // 时间戳
-    key: moment().valueOf(),
-    remark: "", // 备注
-    tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: [], // 选中的类型
-    dose: 30, // 剂量，母乳多少毫升
-    pictures: [{
-        time: moment().valueOf(), // 时间戳
-        name: "", // 名称：使用类型和时间戳来标记
-        url: "" // 图片在地址/远程地址
-    }], // 图片
-}
-// 拉屎的模板数据
-const poopTemplateData = {
-    name: typeMapList[1].name,
-    typeId: typeMapList[1].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-    time: moment().valueOf(), // 时间戳
-    remark: "", // 备注
-    tags: poopTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: [], // 选中的类型
-    dose: 0, // 剂量，母乳多少毫升
-    pictures: [{
-        time: moment().valueOf(), // 时间戳
-        name: "", // 名称：使用类型和时间戳来标记
-        url: "" // 图片在地址/远程地址
-    }], // 图片
-}
-// 撒尿的模板
-const peeTemplateData = {
-    name: typeMapList[2].name,
-    typeId: typeMapList[2].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-    time: moment().valueOf(), // 时间戳
-    remark: "", // 备注
-    tags: peeTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: [], // 选中的类型
-    dose: 0, // 剂量，母乳多少毫升
-    pictures: [{
-        time: moment().valueOf(), // 时间戳
-        name: "", // 名称：使用类型和时间戳来标记
-        url: "" // 图片在地址/远程地址
-    }], // 图片
-}
-// 黄疸模板
-const jaundiceTemplateData = {
-    name: typeMapList[3].name,
-    typeId: typeMapList[3].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-    time: moment().valueOf(), // 时间戳
-    remark: "", // 备注
-    tags: peeTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: [], // 选中的类型
-    dose: 0, // 剂量，母乳多少毫升
-    pictures: [{
-        time: moment().valueOf(), // 时间戳
-        name: "", // 名称：使用类型和时间戳来标记
-        url: "" // 图片在地址/远程地址
-    }], // 图片
-    jaundiceValue: {
-        header: 0, // 头的黄疸
-        chest: 0 // 胸的黄疸
-    }
-}
-// 其他记录模板，比如其他的一些记录
-const otherTemplateData = {
-    name: typeMapList[5].name,
-    typeId: typeMapList[5].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
-    time: moment().valueOf(), // 时间戳
-    remark: "", // 备注
-    tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: [], // 选中的类型
-    dose: 0, // 剂量，母乳多少毫升
-    pictures: [{
-        time: moment().valueOf(), // 时间戳
-        name: "", // 名称：使用类型和时间戳来标记
-        url: "" // 图片在地址/远程地址
-    }], // 图片
-}
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {dataList: []}
 // 存储本地数据的key
@@ -152,9 +54,9 @@ echarts.use([SVGRenderer, LineChart, BarChart, TitleComponent,
 
 
 export default class HomeScreen extends React.Component<any, any> {
-    private currentAddType: null; // 当前的添加类型
-    private floatingActionRef: null; // 悬浮按钮引用
-    private cloneType: null; // 临时保存type的数据
+    private currentAddType = null; // 当前的添加类型
+    private floatingActionRef = null; // 悬浮按钮引用
+    private cloneType = null; // 临时保存type的数据
     private oldMilkData = null // 已经有的最新的喝牛奶的数据，用来保存默认数据
     private milkDoseList = [] // 牛奶的最新3个量数据列表
     private oldPoopData = null // 已经有的最新的拉屎的数据，用来保存默认数据
@@ -930,7 +832,7 @@ export default class HomeScreen extends React.Component<any, any> {
     // 进入详情
     _gotoItemDetail(item) {
         logi("detail item", item)
-        // this.props.navigation.navigate("")
+        this.props.navigation.navigate("NewLifeDetailScreen", {data: item})
     }
 
     _renderListEmptyView() {
@@ -1013,7 +915,7 @@ export default class HomeScreen extends React.Component<any, any> {
         )
     }
 
-    _refreshLast24HourCharts(){
+    _refreshLast24HourCharts() {
         let dataList = this._getLast24HoursData()
         logi("chart ref", this.last24HourChartRef)
         if (this.last24HourChartRef && dataList) {
@@ -1037,7 +939,7 @@ export default class HomeScreen extends React.Component<any, any> {
                         obj.dose = data.dose
                     }
                     logi("set milk dose ", obj)
-                    dataMap.set(data.name,  obj)
+                    dataMap.set(data.name, obj)
                 }
             }
             let sortedMap = new Map()
@@ -1072,7 +974,7 @@ export default class HomeScreen extends React.Component<any, any> {
                             position: 'top',
                             color: "black",
                             fontSize: 12,
-                            formatter: function(d) {
+                            formatter: function (d) {
                                 logi("label formater", d.data)
                                 // 牛奶显示总量
                                 if (d.data.name.indexOf("奶") >= 0) {
@@ -1089,7 +991,7 @@ export default class HomeScreen extends React.Component<any, any> {
         }
     }
 
-    _refreshTodayCharts(){
+    _refreshTodayCharts() {
         let dataList = this._getTodayData()
         if (this.todayChartRef && dataList) {
             // 获取分类数据
@@ -1112,7 +1014,7 @@ export default class HomeScreen extends React.Component<any, any> {
                         obj.dose = data.dose
                     }
                     logi("set milk dose ", obj)
-                    dataMap.set(data.name,  obj)
+                    dataMap.set(data.name, obj)
                 }
             }
             let sortedMap = new Map()
@@ -1148,7 +1050,7 @@ export default class HomeScreen extends React.Component<any, any> {
                             position: 'top',
                             color: "black",
                             fontSize: 12,
-                            formatter: function(d) {
+                            formatter: function (d) {
                                 logi("label formater", d.data)
                                 // 牛奶显示总量
                                 if (d.data.name.indexOf("奶") >= 0) {

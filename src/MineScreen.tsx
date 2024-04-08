@@ -89,6 +89,10 @@ export default class MineScreen extends React.Component<any, any> {
                         <View style={commonStyles.lineWithMargin}/>
                     </View>
                     {ItemRow(<Image style={styles.titleImg}
+                                    source={require('./assets/ic_version.png')}/>, '类型管理', () => {
+                        this.props.navigation.navigate('TypeMangeScreen');
+                    })}
+                    {ItemRow(<Image style={styles.titleImg}
                                     source={require('./assets/ic_version.png')}/>, '应用设置', () => {
                         this.props.navigation.navigate('VersionScreen');
                     })}

@@ -20,6 +20,8 @@ import {logi} from "./src/utils/logutil";
 import {Colors} from "./src/colors";
 import {commonStyles} from "./src/commonStyle";
 import {NativeBaseProvider} from "native-base";
+import TypeMangeScreen from "./src/TypeMangeScreen";
+import NewLifeDetailScreen from "./src/NewLifeDetailScreen";
 
 const Stack = createNativeStackNavigator()
 const BottomTab = createBottomTabNavigator()
@@ -87,22 +89,6 @@ function CustomTabBar({state, descriptors, navigation}) {
     );
 }
 
-function BottomTabs() {
-    return (
-        <BottomTab.Navigator>
-            {/*首页，添加喂奶等记录，主要功能*/}
-            <BottomTab.Screen name={"Home"} component={HomeScreen}/>
-            {/*养娃常用知识*/}
-            <BottomTab.Screen name={"CommonKnowedge"} component={CommonKnowedgeScreen}/>
-            {/*回忆点滴界面，保存图片视频等*/}
-            <BottomTab.Screen name={"Memory"} component={MemoryScreen}/>
-            {/*我的界面，用来登录，设置等*/}
-            <BottomTab.Screen name={"Mine"} component={MineScreen}/>
-        </BottomTab.Navigator>
-    )
-}
-
-
 function MainStack() {
     return (
         <Stack.Navigator
@@ -112,6 +98,8 @@ function MainStack() {
             initialRouteName={"SplashScreen"}>
             <Stack.Screen name={"SplashScreen"} component={SplashScreen}/>
             <Stack.Screen name={"MainScreen"} component={MainScreen}/>
+            <Stack.Screen name={"TypeMangeScreen"} component={TypeMangeScreen}/>
+            <Stack.Screen name={"NewLifeDetailScreen"} component={NewLifeDetailScreen}/>
         </Stack.Navigator>
     )
 }
