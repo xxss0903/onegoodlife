@@ -31,6 +31,7 @@ import {EChartsType} from "echarts/core";
 import {GridComponent, TitleComponent, TooltipComponent} from "echarts/components";
 import {screenW} from "./utils/until";
 import PagerView from 'react-native-pager-view';
+import {Checkbox} from "native-base";
 
 
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
@@ -585,6 +586,25 @@ export default class HomeScreen extends React.Component<any, any> {
                     }}>
                     <Text>{formatTime}</Text>
                 </TouchableOpacity>
+                <View style={{height: 40, backgroundColor: "#ff00ff", marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        value={this.state.newTag}
+                        onChangeText={(text) => {
+                            this.setState({
+                                newTag: text
+                            })
+                        }}
+                        keyboardType={'default'}
+                        placeholderTextColor={"#bbbbbb"}
+                        placeholder={"请输入标签"}/>
+                </View>
                 <View style={{minHeight: 80, marginTop: 12}}>
                     <TextInput
                         style={[{
@@ -602,6 +622,9 @@ export default class HomeScreen extends React.Component<any, any> {
                         placeholderTextColor={"#bbbbbb"}
                         keyboardType={'default'}
                         placeholder={"请输入备注"}/>
+                </View>
+                <View style={{height: 40, marginTop: 12}}>
+                    <Checkbox value={this.state.addNewTag}>添加新标签</Checkbox>
                 </View>
             </View>
         );
@@ -626,6 +649,40 @@ export default class HomeScreen extends React.Component<any, any> {
             })
     }
 
+    // 其他类型
+    _confirmOtherNewLife(callback) {
+        if (this.isTypeEdit) {
+            if (this._checkAddTypeData(this.cloneType)) {
+                // 根据时间排序
+                this.state.dataList.sort((a, b) => b.time - a.time)
+                this._refreshLocalData()
+                if (callback) {
+                    callback()
+                }
+            }
+        } else {
+            // 判断是否添加新的标签，可以添加标签也可以不添加标签
+
+
+            if (this._checkAddTypeData(this.cloneType)) {
+                logi("add milk check true")
+                this.cloneType.key = this.cloneType.time
+                // 插入到最新的数据，这里还是根据时间进行设置
+                let dataList = this._insertItemByResortTime(this.state.dataList, this.cloneType)
+                this.setState({
+                    dataList: dataList
+                })
+                // this.state.dataList.unshift(this.cloneType)
+                this._refreshLocalData()
+                if (callback) {
+                    callback()
+                }
+            } else {
+                logi("add milk check false")
+            }
+        }
+    }
+
     _confirmAddNewLife(callback) {
         if (this.isTypeEdit) {
             if (this._checkAddTypeData(this.cloneType)) {
@@ -637,6 +694,9 @@ export default class HomeScreen extends React.Component<any, any> {
                 }
             }
         } else {
+            // 判断是否添加新的标签，可以添加标签也可以不添加标签
+
+
             if (this._checkAddTypeData(this.cloneType)) {
                 logi("add milk check true")
                 this.cloneType.key = this.cloneType.time
@@ -694,10 +754,19 @@ export default class HomeScreen extends React.Component<any, any> {
                     this.setShowModal(false)
                 },
                 confirmClick: () => {
-                    this._confirmAddNewLife(() => {
-                        this.setShowModal(false)
-                        this._refreshStaticsCharts()
-                    })
+                    if (typeMapList[5].id === this.currentAddType.id) {
+                        // 渲染其他的类型，需要判断是否添加新的tag
+                        this._confirmOtherNewLife(() => {
+                            this.setShowModal(false)
+                            this._refreshStaticsCharts()
+                        })
+                    } else {
+                        this._confirmAddNewLife(() => {
+                            this.setShowModal(false)
+                            this._refreshStaticsCharts()
+                        })
+                    }
+
                 }
             }
         )
@@ -793,7 +862,7 @@ export default class HomeScreen extends React.Component<any, any> {
         }
     }
 
-    _renderTypeItem(item) {
+    _renderTypeItem(item, index) {
         let typeName = item.name
         let time = moment(item.time).format("yyyy-MM-DD HH:mm")
         let tags = item.selectedTags
@@ -810,7 +879,7 @@ export default class HomeScreen extends React.Component<any, any> {
                     // 进入详情
                     this._gotoItemDetail(item)
                 }}
-                key={item.time} style={styles.timelineItemContainer}>
+                key={item.time} style={[styles.timelineItemContainer, {marginTop: index === 0 ? 12 : 0}]}>
                 <View style={styles.timelineItemType}>
                     <Text>{typeName}</Text>
                 </View>
@@ -967,6 +1036,7 @@ export default class HomeScreen extends React.Component<any, any> {
                     if (data.name.indexOf("奶") >= 0) {
                         obj.dose = data.dose
                     }
+                    logi("set milk dose ", obj)
                     dataMap.set(data.name,  obj)
                 }
             }
@@ -1003,9 +1073,11 @@ export default class HomeScreen extends React.Component<any, any> {
                             color: "black",
                             fontSize: 12,
                             formatter: function(d) {
+                                logi("label formater", d.data)
                                 // 牛奶显示总量
-                                if (d.name.indexOf("奶") >= 0) {
-                                    return d.dose + "ml"
+                                if (d.data.name.indexOf("奶") >= 0) {
+                                    logi("set milk dose 2 ", d.data.dose)
+                                    return d.data.dose + "ml"
                                 }
                                 return ""
                             }
@@ -1026,10 +1098,21 @@ export default class HomeScreen extends React.Component<any, any> {
                 let data = dataList[i]
                 if (dataMap.has(data.name)) {
                     let value = dataMap.get(data.name)
-                    value += 1
+                    // 统计次数
+                    value.value += 1
+                    // 如果是牛奶就添加牛奶总量
+                    if (data.name.indexOf("奶") >= 0) {
+                        value.dose += data.dose
+                    }
+
                     dataMap.set(data.name, value)
                 } else {
-                    dataMap.set(data.name, 1)
+                    let obj = {value: 1, name: data.name}
+                    if (data.name.indexOf("奶") >= 0) {
+                        obj.dose = data.dose
+                    }
+                    logi("set milk dose ", obj)
+                    dataMap.set(data.name,  obj)
                 }
             }
             let sortedMap = new Map()
@@ -1059,7 +1142,22 @@ export default class HomeScreen extends React.Component<any, any> {
                         data: valueList,
                         type: 'bar',
                         barWidth: 40,
-                        sort: 'ascending'
+                        sort: 'ascending',
+                        label: {
+                            show: true,
+                            position: 'top',
+                            color: "black",
+                            fontSize: 12,
+                            formatter: function(d) {
+                                logi("label formater", d.data)
+                                // 牛奶显示总量
+                                if (d.data.name.indexOf("奶") >= 0) {
+                                    logi("set milk dose 2 ", d.data.dose)
+                                    return d.data.dose + "ml"
+                                }
+                                return ""
+                            }
+                        }
                     },
                 ],
             };
@@ -1119,7 +1217,7 @@ export default class HomeScreen extends React.Component<any, any> {
                             <SwipeListView
                                 data={this.state.dataList}
                                 renderItem={({item, index}) => {
-                                    return this._renderTypeItem(item)
+                                    return this._renderTypeItem(item, index)
                                 }}
                                 renderHiddenItem={(data, rowMap) => {
                                     return (

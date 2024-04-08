@@ -137,11 +137,11 @@ export default class MainScreen extends React.Component<any, any> {
                         tabBarIcon: ({focused, color, size}) => {
                             if (focused) {
                                 return (
-                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.loginTouch}}/>
+                                    <Image source={require("./assets/ic_home.png")} style={{width: 20, height: 20}}/>
                                 );
                             } else {
                                 return (
-                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.black333}}/>
+                                    <Image source={require("./assets/ic_home_n.png")} style={{width: 20, height: 20}}/>
                                 );
                             }
                         },
@@ -153,11 +153,11 @@ export default class MainScreen extends React.Component<any, any> {
                         tabBarIcon: ({focused, color, size}) => {
                             if (focused) {
                                 return (
-                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.loginTouch}}/>
+                                    <Image source={require("./assets/ic_moment.png")} style={{width: 20, height: 20}}/>
                                 );
                             } else {
                                 return (
-                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.black333}}/>
+                                    <Image source={require("./assets/ic_moment_n.png")} style={{width: 20, height: 20}}/>
                                 );
                             }
                         },
@@ -169,11 +169,11 @@ export default class MainScreen extends React.Component<any, any> {
                         tabBarIcon: ({focused, color, size}) => {
                             if (focused) {
                                 return (
-                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.loginTouch}}/>
+                                    <Image source={require("./assets/ic_knowedge.png")} style={{width: 20, height: 20}}/>
                                 );
                             } else {
                                 return (
-                                    <Icon name={'home'} type={'Entypo'} style={{color: Colors.black333}}/>
+                                    <Image source={require("./assets/ic_knowedge_n.png")} style={{width: 20, height: 20}}/>
                                 );
                             }
                         },
@@ -185,11 +185,11 @@ export default class MainScreen extends React.Component<any, any> {
                         tabBarIcon: ({focused, color, size}) => {
                             if (focused) {
                                 return (
-                                    <Icon name={'user'} type={'FontAwesome'} style={{color: Colors.loginTouch}}/>
+                                    <Image source={require("./assets/ic_mine.png")} style={{width: 20, height: 20}}/>
                                 );
                             } else {
                                 return (
-                                    <Icon name={'user'} type={'FontAwesome'} style={{color: Colors.black333}}/>
+                                    <Image source={require("./assets/ic_mine_n.png")} style={{width: 20, height: 20}}/>
                                 );
                             }
                         },
