@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {mainData} from "../mainData";
 
 export class DeviceStorage {
     /**
@@ -31,5 +32,18 @@ export class DeviceStorage {
      * 删除 */
     static delete(key) {
         return AsyncStorage.removeItem(key);
+    }
+
+    static refreshMainData() {
+        this.save("mainData", mainData)
+    }
+
+    static async getMainData() {
+        let res = await this.get("mainData")
+        if (res) {
+            for (const resKey in res) {
+                mainData[resKey] = res[resKey]
+            }
+        }
     }
 }

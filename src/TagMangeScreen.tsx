@@ -34,7 +34,8 @@ const ItemRow = (img, title, callback, showLine = true) => {
     );
 };
 
-export default class MineScreen extends React.Component<any, any> {
+// 标签管理界面
+export default class TagMangeScreen extends React.Component<any, any> {
 
     constructor(props) {
         super(props);
