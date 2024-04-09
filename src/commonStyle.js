@@ -167,6 +167,14 @@ export const dateText = {
 
 
 export const commonStyles = StyleSheet.create({
+    flexColumn: {
+      display: "flex",
+      flexDirection: "column"
+    },
+    flexRow: {
+        display: "flex",
+        flexDirection: "row"
+    },
     fullScreen: {
         width: screenW,
         height: screenH,

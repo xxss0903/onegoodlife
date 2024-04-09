@@ -40,6 +40,7 @@ import {
     otherTemplateData
 } from "./mainData";
 import AddNewLifeModal from "./components/AddNewLifeModal";
+import StaticsView from "./components/StaticsView";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = mainData.commonActions // 放在主页的主要使用的类型action
@@ -566,8 +567,6 @@ export default class HomeScreen extends React.Component<any, any> {
             }
         } else {
             // 判断是否添加新的标签，可以添加标签也可以不添加标签
-
-
             if (this._checkAddTypeData(this.cloneType)) {
                 logi("add milk check true")
                 this.cloneType.key = this.cloneType.time
@@ -585,6 +584,16 @@ export default class HomeScreen extends React.Component<any, any> {
                 logi("add milk check false")
             }
         }
+    }
+
+    _insertNewlifeLineImpl(data){
+        // 插入到最新的数据，这里还是根据时间进行设置
+        let dataList = this._insertItemByResortTime(this.state.dataList, data)
+        this.setState({
+            dataList: dataList
+        })
+        // this.state.dataList.unshift(this.cloneType)
+        this._refreshLocalData()
     }
 
     _confirmAddNewLife(callback) {
@@ -676,6 +685,9 @@ export default class HomeScreen extends React.Component<any, any> {
         // )
         return (
             <AddNewLifeModal
+                addNewLifeline={(item) => {
+                    this._insertItemByResortTime(this.state.dataList, item)
+                }}
                 currentAddType={this.currentAddType}
                 ref={ref => this.newlifeModalRef = ref}
             />
@@ -752,7 +764,7 @@ export default class HomeScreen extends React.Component<any, any> {
         }
     }
 
-    _toAllTypeScreen(){
+    _toAllTypeScreen() {
         // 进入全部界面
         this.props.navigation.navigate("AllTypeScreen")
     }
@@ -1133,7 +1145,10 @@ export default class HomeScreen extends React.Component<any, any> {
                 <View style={styles.container}>
                     <View style={styles.scrollContainer}>
                         <View style={[styles.staticsContainer, {height: screenW * 0.6}]}>
-                            {this._renderSvgCharts()}
+                            {/*{this._renderSvgCharts()}*/}
+                            <StaticsView
+                                dataList={this.state.dataList}
+                            />
                         </View>
                         <View style={styles.line}/>
                         <View style={styles.timelineContainer}>
@@ -1194,6 +1209,9 @@ export default class HomeScreen extends React.Component<any, any> {
                         }}
                     />
                     <AddNewLifeModal
+                        addNewLifeline={(item) => {
+                            this._insertNewlifeLineImpl(item)
+                        }}
                         currentAddType={this.currentAddType}
                         ref={ref => this.newlifeModalRef = ref}
                     />

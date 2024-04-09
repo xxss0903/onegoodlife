@@ -212,6 +212,17 @@ export default class AddNewLifeModal extends Component<any, any> {
         return contentView
     }
 
+    // 检查是否填写必须的数据
+    _checkAddTypeData(typeData) {
+        logi("check type ", typeData)
+        switch (typeData.typeId) {
+            case mainData.typeMapList[0].id:
+                // 牛奶必须输入毫升数量
+                return typeData.dose > 0
+        }
+        return true
+    }
+
     render() {
         let datetime = this.cloneType ? new Date(this.cloneType.time) : new Date()
         return (
@@ -240,7 +251,14 @@ export default class AddNewLifeModal extends Component<any, any> {
                                 </TouchableOpacity>
                                 <View style={{width: 1, backgroundColor: "#bbbbbb"}}></View>
                                 <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
-                                    this.showModal(false)
+                                    if(this._checkAddTypeData(this.cloneType)){
+                                        this.showModal(false)
+                                        logi("this.pros", this.cloneType)
+                                        // 添加数据
+                                        this.props.addNewLifeline(this.cloneType)
+                                    } else {
+
+                                    }
                                 }}>
                                     <Text>确认</Text>
                                 </TouchableOpacity>
