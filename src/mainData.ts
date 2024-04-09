@@ -27,6 +27,14 @@ export const commonTypeList = [{id: 1, name: "喝奶", value: "type_1", text: "�
     id: 6,
     name: "其他",
     value: "type_6", text: "其他", position: 6
+}, {
+    id: 7,
+    name: "身高",
+    value: "type_7", text: "身高", position: 7
+}, {
+    id: 8,
+    name: "体重",
+    value: "type_8", text: "体重", position: 8
 }]
 
 // 全局数据，包括用户信息等需要全局使用的

@@ -1,8 +1,8 @@
 import React, {Component} from "react";
-import {View} from "native-base";
-import {Modal, StyleSheet, Text, TouchableOpacity} from "react-native";
+import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {mainData} from "../mainData";
 
-
+// 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
 
     constructor(props) {
@@ -12,15 +12,128 @@ export default class AddNewLifeModal extends Component<any, any> {
         }
     }
 
-    setShowModal(show) {
+    showModal(show) {
         this.setState({
             showAddModal: show
         })
     }
 
-    render() {
+    _renderModalFrame({headerView, contentView, footerView, cancelClick, confirmClick}) {
+        return (
+            <Modal
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => {
+                    this.showModal(!this.state.showAddModal)
+                }}
+                visible={this.state.showAddModal}>
+                <View style={styles.addModalContainer}>
+                    <View style={styles.addContentContainer}>
+                        {headerView ? headerView : null}
+                        {contentView ? <View style={{flex: 1, padding: 12}}>
+                            {contentView}
+                        </View> : null}
+                        {footerView ? <View style={styles.line}></View> : null}
+                        {footerView ? <View style={styles.modalFooter}>
+                            <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
+                                if (cancelClick) {
+                                    cancelClick()
+                                }
+                            }}>
+                                <Text>取消</Text>
+                            </TouchableOpacity>
+                            <View style={{width: 1, backgroundColor: "#bbbbbb"}}></View>
+                            <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
+                                if (confirmClick) {
+                                    confirmClick()
+                                }
+                            }}>
+                                <Text>确认</Text>
+                            </TouchableOpacity>
+                        </View> : null}
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+
+    _renderMilkContent(type){
         return (
             <View></View>
+        )
+    }
+
+    _renderPoopContent(type){
+        return (
+            <View></View>
+        )
+    }
+
+    _renderPeeContent(type){
+        return (
+            <View></View>
+        )
+    }
+
+    _renderOtherContent(type){
+        return (
+            <View></View>
+        )
+    }
+
+    _renderContentView(){
+        let contentView = null;
+        // 根据类型id渲染不同的内容界面
+        switch (this.props.currentAddType.id) {
+            case mainData.typeMapList[0].id:
+                contentView = this._renderMilkContent(this.props.currentAddType)
+                break;
+            case mainData.typeMapList[1].id:
+                contentView = this._renderPoopContent(this.props.currentAddType)
+                break;
+            case mainData.typeMapList[2].id:
+                contentView = this._renderPeeContent(this.props.currentAddType)
+                break;
+            case mainData.typeMapList[5].id:
+                contentView = this._renderOtherContent(this.props.currentAddType)
+                break;
+            default:
+                contentView = this._renderOtherContent(this.props.currentAddType)
+                break;
+        }
+
+        return contentView
+    }
+
+    render() {
+        return (
+            <Modal
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => {
+                    this.showModal(!this.state.showAddModal)
+                }}
+                visible={this.state.showAddModal}>
+                <View style={styles.addContentContainer}>
+                    <View style={{height: 40, display: "flex", justifyContent: "center", alignItems: "center"}}>
+                        <Text>添加{this.props.currentType?.name}</Text>
+                    </View>
+                    {this._renderContentView()}
+                    <View style={styles.modalFooter}>
+                        <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
+                            this.showModal(false)
+                        }}>
+                            <Text>取消</Text>
+                        </TouchableOpacity>
+                        <View style={{width: 1, backgroundColor: "#bbbbbb"}}></View>
+                        <TouchableOpacity style={styles.btnModalFooter} onPress={() => {
+                            this.showModal(false)
+                        }}>
+                            <Text>确认</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         )
     }
 }

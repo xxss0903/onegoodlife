@@ -739,9 +739,16 @@ export default class HomeScreen extends React.Component<any, any> {
         }
     }
 
+    _toAllTypeScreen(){
+        // 进入全部界面
+        this.props.navigation.navigate("AllTypeScreen")
+    }
+
+    // 其他就是进入全部界面
     _addOther(item) {
-        this.currentAddType = item
-        this.setShowModal(true)
+        // this.currentAddType = item
+        // this.setShowModal(true)
+        this._toAllTypeScreen()
     }
 
     // 添加新的时间线

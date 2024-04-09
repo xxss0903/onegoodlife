@@ -22,6 +22,7 @@ import {commonStyles} from "./src/commonStyle";
 import {NativeBaseProvider} from "native-base";
 import TypeMangeScreen from "./src/TypeMangeScreen";
 import NewLifeDetailScreen from "./src/NewLifeDetailScreen";
+import AllTypeScreen from "./src/AllTypeScreen";
 
 const Stack = createNativeStackNavigator()
 const BottomTab = createBottomTabNavigator()
@@ -100,6 +101,7 @@ function MainStack() {
             <Stack.Screen name={"MainScreen"} component={MainScreen}/>
             <Stack.Screen name={"TypeMangeScreen"} component={TypeMangeScreen}/>
             <Stack.Screen name={"NewLifeDetailScreen"} component={NewLifeDetailScreen}/>
+            <Stack.Screen name={"AllTypeScreen"} component={AllTypeScreen}/>
         </Stack.Navigator>
     )
 }
