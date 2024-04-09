@@ -39,6 +39,7 @@ import {
     peeTemplateData,
     otherTemplateData
 } from "./mainData";
+import AddNewLifeModal from "./components/AddNewLifeModal";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = mainData.commonActions // 放在主页的主要使用的类型action
@@ -70,6 +71,7 @@ export default class HomeScreen extends React.Component<any, any> {
     private last24HourCharts: EChartsType; // 统计图表
     private todayChartRef: any; // 统计数据的渲染引用
     private todayCharts: EChartsType; // 统计图表
+    private newlifeModalRef = null;
 
     constructor(props) {
         super(props);
@@ -647,30 +649,36 @@ export default class HomeScreen extends React.Component<any, any> {
             <View style={{height: 40, display: "flex", justifyContent: "center", alignItems: "center"}}>
                 <Text>添加{this.currentAddType.name}</Text>
             </View>
-        return this._renderModalFrame(
-            {
-                headerView: headerView,
-                contentView: contentView,
-                footerView: true,
-                cancelClick: () => {
-                    this.setShowModal(false)
-                },
-                confirmClick: () => {
-                    if (typeMapList[5].id === this.currentAddType.id) {
-                        // 渲染其他的类型，需要判断是否添加新的tag
-                        this._confirmOtherNewLife(() => {
-                            this.setShowModal(false)
-                            this._refreshStaticsCharts()
-                        })
-                    } else {
-                        this._confirmAddNewLife(() => {
-                            this.setShowModal(false)
-                            this._refreshStaticsCharts()
-                        })
-                    }
-
-                }
-            }
+        // return this._renderModalFrame(
+        //     {
+        //         headerView: headerView,
+        //         contentView: contentView,
+        //         footerView: true,
+        //         cancelClick: () => {
+        //             this.setShowModal(false)
+        //         },
+        //         confirmClick: () => {
+        //             if (typeMapList[5].id === this.currentAddType.id) {
+        //                 // 渲染其他的类型，需要判断是否添加新的tag
+        //                 this._confirmOtherNewLife(() => {
+        //                     this.setShowModal(false)
+        //                     this._refreshStaticsCharts()
+        //                 })
+        //             } else {
+        //                 this._confirmAddNewLife(() => {
+        //                     this.setShowModal(false)
+        //                     this._refreshStaticsCharts()
+        //                 })
+        //             }
+        //
+        //         }
+        //     }
+        // )
+        return (
+            <AddNewLifeModal
+                currentAddType={this.currentAddType}
+                ref={ref => this.newlifeModalRef = ref}
+            />
         )
     }
 
@@ -678,7 +686,9 @@ export default class HomeScreen extends React.Component<any, any> {
     _addMilk(item) {
         this.currentAddType = item
         // 添加牛奶的弹窗
-        this.setShowModal(true)
+        // this.setShowModal(true)
+
+        this.newlifeModalRef.addNewType(item)
     }
 
     // 添加拉屎
@@ -728,13 +738,16 @@ export default class HomeScreen extends React.Component<any, any> {
         this.cloneType = item
         switch (item.name) {
             case typeMapList[0].name:
-                this._addMilk(typeMapList[0])
+                this.newlifeModalRef.editType(typeMapList[0], this.cloneType)
+                // this._addMilk(typeMapList[0])
                 break;
             case typeMapList[1].name:
-                this._addPoop(typeMapList[1])
+                this.newlifeModalRef.editType(typeMapList[1], this.cloneType)
+                // this._addPoop(typeMapList[1])
                 break;
             case typeMapList[2].name:
-                this._addPee(typeMapList[2])
+                this.newlifeModalRef.editType(typeMapList[2], this.cloneType)
+                // this._addPee(typeMapList[2])
                 break;
         }
     }
@@ -755,6 +768,7 @@ export default class HomeScreen extends React.Component<any, any> {
     _addNewLifeline(item) {
         logi("add life line ", item)
         this.cloneType = null
+        this.currentAddType = item
         switch (item) {
             case typeMapList[0].name:
                 this._addMilk(typeMapList[0])
@@ -1179,7 +1193,10 @@ export default class HomeScreen extends React.Component<any, any> {
                             this._addNewLifeline(item)
                         }}
                     />
-                    {this._renderAddModal()}
+                    <AddNewLifeModal
+                        currentAddType={this.currentAddType}
+                        ref={ref => this.newlifeModalRef = ref}
+                    />
                     {this._renderDatetimePicker()}
                     {/*{this._renderExportAction()}*/}
                 </View>
