@@ -837,6 +837,8 @@ export default class HomeScreen extends React.Component<any, any> {
                 <View style={styles.timelineItemContent}>
                     <Text>时间：{time}</Text>
                     {item.dose ? <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text> : null}
+                    {item.typeId === commonTypeList[3].id ? <Text>    头：{item.jaundiceValue.header}</Text> : null}
+                    {item.typeId === commonTypeList[3].id ? <Text>胸口：{item.jaundiceValue.chest}</Text> : null}
                     {tagView ?
                         <View style={{display: "flex", flexDirection: "row"}}>
                             {tagView}

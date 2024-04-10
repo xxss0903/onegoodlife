@@ -79,43 +79,11 @@ export default class AllTypeScreen extends React.Component<any, any> {
         )
     }
 
+    // 插入新的类型
     _insertNewlifeLineImpl(data){
         EventBus.sendEvent(EventBus.REFRESH_DATA, data)
+        this.props.navigation.goBack()
     }
-
-    _refreshLocalData() {
-        DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList)
-            .then(data => {
-                logi("save data ", data)
-            })
-    }
-
-    // 重新排序记录，根据时间插入
-    _insertItemByResortTime(dataList, newData) {
-        if (!newData) {
-            return dataList
-        }
-        if (dataList && dataList.length > 0) {
-            if (dataList[0].time < newData.time) {
-                dataList.unshift(newData)
-            } else {
-                for (let i = 0; i < dataList.length; i++) {
-                    let value = dataList[i]
-                    if (value.time < newData.time) {
-                        logi("insert to index 1 ", dataList.length)
-                        logi("insert to index 2 ", i)
-                        dataList.splice(i, 0, newData)
-                        return dataList
-                    }
-                }
-                dataList.push(newData)
-            }
-        } else {
-            dataList = [newData]
-        }
-        return dataList
-    }
-
 
     render() {
         return (

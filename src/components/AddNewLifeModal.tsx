@@ -1,9 +1,10 @@
 import React, {Component} from "react";
 import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {mainData, milkTemplateData, peeTemplateData, poopTemplateData} from "../mainData";
+import {jaundiceTemplateData, mainData, milkTemplateData, peeTemplateData, poopTemplateData} from "../mainData";
 import moment from "moment";
 import {logi} from "../utils/logutil";
 import DatePicker from "react-native-date-picker";
+import {commonStyles} from "../commonStyle";
 
 // 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
@@ -11,6 +12,7 @@ export default class AddNewLifeModal extends Component<any, any> {
     private oldMilkData = null;
     private oldPoopData = null;
     private oldPeeData = null;
+    private oldJaundiceData = null;
     private milkDoseList = [30, 50, 60, 70]
     private currentAddType = null;
 
@@ -121,7 +123,8 @@ export default class AddNewLifeModal extends Component<any, any> {
                     }}>
                     <Text>{formatTime}</Text>
                 </TouchableOpacity>
-                <View style={{height: 40, backgroundColor: "#ff00ff", marginTop: 12}}>
+                <View style={[{height: 40, marginTop: 12}, commonStyles.flexRow, commonStyles.center]}>
+                    <Text>喝奶量：</Text>
                     <TextInput
                         style={[{
                             textAlign: 'left',
@@ -290,6 +293,115 @@ export default class AddNewLifeModal extends Component<any, any> {
         );
     }
 
+    _renderJaundiceContent(type){
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            if (this.oldJaundiceData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldJaundiceData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(jaundiceTemplateData))
+                this.cloneType.name = this.currentAddType.name
+            }
+            this.cloneType.time = moment().valueOf()
+            this.cloneType.key = moment().valueOf()
+        }
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index", tagIndex + " # " + tag)
+            if (tagIndex >= 0) {
+                // 选中了要去掉
+                this.cloneType.selectedTags.splice(tagIndex, 1)
+            } else {
+                // 需要添加
+                this.cloneType.selectedTags.push(tag)
+            }
+            this.forceUpdate()
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        logi("formattime ", formatTime)
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View style={[{height: 40, marginTop: 12}, commonStyles.flexRow, commonStyles.center]}>
+                    <Text style={{width: 60}}>头：</Text>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        value={this.cloneType.jaundiceValue.header.toString()}
+                        onChangeText={(text) => {
+                            let dose
+                            if (text) {
+                                dose = parseInt(text)
+                            } else {
+                                dose = ""
+                            }
+                            this.cloneType.jaundiceValue.header = dose
+                            this.forceUpdate()
+                        }}
+                        keyboardType={'number-pad'}
+                        placeholderTextColor={"#bbbbbb"}
+                        placeholder={"请输入额头黄疸值"}/>
+                </View>
+                <View style={[{height: 40, marginTop: 12, alignItems: "center", justifyContent: "flex-end"}, commonStyles.flexRow]}>
+                    <Text style={{width: 60}}>胸口：</Text>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        value={this.cloneType.jaundiceValue.chest.toString()}
+                        onChangeText={(text) => {
+                            let dose
+                            if (text) {
+                                dose = parseInt(text)
+                            } else {
+                                dose = ""
+                            }
+                            this.cloneType.jaundiceValue.chest = dose
+                            this.forceUpdate()
+                        }}
+                        keyboardType={'number-pad'}
+                        placeholderTextColor={"#bbbbbb"}
+                        placeholder={"请输入胸口黄疸值"}/>
+                </View>
+                <View>
+                    {tagView}
+                </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
     _renderOtherContent(type){
         return (
             <View></View>
@@ -308,6 +420,9 @@ export default class AddNewLifeModal extends Component<any, any> {
                 break;
             case mainData.typeMapList[2].id:
                 contentView = this._renderPeeContent(this.currentAddType)
+                break;
+            case mainData.typeMapList[3].id:
+                contentView = this._renderJaundiceContent(this.currentAddType)
                 break;
             case mainData.typeMapList[5].id:
                 contentView = this._renderOtherContent(this.currentAddType)
