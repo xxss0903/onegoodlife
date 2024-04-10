@@ -37,18 +37,21 @@ import {
     milkTemplateData,
     poopTemplateData,
     peeTemplateData,
-    otherTemplateData
+    otherTemplateData, commonTypeList
 } from "./mainData";
 import AddNewLifeModal from "./components/AddNewLifeModal";
 import StaticsView from "./components/StaticsView";
+import EventBus from "./utils/eventBus";
 
 const typeMapList = mainData.typeMapList // 类型列表
-const commonActions = mainData.commonActions // 放在主页的主要使用的类型action
+const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
+    id: 6,
+    name: "全部",
+    value: "type_6", text: "全部", position: 6
+}] // 放在主页的主要使用的类型action
 
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {dataList: []}
-// 存储本地数据的key
-const KEY_LOCAL_DATA = "key_local_key"
 
 echarts.use([SVGRenderer, LineChart, BarChart, TitleComponent,
     TooltipComponent,
@@ -85,24 +88,39 @@ export default class HomeScreen extends React.Component<any, any> {
     }
 
     componentDidMount() {
+        this._initListeners()
         this._initEcharts()
         AndroidPermissions.checkStoragePermissions(() => {
-            // 获取本地的数据
-            DeviceStorage.get(KEY_LOCAL_DATA)
-                .then((data) => {
-                    logi("get data ", typeof data)
-                    if (data) {
-                        logi("get my datalist ", data)
-                        this._refreshDataList(data)
-                        this._refreshStaticsCharts()
-                    }
-                })
-                .catch(error => {
-                    logi("get data error ", error)
-                })
+            this._initLocalData()
         }, () => {
             // 没有存储权限
         })
+    }
+
+    _initLocalData(){
+        // 获取本地的数据
+        DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA)
+            .then((data) => {
+                logi("get data ", typeof data)
+                logi("get my datalist ", data)
+                if (data) {
+                    this._refreshDataList(data)
+                    this._refreshStaticsCharts()
+                }
+            })
+            .catch(error => {
+                logi("get data error ", error)
+            })
+    }
+
+    _initListeners(){
+        EventBus.addEventListener(EventBus.REFRESH_DATA, (data) => {
+            this._insertNewlifeLineImpl(data)
+        })
+    }
+
+    componentWillUnmount() {
+        EventBus.clearAllListeners()
     }
 
     // 获取最近使用的3个牛奶量来组成常用的
@@ -115,7 +133,8 @@ export default class HomeScreen extends React.Component<any, any> {
                 }
             })
             if (oldDataList.length > 0) {
-                this.oldMilkData = JSON.parse(JSON.stringify(oldDataList[0]))
+                // this.oldMilkData = JSON.parse(JSON.stringify(oldDataList[0]))
+                mainData.oldData.oldMilkData = JSON.parse(JSON.stringify(oldDataList[0]))
                 // 拿到最新的3个
                 if (this.milkDoseList.length > 5) {
 
@@ -145,6 +164,7 @@ export default class HomeScreen extends React.Component<any, any> {
             })
             if (oldDataList.length > 0) {
                 this.oldPoopData = JSON.parse(JSON.stringify(oldDataList[0]))
+                mainData.oldData.oldPoopData = JSON.parse(JSON.stringify(oldDataList[0]))
                 // 拿到最新的3个
                 let subList = oldDataList.slice(0, 3)
                 subList.forEach(value => {
@@ -164,7 +184,7 @@ export default class HomeScreen extends React.Component<any, any> {
                 }
             })
             if (oldDataList.length > 0) {
-                this.oldPeeData = JSON.parse(JSON.stringify(oldDataList[0]))
+                mainData.oldData.oldPeeData = JSON.parse(JSON.stringify(oldDataList[0]))
                 // 拿到最新的3个
                 let subList = oldDataList.slice(0, 3)
                 subList.forEach(value => {
@@ -549,7 +569,7 @@ export default class HomeScreen extends React.Component<any, any> {
     }
 
     _refreshLocalData() {
-        DeviceStorage.save(KEY_LOCAL_DATA, this.state.dataList)
+        DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList)
             .then(data => {
                 logi("save data ", data)
             })
@@ -716,7 +736,8 @@ export default class HomeScreen extends React.Component<any, any> {
     // 添加撒尿
     _addPee(item) {
         this.currentAddType = item
-        this.setShowModal(true)
+        // this.setShowModal(true)
+        this.newlifeModalRef.addNewType(item)
     }
 
     // 获取过去24小时的数据
@@ -771,13 +792,6 @@ export default class HomeScreen extends React.Component<any, any> {
         this.props.navigation.navigate("AllTypeScreen")
     }
 
-    // 其他就是进入全部界面
-    _addOther(item) {
-        // this.currentAddType = item
-        // this.setShowModal(true)
-        this._toAllTypeScreen()
-    }
-
     // 添加新的时间线
     _addNewLifeline(item) {
         logi("add life line ", item)
@@ -793,8 +807,8 @@ export default class HomeScreen extends React.Component<any, any> {
             case typeMapList[2].name:
                 this._addPee(typeMapList[2])
                 break;
-            case typeMapList[5].name:
-                this._addOther(typeMapList[5])
+            case "全部":
+                this._toAllTypeScreen()
                 break;
         }
     }

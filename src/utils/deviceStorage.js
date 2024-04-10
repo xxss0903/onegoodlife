@@ -2,6 +2,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {mainData} from "../mainData";
 
 export class DeviceStorage {
+
+    static KEY_LOCAL_DATA = "KEY_LOCAL_DATA"
+
     /**
      * 获取  */
     static get(key) {

@@ -50,9 +50,6 @@ export default class StaticsView extends Component<any, any> {
                 sortedMap.set(value.name, dataMap.get(value.name))
             }
         })
-        logi("data map 1", dataMap.keys())
-        logi("data map 2", sortedMap)
-
         callback && callback(sortedMap)
     }
 

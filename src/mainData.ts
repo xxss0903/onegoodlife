@@ -53,6 +53,11 @@ export const mainData = {
     appConfigs: {
         showStatics: true, // 默认首页显示统计信息
     }, // app默认设置
+    oldData: {
+        oldMilkData: null,
+        oldPeeData: null,
+        oldPoopData: null
+    }
 }
 
 
@@ -65,7 +70,7 @@ export const milkTemplateData = {
     key: moment().valueOf(),
     remark: "", // 备注
     tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
-    selectedTags: [], // 选中的类型
+    selectedTags: [milkTags[0]], // 选中的类型
     dose: 30, // 剂量，母乳多少毫升
     pictures: [{
         time: moment().valueOf(), // 时间戳

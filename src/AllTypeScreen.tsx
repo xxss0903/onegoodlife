@@ -8,34 +8,17 @@ import {logi} from "./utils/logutil";
 import DatePicker from "react-native-date-picker";
 import {DeviceStorage} from "./utils/deviceStorage";
 import {mainData} from "./mainData";
+import AddNewLifeModal from "./components/AddNewLifeModal";
+import EventBus from "./utils/eventBus";
 
-const ItemRow = (img, title, callback, showLine = true) => {
-    return (
-        <View>
-            <TouchableOpacity
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingVertical: Margin.bigTop,
-                    paddingHorizontal: Margin.horizontal,
-                    alignItems: 'center',
-                }}
-                onPress={callback}>
-                <View style={{flexDirection: 'row'}}>
-                    {img}
-                    <Text style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>{title}</Text>
-                </View>
-                <View>
-                </View>
-            </TouchableOpacity>
-            {showLine ? <View style={commonStyles.lineWithMargin}/> : null}
-        </View>
-
-    );
-};
+// 存储本地数据的key
+const KEY_LOCAL_DATA = "key_local_key"
 
 // 所有类型界面，选择类型然后添加
 export default class AllTypeScreen extends React.Component<any, any> {
+
+    private currentAddType = null; // 当前的添加类型
+    private newlifeModalRef = null;
 
     constructor(props) {
         super(props);
@@ -50,7 +33,7 @@ export default class AllTypeScreen extends React.Component<any, any> {
             <TouchableOpacity
                 onPress={() => {
                     // 添加类型
-                    this._addNewLifeline()
+                    this._addNewLifeline(value)
                 }}
                 style={[{width: "30%", height: 60, marginBottom: 12, backgroundColor: "#ff0000", marginHorizontal: 6}, commonStyles.center]}>
                 <Text>{value.name}</Text>
@@ -69,14 +52,8 @@ export default class AllTypeScreen extends React.Component<any, any> {
         )
     }
 
-    setShowModal(show) {
-        this.setState({
-            showAddModal: show
-        })
-    }
-
-    _addNewLifeline() {
-        
+    _addNewLifeline(type) {
+        this.newlifeModalRef.addNewType(type)
     }
 
     _renderOtherItem() {
@@ -102,6 +79,44 @@ export default class AllTypeScreen extends React.Component<any, any> {
         )
     }
 
+    _insertNewlifeLineImpl(data){
+        EventBus.sendEvent(EventBus.REFRESH_DATA, data)
+    }
+
+    _refreshLocalData() {
+        DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList)
+            .then(data => {
+                logi("save data ", data)
+            })
+    }
+
+    // 重新排序记录，根据时间插入
+    _insertItemByResortTime(dataList, newData) {
+        if (!newData) {
+            return dataList
+        }
+        if (dataList && dataList.length > 0) {
+            if (dataList[0].time < newData.time) {
+                dataList.unshift(newData)
+            } else {
+                for (let i = 0; i < dataList.length; i++) {
+                    let value = dataList[i]
+                    if (value.time < newData.time) {
+                        logi("insert to index 1 ", dataList.length)
+                        logi("insert to index 2 ", i)
+                        dataList.splice(i, 0, newData)
+                        return dataList
+                    }
+                }
+                dataList.push(newData)
+            }
+        } else {
+            dataList = [newData]
+        }
+        return dataList
+    }
+
+
     render() {
         return (
             <View style={styles.container}>
@@ -117,7 +132,13 @@ export default class AllTypeScreen extends React.Component<any, any> {
                         {this._renderOtherItem()}
                     </View>
                 </View>
-
+                <AddNewLifeModal
+                    addNewLifeline={(item) => {
+                        this._insertNewlifeLineImpl(item)
+                    }}
+                    currentAddType={this.currentAddType}
+                    ref={ref => this.newlifeModalRef = ref}
+                />
             </View>
         )
     }

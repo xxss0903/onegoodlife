@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {mainData, milkTemplateData, poopTemplateData} from "../mainData";
+import {mainData, milkTemplateData, peeTemplateData, poopTemplateData} from "../mainData";
 import moment from "moment";
 import {logi} from "../utils/logutil";
 import DatePicker from "react-native-date-picker";
@@ -10,6 +10,7 @@ export default class AddNewLifeModal extends Component<any, any> {
     private cloneType = null;
     private oldMilkData = null;
     private oldPoopData = null;
+    private oldPeeData = null;
     private milkDoseList = [30, 50, 60, 70]
     private currentAddType = null;
 
@@ -231,9 +232,62 @@ export default class AddNewLifeModal extends Component<any, any> {
     }
 
     _renderPeeContent(type){
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            if (this.oldPeeData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldPeeData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(peeTemplateData))
+                this.cloneType.name = this.currentAddType.name
+            }
+            this.cloneType.time = moment().valueOf()
+            this.cloneType.key = moment().valueOf()
+        }
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index", tagIndex + " # " + tag)
+            if (tagIndex >= 0) {
+                // 选中了要去掉
+                this.cloneType.selectedTags.splice(tagIndex, 1)
+            } else {
+                // 需要添加
+                this.cloneType.selectedTags.push(tag)
+            }
+            this.forceUpdate()
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        logi("formattime ", formatTime)
         return (
-            <View></View>
-        )
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View>
+                    {tagView}
+                </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
     }
 
     _renderOtherContent(type){
