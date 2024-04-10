@@ -275,6 +275,7 @@ export default class AddNewLifeModal extends Component<any, any> {
                     onConfirm={(date) => {
                         // 确认选择，将日期转为时间戳
                         this.cloneType.time = moment(date).valueOf()
+                        this.cloneType.key = this.cloneType.time
                         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
                         logi("confirm date", date + " # " + formatTime)
                         this._toggleDatetimePicker(false)

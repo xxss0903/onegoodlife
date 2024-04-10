@@ -13,11 +13,12 @@ export default class StaticsView extends Component<any, any> {
         this.state = {
             showAddModal: false,
             datepickerOpen: false,
-            todayDataMap: new Map()
+            todayDataMap: new Map(),
+            last24Data: new Map()
         }
     }
 
-    _getStaticsDataView(dataList) {
+    _getStaticsDataView(dataList, callback) {
         // 获取分类数据
         let dataMap = new Map()
         for (let i = 0; i < dataList.length; i++) {
@@ -40,6 +41,8 @@ export default class StaticsView extends Component<any, any> {
                 logi("set milk dose ", obj)
                 dataMap.set(data.name, obj)
             }
+            logi("add datamap", data)
+            logi("add datamap arra", Array.from(dataMap.values()))
         }
         let sortedMap = new Map()
         mainData.typeMapList.forEach(value => {
@@ -47,13 +50,10 @@ export default class StaticsView extends Component<any, any> {
                 sortedMap.set(value.name, dataMap.get(value.name))
             }
         })
+        logi("data map 1", dataMap.keys())
+        logi("data map 2", sortedMap)
 
-        this.setState({
-            todayDataMap: sortedMap
-        }, () => {
-            logi("data map", this.state.todayDataMap)
-            logi("data map", this.state.todayDataMap)
-        })
+        callback && callback(sortedMap)
     }
 
     componentDidMount() {
@@ -62,11 +62,19 @@ export default class StaticsView extends Component<any, any> {
 
     refreshData(){
         let todayData = this._getTodayData()
-        this._getStaticsDataView(todayData)
-
-
+        this._getStaticsDataView(todayData, (data) => {
+            this.setState({
+                todayDataMap: data
+            }, () => {
+            })
+        })
         let last24Data = this._getLast24HoursData()
-        logi("today data ", todayData)
+        this._getStaticsDataView(last24Data, (data) => {
+            this.setState({
+                last24Data: data
+            }, () => {
+            })
+        })
     }
     
     // 获取今天的数据
@@ -80,7 +88,6 @@ export default class StaticsView extends Component<any, any> {
                 tempDataList.push(data)
             }
         }
-        logi("last day data ", tempDataList)
         return JSON.parse(JSON.stringify(tempDataList))
     }
 
@@ -105,11 +112,11 @@ export default class StaticsView extends Component<any, any> {
             let data = dataMap[key]
 
         }
-        let keyArray = Array.from(dataMap.keys)
+        let keyArray = Array.from(dataMap.keys())
         let mapView = keyArray.map(key => {
             return (
                 <View>
-                    <Text>{key}:{dataMap[key].value}</Text>
+                    <Text>{key}:{dataMap.get(key).value}次</Text>
                 </View>
             )
         })
@@ -133,11 +140,12 @@ export default class StaticsView extends Component<any, any> {
                     {/*最近24小时统计*/}
                     <View style={[commonStyles.flexColumn, {flex: 1}]}>
                         <Text>最近24小时</Text>
-                        {this._renderDataMap(this.state.todayDataMap)}
+                        {this._renderDataMap(this.state.last24Data)}
                     </View>
                     {/*当天的统计*/}
                     <View style={[commonStyles.flexColumn, {flex: 1}]}>
                         <Text>当天数据</Text>
+                        {this._renderDataMap(this.state.todayDataMap)}
                     </View>
                 </View>
             </View>
@@ -147,152 +155,4 @@ export default class StaticsView extends Component<any, any> {
 }
 
 
-const styles = StyleSheet.create({
-    scrollContainer: {
-        flex: 1,
-        display: "flex",
-        flexDirection: "column"
-    },
-    staticsContainer: {
-        height: 200,
-    },
-    timelineContainer: {
-        backgroundColor: '#dddddd',
-        flex: 1,
-    },
-    timelineItemContainer: {
-        marginBottom: 12,
-        marginHorizontal: 12,
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: "#ffffff",
-        padding: 12,
-        borderRadius: 12
-    },
-    timelineItemContent: {
-        display: "flex",
-        flexDirection: "column",
-    },
-    timelineItemType: {
-        width: 60,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    container: {
-        display: "flex",
-        flexDirection: "column",
-        height: "100%"
-    },
-    btnCreate: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "absolute",
-        right: 48,
-        bottom: 128,
-        backgroundColor: "#ff0000",
-        width: 80,
-        height: 80,
-        borderRadius: 40
-    },
-    addModalContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-        backgroundColor: "#00000033"
-    },
-    addContentContainer: {
-        width: "80%",
-        minHeight: 400,
-        backgroundColor: "#ffffff",
-        shadowColor: "#bbbbbb",
-        borderRadius: 12,
-        padding: 12
-    },
-    modalFooter: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center"
-    },
-    btnModalFooter: {
-        height: 48,
-        flex: 1,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    line: {
-        height: 1,
-        backgroundColor: "#bbbbbb"
-    },
-    emptyViewContainer: {
-        display: "flex",
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        height: 100
-    },
-    rowBack: {
-        alignItems: 'center',
-        backgroundColor: '#dddddd',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingLeft: 15,
-    },
-    photoLeftBtn: {
-        alignItems: 'center',
-        bottom: 0,
-        left: 0,
-        top: 0,
-        justifyContent: 'center',
-        position: 'absolute',
-        width: 75,
-    },
-    backRightBtn: {
-        alignItems: 'center',
-        bottom: 0,
-        justifyContent: 'center',
-        position: 'absolute',
-        top: 0,
-        width: 75,
-    },
-    backRightBtnLeft: {
-        right: 75,
-    },
-    backRightBtnRight: {
-        right: 0,
-    },
-    backTextWhite: {
-        color: '#ffffff',
-    },
-    rowFront: {
-        alignItems: 'center',
-        backgroundColor: '#CCC',
-        borderBottomColor: 'black',
-        borderBottomWidth: 1,
-        justifyContent: 'center',
-        height: 50,
-    },
-    exportActionsContainer: {
-        position: "absolute",
-        bottom: 180,
-        right: 48,
-        width: 60,
-        height: 148,
-        display: "flex",
-        flexDirection: "column"
-    },
-    btnExportAction: {
-        width: 60,
-        color: "white",
-        height: 60,
-        borderRadius: 30,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: "blue"
-    }
-})
+const styles = StyleSheet.create({})

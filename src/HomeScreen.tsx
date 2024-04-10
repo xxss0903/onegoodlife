@@ -58,6 +58,7 @@ echarts.use([SVGRenderer, LineChart, BarChart, TitleComponent,
 export default class HomeScreen extends React.Component<any, any> {
     private currentAddType = null; // 当前的添加类型
     private floatingActionRef = null; // 悬浮按钮引用
+    private staticsViewRef = null; // 统计数据view
     private cloneType = null; // 临时保存type的数据
     private oldMilkData = null // 已经有的最新的喝牛奶的数据，用来保存默认数据
     private milkDoseList = [] // 牛奶的最新3个量数据列表
@@ -591,6 +592,8 @@ export default class HomeScreen extends React.Component<any, any> {
         let dataList = this._insertItemByResortTime(this.state.dataList, data)
         this.setState({
             dataList: dataList
+        }, () => {
+            this._refreshStaticsCharts()
         })
         // this.state.dataList.unshift(this.cloneType)
         this._refreshLocalData()
@@ -706,7 +709,8 @@ export default class HomeScreen extends React.Component<any, any> {
     // 添加拉屎
     _addPoop(item) {
         this.currentAddType = item
-        this.setShowModal(true)
+        // this.setShowModal(true)
+        this.newlifeModalRef.addNewType(item)
     }
 
     // 添加撒尿
@@ -727,7 +731,6 @@ export default class HomeScreen extends React.Component<any, any> {
                 tempDataList.push(data)
             }
         }
-        logi("last 24 hour data ", tempDataList)
         return JSON.parse(JSON.stringify(tempDataList))
     }
 
@@ -742,7 +745,6 @@ export default class HomeScreen extends React.Component<any, any> {
                 tempDataList.push(data)
             }
         }
-        logi("last day data ", tempDataList)
         return JSON.parse(JSON.stringify(tempDataList))
     }
 
@@ -1102,10 +1104,11 @@ export default class HomeScreen extends React.Component<any, any> {
 
     // 刷新统计数据图标
     _refreshStaticsCharts() {
-        setTimeout(() => {
-            this._refreshLast24HourCharts()
-            this._refreshTodayCharts()
-        }, 0)
+        // setTimeout(() => {
+        //     this._refreshLast24HourCharts()
+        //     this._refreshTodayCharts()
+        // }, 0)
+        this.staticsViewRef.refreshData()
     }
 
     // 统计数据
@@ -1147,6 +1150,7 @@ export default class HomeScreen extends React.Component<any, any> {
                         <View style={[styles.staticsContainer, {height: screenW * 0.6}]}>
                             {/*{this._renderSvgCharts()}*/}
                             <StaticsView
+                                ref={ref => this.staticsViewRef = ref}
                                 dataList={this.state.dataList}
                             />
                         </View>
