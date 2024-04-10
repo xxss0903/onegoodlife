@@ -5,6 +5,7 @@ export const milkTags = ["纯奶粉", "母乳", "混合喂养"] // 牛奶类型
 export const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣", "稀便", "干便", "正常"] // 拉屎类型
 export const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
 export const jaundiceTags = ["正常", "生理性", "病理性"] // 黄疸类型
+export const spitMilkTags = ["少量", "中量", "多量"] // 吐奶类型
 
 
 // 内置的常用类型，不可更改和删除
@@ -129,6 +130,21 @@ export const jaundiceTemplateData = {
         header: 0, // 头的黄疸
         chest: 0 // 胸的黄疸
     }
+}
+// 吐奶模板
+export const spitMilkTemplateData = {
+    name: mainData.typeMapList[4].name,
+    typeId: mainData.typeMapList[4].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: spitMilkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: [spitMilkTags[0]], // 选中的类型
+    dose: 0, // 剂量，母乳多少毫升
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
 }
 // 其他记录模板，比如其他的一些记录
 export const otherTemplateData = {

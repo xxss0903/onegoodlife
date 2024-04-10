@@ -1,6 +1,13 @@
 import React, {Component} from "react";
 import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import {jaundiceTemplateData, mainData, milkTemplateData, peeTemplateData, poopTemplateData} from "../mainData";
+import {
+    jaundiceTemplateData,
+    mainData,
+    milkTemplateData,
+    peeTemplateData,
+    poopTemplateData,
+    spitMilkTemplateData
+} from "../mainData";
 import moment from "moment";
 import {logi} from "../utils/logutil";
 import DatePicker from "react-native-date-picker";
@@ -10,6 +17,7 @@ import {commonStyles} from "../commonStyle";
 export default class AddNewLifeModal extends Component<any, any> {
     private cloneType = null;
     private oldMilkData = null;
+    private oldSpitMilkData = null;
     private oldPoopData = null;
     private oldPeeData = null;
     private oldJaundiceData = null;
@@ -408,6 +416,60 @@ export default class AddNewLifeModal extends Component<any, any> {
         )
     }
 
+    _renderSpitMilkContent(type){
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            if (this.oldSpitMilkData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldSpitMilkData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(spitMilkTemplateData))
+                this.cloneType.name = this.currentAddType.name
+            }
+            this.cloneType.time = moment().valueOf()
+            this.cloneType.key = moment().valueOf()
+        }
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index", tagIndex + " # " + tag)
+            // 单选
+            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
+            this.cloneType.selectedTags.push(tag)
+            this.forceUpdate()
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View>
+                    {tagView}
+                </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
     _renderContentView(){
         let contentView = null;
         // 根据类型id渲染不同的内容界面
@@ -426,6 +488,9 @@ export default class AddNewLifeModal extends Component<any, any> {
                 break;
             case mainData.typeMapList[5].id:
                 contentView = this._renderOtherContent(this.currentAddType)
+                break;
+            case mainData.typeMapList[4].id:
+                contentView = this._renderSpitMilkContent(this.currentAddType)
                 break;
             default:
                 contentView = this._renderOtherContent(this.currentAddType)
