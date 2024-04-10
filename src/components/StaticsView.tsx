@@ -103,7 +103,6 @@ export default class StaticsView extends Component<any, any> {
                 tempDataList.push(data)
             }
         }
-        logi("last 24 hour data ", tempDataList)
         return JSON.parse(JSON.stringify(tempDataList))
     }
 

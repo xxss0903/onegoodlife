@@ -889,8 +889,8 @@ export default class HomeScreen extends React.Component<any, any> {
 
     deleteRow = (rowMap, rowKey) => {
         this.closeRow(rowMap, rowKey)
-        logi("delete index ")
         let index = this.state.dataList.findIndex(value => value.key === rowKey)
+        logi("delete index ", index)
         // 删除数据
         let dataList = this.state.dataList
         dataList.splice(index, 1)
@@ -921,8 +921,6 @@ export default class HomeScreen extends React.Component<any, any> {
                 }
                 dataList.push(newData)
             }
-
-
         } else {
             dataList = [newData]
         }
