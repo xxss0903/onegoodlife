@@ -839,6 +839,8 @@ export default class HomeScreen extends React.Component<any, any> {
                     {item.dose ? <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text> : null}
                     {item.typeId === commonTypeList[3].id ? <Text>    头：{item.jaundiceValue.header}</Text> : null}
                     {item.typeId === commonTypeList[3].id ? <Text>胸口：{item.jaundiceValue.chest}</Text> : null}
+                    {item.typeId === commonTypeList[6].id ? <Text>身高：{item.height} cm</Text> : null}
+                    {item.typeId === commonTypeList[7].id ? <Text>体重：{item.weight} kg</Text> : null}
                     {tagView ?
                         <View style={{display: "flex", flexDirection: "row"}}>
                             {tagView}

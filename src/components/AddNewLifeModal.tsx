@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {
+    heightTemplateData,
     jaundiceTemplateData,
     mainData,
     milkTemplateData,
     peeTemplateData,
     poopTemplateData,
-    spitMilkTemplateData
+    spitMilkTemplateData, weightTemplateData
 } from "../mainData";
 import moment from "moment";
 import {logi} from "../utils/logutil";
@@ -17,6 +18,8 @@ import {commonStyles} from "../commonStyle";
 export default class AddNewLifeModal extends Component<any, any> {
     private cloneType = null;
     private oldMilkData = null;
+    private oldHeightData = null;
+    private oldWeightData = null;
     private oldSpitMilkData = null;
     private oldPoopData = null;
     private oldPeeData = null;
@@ -158,6 +161,162 @@ export default class AddNewLifeModal extends Component<any, any> {
                 </View>
                 <View>
                     {commonDoseTagView}
+                </View>
+                <View>
+                    {tagView}
+                </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
+    _renderWeightContent(type){
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            if (this.oldWeightData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldWeightData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(weightTemplateData))
+                this.cloneType.name = this.currentAddType.name
+            }
+            this.cloneType.time = moment().valueOf()
+            this.cloneType.key = moment().valueOf()
+        }
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index", tagIndex + " # " + tag)
+            // 单选
+            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
+            this.cloneType.selectedTags.push(tag)
+            this.forceUpdate()
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表
+        let commonDoseTagView = this._renderTagViewList(this.milkDoseList, [], (dose) => {
+            logi("select milk dose", dose)
+            this.cloneType.dose = dose
+            this.forceUpdate()
+        })
+        logi("formattime ", formatTime)
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View style={[{height: 40, marginTop: 12}, commonStyles.flexRow, commonStyles.center]}>
+                    <Text>体重：</Text>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        value={this.cloneType.weight.toString()}
+                        onChangeText={(text) => {
+                            this.cloneType.weight = text
+                            this.forceUpdate()
+                        }}
+                        keyboardType={'number-pad'}
+                        placeholderTextColor={"#bbbbbb"}
+                        placeholder={"请输入喝奶量"}/>
+                </View>
+                <View>
+                    {commonDoseTagView}
+                </View>
+                <View>
+                    {tagView}
+                </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
+    _renderHeightContent(type){
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            if (this.oldHeightData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldHeightData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(heightTemplateData))
+                this.cloneType.name = this.currentAddType.name
+            }
+            this.cloneType.time = moment().valueOf()
+            this.cloneType.key = moment().valueOf()
+        }
+        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
+            logi("tag index", tagIndex + " # " + tag)
+            // 单选
+            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
+            this.cloneType.selectedTags.push(tag)
+            this.forceUpdate()
+        })
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
+                <View style={[{height: 40, marginTop: 12}, commonStyles.flexRow, commonStyles.center]}>
+                    <Text>身高：</Text>
+                    <TextInput
+                        style={[{
+                            textAlign: 'left',
+                            fontSize: 16,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        value={this.cloneType.height.toString()}
+                        onChangeText={(text) => {
+                            this.cloneType.height = text
+                            this.forceUpdate()
+                        }}
+                        keyboardType={'number-pad'}
+                        placeholderTextColor={"#bbbbbb"}
+                        placeholder={"请输入喝奶量"}/>
                 </View>
                 <View>
                     {tagView}
@@ -491,6 +650,12 @@ export default class AddNewLifeModal extends Component<any, any> {
                 break;
             case mainData.typeMapList[4].id:
                 contentView = this._renderSpitMilkContent(this.currentAddType)
+                break;
+            case mainData.typeMapList[6].id:
+                contentView = this._renderHeightContent(this.currentAddType)
+                break;
+            case mainData.typeMapList[7].id:
+                contentView = this._renderWeightContent(this.currentAddType)
                 break;
             default:
                 contentView = this._renderOtherContent(this.currentAddType)

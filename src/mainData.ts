@@ -6,6 +6,8 @@ export const poopTags = ["黄色", "褐色", "胎便", "墨绿色", "奶瓣", "�
 export const peeTags = ["少量", "中量", "多量", "黄色", "白色"] // 撒尿类型
 export const jaundiceTags = ["正常", "生理性", "病理性"] // 黄疸类型
 export const spitMilkTags = ["少量", "中量", "多量"] // 吐奶类型
+export const heightTags = ["正常", "偏高", "偏矮"] // 身高类型
+export const weightTags = ["正常", "偏重", "偏轻"] // 体重类型
 
 
 // 内置的常用类型，不可更改和删除
@@ -155,6 +157,38 @@ export const otherTemplateData = {
     tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
     selectedTags: [], // 选中的类型
     dose: 0, // 剂量，母乳多少毫升
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
+}
+// 身高模板
+export const heightTemplateData = {
+    name: mainData.typeMapList[6].name,
+    typeId: mainData.typeMapList[6].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: heightTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: [heightTags[0]], // 选中的类型
+    height: 0, // 身高
+    weight: 0, // 体重
+    pictures: [{
+        time: moment().valueOf(), // 时间戳
+        name: "", // 名称：使用类型和时间戳来标记
+        url: "" // 图片在地址/远程地址
+    }], // 图片
+}
+// 体重模板
+export const weightTemplateData = {
+    name: mainData.typeMapList[7].name,
+    typeId: mainData.typeMapList[7].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+    time: moment().valueOf(), // 时间戳
+    remark: "", // 备注
+    tags: weightTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
+    selectedTags: [weightTags[0]], // 选中的类型
+    height: 0, // 身高
+    weight: 0, // 体重
     pictures: [{
         time: moment().valueOf(), // 时间戳
         name: "", // 名称：使用类型和时间戳来标记
