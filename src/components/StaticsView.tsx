@@ -38,11 +38,8 @@ export default class StaticsView extends Component<any, any> {
                 if (data.name.indexOf("奶") >= 0) {
                     obj.dose = data.dose
                 }
-                logi("set milk dose ", obj)
                 dataMap.set(data.name, obj)
             }
-            logi("add datamap", data)
-            logi("add datamap arra", Array.from(dataMap.values()))
         }
         let sortedMap = new Map()
         mainData.typeMapList.forEach(value => {

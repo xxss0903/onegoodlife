@@ -23,7 +23,6 @@ import {showToast} from "./utils/toastUtil";
 import {DeviceStorage} from "./utils/deviceStorage";
 import {AndroidPermissions} from "./utils/permissionUtils";
 import {SwipeListView} from "react-native-swipe-list-view";
-import {Share} from "react-native/Libraries/Share/Share";
 import {BarChart, LineChart} from 'echarts/charts';
 import * as echarts from 'echarts/core';
 import SvgChart, {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
@@ -42,6 +41,11 @@ import {
 import AddNewLifeModal from "./components/AddNewLifeModal";
 import StaticsView from "./components/StaticsView";
 import EventBus from "./utils/eventBus";
+import Share from 'react-native-share';
+import RNFS from "react-native-fs"
+import {deleteData, getDataList, insertData, saveDataList} from "./utils/dbService";
+import App from "../App";
+import {decodeFuc, encodeFuc} from "./utils/base64";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
@@ -91,18 +95,39 @@ export default class HomeScreen extends React.Component<any, any> {
         this._initListeners()
         this._initEcharts()
         AndroidPermissions.checkStoragePermissions(() => {
-            this._initLocalData()
+            // this._initLocalData()
+            this._initDBData()
         }, () => {
             // 没有存储权限
         })
+    }
+
+    // 测试数据库数据写入
+    async _testDB() {
+        try {
+            // 测试将数据插入到本地数据库
+            // await saveDataList(App.db, this.state.dataList)
+
+            let data = JSON.parse(JSON.stringify(milkTemplateData))
+            logi("test db insert data ", data)
+            // // 插入单条数据
+            let res = await insertData(App.db, data, encodeFuc(JSON.stringify(data)))
+            // logi("insert res ", res)
+            // let localData = await getDataList(App.db)
+            // logi("db data ", localData)
+
+
+
+        } catch (e) {
+            logi("insert data err", e)
+        }
+
     }
 
     _initLocalData(){
         // 获取本地的数据
         DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA)
             .then((data) => {
-                logi("get data ", typeof data)
-                logi("get my datalist ", data)
                 if (data) {
                     this._refreshDataList(data)
                     this._refreshStaticsCharts()
@@ -111,6 +136,29 @@ export default class HomeScreen extends React.Component<any, any> {
             .catch(error => {
                 logi("get data error ", error)
             })
+    }
+
+    // 获取数据库数据
+    async _initDBData() {
+        await this._testDB()
+
+        let localData = await getDataList(App.db)
+        // 先删除所有数据
+        logi("get db data ", localData)
+        if (localData && localData.length > 0) {
+            let dataList = []
+            // 获取列表数据
+            for (const value of localData) {
+                let data = decodeFuc(value.json)
+                let dataObj = JSON.parse(data)
+                dataList.push(dataObj)
+                // await deleteData(App.db, value.rowid)
+            }
+            logi("data list ", dataList)
+            this.setState({
+                dataList: dataList
+            })
+        }
     }
 
     _initListeners(){
@@ -946,10 +994,19 @@ export default class HomeScreen extends React.Component<any, any> {
     }
 
     _exportData() {
+        // 保存json到本地文件
+
+
         // 将数据保存为文件，然后再分享
         Share.open({
-            title: "分享文件"
-        }, {})
+            title: "data"
+        })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                err && console.log(err);
+            });
     }
 
     _renderExportAction() {
@@ -989,7 +1046,6 @@ export default class HomeScreen extends React.Component<any, any> {
                     if (data.name.indexOf("奶") >= 0) {
                         obj.dose = data.dose
                     }
-                    logi("set milk dose ", obj)
                     dataMap.set(data.name, obj)
                 }
             }
@@ -1029,7 +1085,6 @@ export default class HomeScreen extends React.Component<any, any> {
                                 logi("label formater", d.data)
                                 // 牛奶显示总量
                                 if (d.data.name.indexOf("奶") >= 0) {
-                                    logi("set milk dose 2 ", d.data.dose)
                                     return d.data.dose + "ml"
                                 }
                                 return ""
@@ -1064,7 +1119,6 @@ export default class HomeScreen extends React.Component<any, any> {
                     if (data.name.indexOf("奶") >= 0) {
                         obj.dose = data.dose
                     }
-                    logi("set milk dose ", obj)
                     dataMap.set(data.name, obj)
                 }
             }
@@ -1105,7 +1159,6 @@ export default class HomeScreen extends React.Component<any, any> {
                                 logi("label formater", d.data)
                                 // 牛奶显示总量
                                 if (d.data.name.indexOf("奶") >= 0) {
-                                    logi("set milk dose 2 ", d.data.dose)
                                     return d.data.dose + "ml"
                                 }
                                 return ""
@@ -1236,7 +1289,7 @@ export default class HomeScreen extends React.Component<any, any> {
                         ref={ref => this.newlifeModalRef = ref}
                     />
                     {this._renderDatetimePicker()}
-                    {/*{this._renderExportAction()}*/}
+                    {this._renderExportAction()}
                 </View>
             </SafeAreaView>
         )

@@ -23,6 +23,7 @@ import {NativeBaseProvider} from "native-base";
 import TypeMangeScreen from "./src/TypeMangeScreen";
 import NewLifeDetailScreen from "./src/NewLifeDetailScreen";
 import AllTypeScreen from "./src/AllTypeScreen";
+import {createLifeRecordTable, deleteTable, getDataList, getDBConnection, saveDataList} from "./src/utils/dbService";
 
 const Stack = createNativeStackNavigator()
 const BottomTab = createBottomTabNavigator()
@@ -112,6 +113,39 @@ function MainStack() {
 
 
 export default class App extends React.Component<any, any> {
+
+    static db = null
+
+    constructor(props) {
+        super(props);
+        this._initDb()
+    }
+
+    // 初始化数据库，首先连接本地数据库，然后如果没有表则创建表
+    async _initDb() {
+        try {
+            // 首先创建数据库链接
+            App.db = await getDBConnection()
+            logi("connect db ", App.db)
+            // await deleteTable(App.db)
+            await createLifeRecordTable(App.db)
+            // const localDataList = await getDataList(db)
+            // logi("get localdata list ", localDataList)
+            // let dataList = [{id: 1, typeId: 1, name: "喝奶"}]
+            // if (localDataList && localDataList.length > 0) {
+            //     logi("get datalist result ", localDataList)
+            // } else {
+            //     logi("insert data to table", dataList)
+            //     // 存入本地数据库
+            //     await saveDataList(db, dataList)
+            //
+            //     const localDataList2 = await getDataList(db)
+            //     logi("get localdata list 2", localDataList2)
+            // }
+        } catch (e) {
+            logi("init db error ", e)
+        }
+    }
 
     render() {
         return (

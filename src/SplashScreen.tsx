@@ -1,6 +1,7 @@
 import React from "react";
 import {View} from "react-native";
 import {DeviceStorage} from "./utils/deviceStorage";
+var SQLite = require('react-native-sqlite-storage')
 
 
 export default class SplashScreen extends React.Component<any, any>{
@@ -21,5 +22,10 @@ export default class SplashScreen extends React.Component<any, any>{
 
     _initData() {
         DeviceStorage.getMainData()
+        SQLite.openDatabase({name: 'my.db', location: 'default'}, () => {
+
+        }, () => {
+
+        });
     }
 }
