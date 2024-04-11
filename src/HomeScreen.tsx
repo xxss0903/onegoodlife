@@ -43,7 +43,7 @@ import StaticsView from "./components/StaticsView";
 import EventBus from "./utils/eventBus";
 import Share from 'react-native-share';
 import RNFS from "react-native-fs"
-import {deleteData, getDataList, insertData, saveDataList} from "./utils/dbService";
+import {deleteData, deleteDataByTime, getDataList, insertData, saveDataList} from "./utils/dbService";
 import App from "../App";
 import {decodeFuc, encodeFuc} from "./utils/base64";
 
@@ -140,24 +140,24 @@ export default class HomeScreen extends React.Component<any, any> {
 
     // 获取数据库数据
     async _initDBData() {
-        await this._testDB()
-
-        let localData = await getDataList(App.db)
-        // 先删除所有数据
-        logi("get db data ", localData)
-        if (localData && localData.length > 0) {
-            let dataList = []
-            // 获取列表数据
-            for (const value of localData) {
-                let data = decodeFuc(value.json)
-                let dataObj = JSON.parse(data)
-                dataList.push(dataObj)
-                // await deleteData(App.db, value.rowid)
+        try {
+            let localData = await getDataList(App.db)
+            logi("get db data ", localData)
+            if (localData && localData.length > 0) {
+                let dataList = []
+                // 获取列表数据
+                for (const value of localData) {
+                    let data = decodeFuc(value.json)
+                    let dataObj = JSON.parse(data)
+                    dataList.push(dataObj)
+                }
+                // 更新界面数据
+                this.setState({
+                    dataList: dataList
+                })
             }
-            logi("data list ", dataList)
-            this.setState({
-                dataList: dataList
-            })
+        } catch (e) {
+            logi("get data error", e)
         }
     }
 
@@ -656,6 +656,7 @@ export default class HomeScreen extends React.Component<any, any> {
     }
 
     _insertNewlifeLineImpl(data){
+        this._insertItemToDB(data)
         // 插入到最新的数据，这里还是根据时间进行设置
         let dataList = this._insertItemByResortTime(this.state.dataList, data)
         this.setState({
@@ -953,7 +954,7 @@ export default class HomeScreen extends React.Component<any, any> {
         }
     };
 
-    deleteRow = (rowMap, rowKey) => {
+    deleteRow = (rowMap, rowKey, data) => {
         this.closeRow(rowMap, rowKey)
         let index = this.state.dataList.findIndex(value => value.key === rowKey)
         logi("delete index ", index)
@@ -964,8 +965,15 @@ export default class HomeScreen extends React.Component<any, any> {
             dataList: dataList
         })
         this._refreshLocalData()
+        // 数据库删除数据
         this._refreshStaticsCharts()
+        deleteDataByTime(App.db, data.time)
     };
+
+    // 插入数据到数据库
+    _insertItemToDB(data){
+        insertData(App.db, data,  encodeFuc(JSON.stringify(data)))
+    }
 
     // 重新排序记录，根据时间插入
     _insertItemByResortTime(dataList, newData) {
@@ -1254,7 +1262,7 @@ export default class HomeScreen extends React.Component<any, any> {
                                             <TouchableOpacity
                                                 style={[styles.backRightBtn, styles.backRightBtnRight]}
                                                 onPress={() => {
-                                                    this.deleteRow(rowMap, data.item.key)
+                                                    this.deleteRow(rowMap, data.item.key, data.item)
                                                 }}
                                             >
                                                 <Text style={styles.backTextWhite}>删除</Text>

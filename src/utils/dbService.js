@@ -54,8 +54,14 @@ export const saveDataList = async (db, dataList) => {
 };
 
 // 删除数据
-export const deleteData = async (db, id) => {
+export const deleteDataByRowId = async (db, id) => {
     const deleteQuery = `DELETE from ${lifeRecordTableName} where rowid = ${id}`;
+    await db.executeSql(deleteQuery);
+};
+
+// 根据时间删除数据
+export const deleteDataByTime = async (db, time) => {
+    const deleteQuery = `DELETE from ${lifeRecordTableName} where time = ${time}`;
     await db.executeSql(deleteQuery);
 };
 
