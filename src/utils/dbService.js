@@ -37,9 +37,25 @@ export const getDataList = async (db) => {
     }
 };
 
+export const getDataListOrderByTime = async (db) => {
+    try {
+        const dataList = [];
+        const results = await db.executeSql(`SELECT rowid, name, json, time FROM ${lifeRecordTableName} order by time desc`);
+        results.forEach(result => {
+            for (let index = 0; index < result.rows.length; index++) {
+                dataList.push(result.rows.item(index))
+            }
+        });
+        return dataList;
+    } catch (error) {
+        logi(error);
+        throw Error('Failed to get todoItems !!!');
+    }
+};
+
+
 // 插入单条数据
 export const insertData = async (db, data, dataStr) => {
-    // const insertQuery = `INSERT INTO ${lifeRecordTableName} (name, time, json) values ("${data.name}", ${data.time}, "${JSON.stringify(data)}")`
     const insertQuery = `INSERT INTO ${lifeRecordTableName} (name, time, json) values ("${data.name}", ${data.time}, "${dataStr}")`
     return db.executeSql(insertQuery)
 }

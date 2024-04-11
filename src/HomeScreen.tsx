@@ -43,7 +43,14 @@ import StaticsView from "./components/StaticsView";
 import EventBus from "./utils/eventBus";
 import Share from 'react-native-share';
 import RNFS from "react-native-fs"
-import {deleteData, deleteDataByTime, getDataList, insertData, saveDataList} from "./utils/dbService";
+import {
+    deleteData,
+    deleteDataByTime,
+    getDataList,
+    getDataListOrderByTime,
+    insertData,
+    saveDataList
+} from "./utils/dbService";
 import App from "../App";
 import {decodeFuc, encodeFuc} from "./utils/base64";
 
@@ -102,46 +109,10 @@ export default class HomeScreen extends React.Component<any, any> {
         })
     }
 
-    // 测试数据库数据写入
-    async _testDB() {
-        try {
-            // 测试将数据插入到本地数据库
-            // await saveDataList(App.db, this.state.dataList)
-
-            let data = JSON.parse(JSON.stringify(milkTemplateData))
-            logi("test db insert data ", data)
-            // // 插入单条数据
-            let res = await insertData(App.db, data, encodeFuc(JSON.stringify(data)))
-            // logi("insert res ", res)
-            // let localData = await getDataList(App.db)
-            // logi("db data ", localData)
-
-
-
-        } catch (e) {
-            logi("insert data err", e)
-        }
-
-    }
-
-    _initLocalData(){
-        // 获取本地的数据
-        DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA)
-            .then((data) => {
-                if (data) {
-                    this._refreshDataList(data)
-                    this._refreshStaticsCharts()
-                }
-            })
-            .catch(error => {
-                logi("get data error ", error)
-            })
-    }
-
     // 获取数据库数据
     async _initDBData() {
         try {
-            let localData = await getDataList(App.db)
+            let localData = await getDataListOrderByTime(App.db)
             logi("get db data ", localData)
             if (localData && localData.length > 0) {
                 let dataList = []
@@ -971,8 +942,8 @@ export default class HomeScreen extends React.Component<any, any> {
     };
 
     // 插入数据到数据库
-    _insertItemToDB(data){
-        insertData(App.db, data,  encodeFuc(JSON.stringify(data)))
+    async _insertItemToDB(data){
+        await insertData(App.db, data,  encodeFuc(JSON.stringify(data)))
     }
 
     // 重新排序记录，根据时间插入
