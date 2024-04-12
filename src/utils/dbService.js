@@ -5,6 +5,7 @@ enablePromise(true)
 const lifeRecordTableName = "liferecord" // 记录生活的表
 
 
+// android存储位置在data/data/com.onegoodlife/databases/yihao.db
 export const getDBConnection = async () => {
     return openDatabase({name: 'yihao.db', location: 'default'});
 }

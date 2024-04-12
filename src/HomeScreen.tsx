@@ -974,8 +974,6 @@ export default class HomeScreen extends React.Component<any, any> {
 
     _exportData() {
         // 保存json到本地文件
-
-
         // 将数据保存为文件，然后再分享
         Share.open({
             title: "data"
@@ -1268,7 +1266,7 @@ export default class HomeScreen extends React.Component<any, any> {
                         ref={ref => this.newlifeModalRef = ref}
                     />
                     {this._renderDatetimePicker()}
-                    {this._renderExportAction()}
+                    {/*{this._renderExportAction()}*/}
                 </View>
             </SafeAreaView>
         )
