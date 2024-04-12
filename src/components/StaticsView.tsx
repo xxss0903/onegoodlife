@@ -79,7 +79,12 @@ export default class StaticsView extends Component<any, any> {
         for (let i = 0; i < dataList.length; i++) {
             let data = dataList[i]
             if (data.time > todayMoment) {
-                tempDataList.push(data)
+                // 常用的数据
+                mainData.commonActions.forEach(value => {
+                    if (value.id === data.typeId) {
+                        tempDataList.push(data)
+                    }
+                })
             }
         }
         return JSON.parse(JSON.stringify(tempDataList))
@@ -94,22 +99,25 @@ export default class StaticsView extends Component<any, any> {
         for (let i = 0; i < dataList.length; i++) {
             let data = dataList[i]
             if (data.time > last24HourMoment) {
-                tempDataList.push(data)
+                // 常用的数据
+                mainData.commonActions.forEach(value => {
+                    if (value.id === data.typeId) {
+                        tempDataList.push(data)
+                    }
+                })
             }
         }
         return JSON.parse(JSON.stringify(tempDataList))
     }
 
     _renderDataMap(dataMap) {
-        for (const key in dataMap) {
-            let data = dataMap[key]
-
-        }
         let keyArray = Array.from(dataMap.keys())
         let mapView = keyArray.map(key => {
+            let data = dataMap.get(key)
             return (
-                <View>
-                    <Text>{key}:{dataMap.get(key).value}次</Text>
+                <View style={commonStyles.flexRow}>
+                    <Text>{key}:{data.value}次</Text>
+                    {data.dose > 0 ? <Text>，共{data.dose}ml</Text> : null}
                 </View>
             )
         })

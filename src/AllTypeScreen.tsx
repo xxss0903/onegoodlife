@@ -10,6 +10,7 @@ import {DeviceStorage} from "./utils/deviceStorage";
 import {mainData} from "./mainData";
 import AddNewLifeModal from "./components/AddNewLifeModal";
 import EventBus from "./utils/eventBus";
+import {screenW} from "./utils/until";
 
 // 存储本地数据的key
 const KEY_LOCAL_DATA = "key_local_key"
@@ -35,7 +36,7 @@ export default class AllTypeScreen extends React.Component<any, any> {
                     // 添加类型
                     this._addNewLifeline(value)
                 }}
-                style={[{width: "30%", height: 60, marginBottom: 12, backgroundColor: "#ff0000", marginHorizontal: 6}, commonStyles.center]}>
+                style={[{width: (screenW - 60)/3, height: 60, marginBottom: 12, backgroundColor: "#ff0000", marginHorizontal: 6}, commonStyles.center]}>
                 <Text>{value.name}</Text>
             </TouchableOpacity>
         )

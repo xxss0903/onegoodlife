@@ -46,7 +46,7 @@ export const commonTypeList = [
 // 全局数据，包括用户信息等需要全局使用的
 export const mainData = {
     typeMapList: commonTypeList, // 类型列表，可以用来保存用户自己的类型数据
-    commonActions: [commonTypeList[0], commonTypeList[1], commonTypeList[2], commonTypeList[5]], // 常用类型
+    commonActions: [commonTypeList[0], commonTypeList[1], commonTypeList[2]], // 常用类型
     userInfo: {
         userName: "", // 登录用户名
         userId: "", // 用户ID
