@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {
+    diaperTemplateData,
     heightTemplateData,
     jaundiceTemplateData,
     mainData,
@@ -13,6 +14,7 @@ import moment from "moment";
 import {logi} from "../utils/logutil";
 import DatePicker from "react-native-date-picker";
 import {commonStyles} from "../commonStyle";
+import {renderTagList} from "./commonViews";
 
 // 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
@@ -20,6 +22,7 @@ export default class AddNewLifeModal extends Component<any, any> {
     private oldMilkData = null;
     private oldHeightData = null;
     private oldWeightData = null;
+    private oldDiaperData = null;
     private oldSpitMilkData = null;
     private oldPoopData = null;
     private oldPeeData = null;
@@ -57,41 +60,6 @@ export default class AddNewLifeModal extends Component<any, any> {
         })
     }
 
-    _renderTagViewList(tags, selectedTags, callback, isView = false) {
-        let tagView = tags.map((value, index) => {
-            let selected = false
-            if (isView) {
-                selected = true
-            } else {
-                if (selectedTags && selectedTags.length > 0) {
-                    selected = selectedTags.indexOf(value) >= 0
-                }
-            }
-            let bgColor = selected ? "#ff0000" : "#ffffff"
-            return (
-                <TouchableOpacity
-                    disabled={!callback}
-                    onPress={() => {
-                        if (callback) {
-                            callback(value)
-                        }
-                    }}
-                    key={value}
-                    style={{padding: 8, backgroundColor: bgColor, borderRadius: 12, marginRight: 12, marginTop: 12}}>
-                    <Text style={{color: "#333333"}}>{
-                        value
-                    }</Text>
-                </TouchableOpacity>
-            )
-        })
-
-        return (
-            <View style={{display: "flex", flexDirection: "row", flexWrap: "wrap"}}>
-                {tagView}
-            </View>
-        )
-    }
-
     _toggleDatetimePicker(open){
         this.setState({
             datepickerOpen: open
@@ -110,17 +78,12 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            // 单选
-            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
-            this.cloneType.selectedTags.push(tag)
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, false)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表
-        let commonDoseTagView = this._renderTagViewList(this.milkDoseList, [], (dose) => {
+        let commonDoseTagView = renderTagList(this.milkDoseList, [], (dose) => {
             logi("select milk dose", dose)
             this.cloneType.dose = dose
             this.forceUpdate()
@@ -199,22 +162,10 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            // 单选
-            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
-            this.cloneType.selectedTags.push(tag)
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, false)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
-        // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表
-        let commonDoseTagView = this._renderTagViewList(this.milkDoseList, [], (dose) => {
-            logi("select milk dose", dose)
-            this.cloneType.dose = dose
-            this.forceUpdate()
-        })
-        logi("formattime ", formatTime)
         return (
             <View>
                 <TouchableOpacity
@@ -243,8 +194,55 @@ export default class AddNewLifeModal extends Component<any, any> {
                         placeholder={"请输入喝奶量"}/>
                 </View>
                 <View>
-                    {commonDoseTagView}
+                    {tagView}
                 </View>
+                <View style={{minHeight: 80, marginTop: 12}}>
+                    <TextInput
+                        style={[{
+                            fontSize: 14,
+                            flex: 1,
+                            backgroundColor: "#eeeeee",
+                            color: "#333333",
+                        }]}
+                        multiline={true}
+                        value={this.cloneType.remark}
+                        onChangeText={(text) => {
+                            this.cloneType.remark = text
+                            this.forceUpdate()
+                        }}
+                        placeholderTextColor={"#bbbbbb"}
+                        keyboardType={'default'}
+                        placeholder={"请输入备注"}/>
+                </View>
+            </View>
+        );
+    }
+
+    // 尿布
+    _renderDiaper(type){
+        // 拷贝一个新的数据
+        if (!this.cloneType) {
+            if (this.oldDiaperData) {
+                this.cloneType = JSON.parse(JSON.stringify(this.oldDiaperData))
+            } else {
+                this.cloneType = JSON.parse(JSON.stringify(diaperTemplateData))
+                this.cloneType.name = this.currentAddType.name
+            }
+            this.cloneType.time = moment().valueOf()
+            this.cloneType.key = moment().valueOf()
+        }
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+            this.forceUpdate()
+        }, false, true)
+        let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        this._toggleDatetimePicker(true)
+                    }}>
+                    <Text>{formatTime}</Text>
+                </TouchableOpacity>
                 <View>
                     {tagView}
                 </View>
@@ -282,14 +280,9 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            // 单选
-            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
-            this.cloneType.selectedTags.push(tag)
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, false)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         return (
             <View>
@@ -355,18 +348,9 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            if (tagIndex >= 0) {
-                // 选中了要去掉
-                this.cloneType.selectedTags.splice(tagIndex, 1)
-            } else {
-                // 需要添加
-                this.cloneType.selectedTags.push(tag)
-            }
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, true)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         return (
             <View>
@@ -413,18 +397,9 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            if (tagIndex >= 0) {
-                // 选中了要去掉
-                this.cloneType.selectedTags.splice(tagIndex, 1)
-            } else {
-                // 需要添加
-                this.cloneType.selectedTags.push(tag)
-            }
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, false)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         logi("formattime ", formatTime)
         return (
@@ -472,18 +447,9 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            if (tagIndex >= 0) {
-                // 选中了要去掉
-                this.cloneType.selectedTags.splice(tagIndex, 1)
-            } else {
-                // 需要添加
-                this.cloneType.selectedTags.push(tag)
-            }
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, false)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         logi("formattime ", formatTime)
         return (
@@ -587,14 +553,9 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.cloneType.time = moment().valueOf()
             this.cloneType.key = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
-            let tagIndex = this.cloneType.selectedTags.indexOf(tag)
-            logi("tag index", tagIndex + " # " + tag)
-            // 单选
-            this.cloneType.selectedTags.splice(0, this.cloneType.selectedTags.length)
-            this.cloneType.selectedTags.push(tag)
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             this.forceUpdate()
-        })
+        }, false, false)
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         return (
             <View>
@@ -656,6 +617,9 @@ export default class AddNewLifeModal extends Component<any, any> {
                 break;
             case mainData.typeMapList[7].id:
                 contentView = this._renderWeightContent(this.currentAddType)
+                break;
+            case mainData.typeMapList[8].id:
+                contentView = this._renderDiaper(this.currentAddType)
                 break;
             default:
                 contentView = this._renderOtherContent(this.currentAddType)

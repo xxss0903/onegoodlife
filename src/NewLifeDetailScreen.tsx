@@ -5,6 +5,7 @@ import {formatTime, formatTimeToDate} from "./utils/until";
 import {logi} from "./utils/logutil";
 import DatePicker from "react-native-date-picker";
 import {commonStyles} from "./commonStyle";
+import {renderTagList} from "./components/commonViews";
 
 // 记录的记录详情
 export default class NewLifeDetailScreen extends React.Component<any, any> {
@@ -35,60 +36,6 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
 
     }
 
-    _renderTagViewList(tags, selectedTags, callback, isView = false, isMultiSelect = false) {
-        let tagView = tags.map((value, index) => {
-            let selected = false
-            if (isView) {
-                selected = true
-            } else {
-                if (selectedTags && selectedTags.length > 0) {
-                    selected = selectedTags.indexOf(value) >= 0
-                }
-            }
-            let bgColor = selected ? "#ff0000" : "#ffffff"
-            return (
-                <TouchableOpacity
-                    disabled={!callback}
-                    onPress={() => {
-                        let tagIndex = selectedTags.indexOf(value)
-                        logi("tag index", tagIndex + " # " + value)
-                        if (isMultiSelect) {
-                            // 多选
-                            if (tagIndex >= 0) {
-                                // 选中了要去掉
-                                selectedTags.splice(tagIndex, 1)
-                            } else {
-                                // 需要添加
-                                selectedTags.push(value)
-                            }
-                        } else {
-                            // 单选
-                            selectedTags.splice(0, selectedTags.length)
-                            selectedTags.push(value)
-                        }
-
-
-                        if (callback) {
-                            callback(value)
-                        }
-                    }}
-                    key={value}
-                    style={{padding: 8, backgroundColor: bgColor, borderRadius: 12, marginRight: 12, marginTop: 12}}>
-                    <Text style={{color: "#333333"}}>{
-                        value
-                    }</Text>
-                </TouchableOpacity>
-            )
-        })
-
-        return (
-            <View style={{display: "flex", flexDirection: "row", flexWrap: "wrap"}}>
-                {tagView}
-            </View>
-        )
-    }
-
-
     render() {
         const {time, remark, name, selectedTags, tags} = this.state.data
         return (
@@ -104,7 +51,7 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
                     </TouchableOpacity>
                     <View>
                         <Text>标签</Text>
-                        {selectedTags ? this._renderTagViewList(tags, selectedTags, (tag) => {
+                        {selectedTags ? renderTagList(tags, selectedTags, (tag) => {
                             this.forceUpdate()
                         }, false, name.indexOf("奶") < 0) : null}
                     </View>
@@ -157,7 +104,6 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
                     onConfirm={(date) => {
                         // 确认选择，将日期转为时间戳
                         this.state.data.time = moment(date).valueOf()
-                        this.state.data.key = this.state.data.time
                         let formatTime = moment(this.state.data.time).format("yyyy-MM-DD HH:mm")
                         logi("confirm date", date + " # " + formatTime)
                         this._toggleDatetimePicker(false)

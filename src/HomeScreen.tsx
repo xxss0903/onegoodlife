@@ -53,6 +53,7 @@ import {
 } from "./utils/dbService";
 import App from "../App";
 import {decodeFuc, encodeFuc} from "./utils/base64";
+import {renderTagList} from "./components/commonViews";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
@@ -113,7 +114,6 @@ export default class HomeScreen extends React.Component<any, any> {
     async _initDBData() {
         try {
             let localData = await getDataListOrderByTime(App.db)
-            logi("get db data ", localData)
             if (localData && localData.length > 0) {
                 let dataList = []
                 // 获取列表数据
@@ -273,42 +273,6 @@ export default class HomeScreen extends React.Component<any, any> {
         )
     }
 
-    // 标签列表，区分单选和多选
-    _renderTagViewList(tags, selectedTags, callback, isView = false) {
-        let tagView = tags.map((value, index) => {
-            let selected = false
-            if (isView) {
-                selected = true
-            } else {
-                if (selectedTags && selectedTags.length > 0) {
-                    selected = selectedTags.indexOf(value) >= 0
-                }
-            }
-            let bgColor = selected ? "#ff0000" : "#ffffff"
-            return (
-                <TouchableOpacity
-                    disabled={!callback}
-                    onPress={() => {
-                        if (callback) {
-                            callback(value)
-                        }
-                    }}
-                    key={value}
-                    style={{padding: 8, backgroundColor: bgColor, borderRadius: 12, marginRight: 12, marginTop: 12}}>
-                    <Text style={{color: "#333333"}}>{
-                        value
-                    }</Text>
-                </TouchableOpacity>
-            )
-        })
-
-        return (
-            <View style={{display: "flex", flexDirection: "row", flexWrap: "wrap"}}>
-                {tagView}
-            </View>
-        )
-    }
-
     // 添加喝牛奶
     _renderMilkContent(typeData) {
         // 拷贝一个新的数据
@@ -321,7 +285,7 @@ export default class HomeScreen extends React.Component<any, any> {
             }
             this.cloneType.time = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
             // 单选
@@ -331,7 +295,7 @@ export default class HomeScreen extends React.Component<any, any> {
         })
         let formatTime = moment(this.cloneType.time).format("yyyy-MM-DD HH:mm")
         // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表
-        let commonDoseTagView = this._renderTagViewList(this.milkDoseList, [], (dose) => {
+        let commonDoseTagView = renderTagList(this.milkDoseList, [], (dose) => {
             logi("select milk dose", dose)
             this.cloneType.dose = dose
             this.forceUpdate()
@@ -409,7 +373,7 @@ export default class HomeScreen extends React.Component<any, any> {
             }
             this.cloneType.time = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
             if (tagIndex >= 0) {
@@ -468,7 +432,7 @@ export default class HomeScreen extends React.Component<any, any> {
             }
             this.cloneType.time = moment().valueOf()
         }
-        let tagView = this._renderTagViewList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
+        let tagView = renderTagList(this.cloneType.tags, this.cloneType.selectedTags, (tag) => {
             let tagIndex = this.cloneType.selectedTags.indexOf(tag)
             logi("tag index", tagIndex + " # " + tag)
             if (tagIndex >= 0) {
@@ -840,7 +804,7 @@ export default class HomeScreen extends React.Component<any, any> {
 
         let tagView = null
         if (tags && tags.length > 0) {
-            tagView = this._renderTagViewList(tags, [], null, true)
+            tagView = renderTagList(tags, [], null, true)
         }
 
         return (
@@ -1247,7 +1211,7 @@ export default class HomeScreen extends React.Component<any, any> {
                         </View>
                     </View>
                     <FloatingAction
-                        distanceToEdge={{vertical: 100, horizontal: 40}}
+                        distanceToEdge={{vertical: 50, horizontal: 40}}
                         buttonSize={60}
                         ref={(ref) => {
                             this.floatingActionRef = ref;
