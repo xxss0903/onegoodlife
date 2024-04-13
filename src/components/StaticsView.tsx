@@ -117,7 +117,7 @@ export default class StaticsView extends Component<any, any> {
             return (
                 <View style={commonStyles.flexRow}>
                     <Text>{key}:{data.value}次</Text>
-                    {data.dose > 0 ? <Text>，共{data.dose}ml</Text> : null}
+                    {data.dose > 0 ? <Text style={{}}>，共{data.dose}ml</Text> : null}
                 </View>
             )
         })
@@ -131,7 +131,7 @@ export default class StaticsView extends Component<any, any> {
 
     render() {
         return (
-            <View style={[commonStyles.flexColumn, {flex: 1}]}>
+            <View style={[commonStyles.flexColumn, {flex: 1, padding: 12}]}>
                 {/*用户信息*/}
                 <View style={{flex: 1}}>
                     <Text>{mainData.babyInfo.nickname}</Text>

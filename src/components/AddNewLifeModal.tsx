@@ -740,7 +740,6 @@ export default class AddNewLifeModal extends Component<any, any> {
                         })
                     }}/>
             </>
-
         )
     }
 }
