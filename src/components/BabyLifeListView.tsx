@@ -17,18 +17,18 @@ import {
 } from "react-native";
 import {FloatingAction} from "react-native-floating-action";
 import Toast from 'react-native-toast-message';
-import {logi} from "./utils/logutil";
+import {logi} from "../utils/logutil";
 import DatePicker from "react-native-date-picker";
-import {showToast} from "./utils/toastUtil";
-import {DeviceStorage} from "./utils/deviceStorage";
-import {AndroidPermissions} from "./utils/permissionUtils";
+import {showToast} from "../utils/toastUtil";
+import {DeviceStorage} from "../utils/deviceStorage";
+import {AndroidPermissions} from "../utils/permissionUtils";
 import {SwipeListView} from "react-native-swipe-list-view";
 import {BarChart, LineChart} from 'echarts/charts';
 import * as echarts from 'echarts/core';
 import SvgChart, {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
 import {EChartsType} from "echarts/core";
 import {GridComponent, TitleComponent, TooltipComponent} from "echarts/components";
-import {screenW} from "./utils/until";
+import {screenW} from "../utils/until";
 import PagerView from 'react-native-pager-view';
 import {Checkbox} from "native-base";
 import {
@@ -37,26 +37,22 @@ import {
     poopTemplateData,
     peeTemplateData,
     otherTemplateData, commonTypeList
-} from "./mainData";
-import AddNewLifeModal from "./components/AddNewLifeModal";
-import StaticsView from "./components/StaticsView";
-import EventBus from "./utils/eventBus";
+} from "../mainData";
+import AddNewLifeModal from "./AddNewLifeModal";
+import StaticsView from "./StaticsView";
+import EventBus from "../utils/eventBus";
 import Share from 'react-native-share';
-import RNFS from "react-native-fs"
 import {
-    deleteData,
     deleteDataByTime,
-    getDataList,
     getDataListOrderByTime,
     insertData,
     saveDataList
-} from "./utils/dbService";
-import App from "../App";
-import {decodeFuc, encodeFuc} from "./utils/base64";
-import {renderTagList} from "./components/commonViews";
-import BabyInfoView from "./components/BabyInfoView";
-import {commonStyles} from "./commonStyle";
-import BabyLifeListView from "./components/BabyLifeListView";
+} from "../utils/dbService";
+import App from "../../App";
+import {decodeFuc, encodeFuc} from "../utils/base64";
+import {renderTagList} from "./commonViews";
+import BabyInfoView from "./BabyInfoView";
+import {commonStyles} from "../commonStyle";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
@@ -73,7 +69,7 @@ echarts.use([SVGRenderer, LineChart, BarChart, TitleComponent,
     GridComponent])
 
 
-export default class HomeScreen extends React.Component<any, any> {
+export default class BabyLifeListView extends React.Component<any, any> {
     private currentAddType = null; // 当前的添加类型
     private floatingActionRef = null; // 悬浮按钮引用
     private staticsViewRef = null; // 统计数据view
@@ -1154,25 +1150,86 @@ export default class HomeScreen extends React.Component<any, any> {
         }
     }
 
-    _renderBabyPages() {
-        let babyView = mainData.babies.map((value, index) => {
-            logi("init baby " + index, value)
-            return (
-                <View key={index} style={[{flex: 1}]}>
-                    <BabyLifeListView baby={value}/>
-                </View>
-            )
-        })
-        return babyView
-    }
-
     render() {
         return (
             <SafeAreaView>
                 <View style={styles.container}>
-                    <PagerView style={{flex: 1}} initialPage={0}>
-                        {this._renderBabyPages()}
-                    </PagerView>
+                    <View style={styles.scrollContainer}>
+                        <View style={[styles.staticsContainer, {height: screenW * 0.6}]}>
+                            {/*{this._renderSvgCharts()}*/}
+                            <BabyInfoView baby={this.props.baby}/>
+                            <StaticsView
+                                ref={ref => this.staticsViewRef = ref}
+                                dataList={this.state.dataList}
+                            />
+                        </View>
+                        <View style={styles.line}/>
+                        <View style={styles.timelineContainer}>
+                            <SwipeListView
+                                data={this.state.dataList}
+                                renderItem={({item, index}) => {
+                                    return this._renderTypeItem(item, index)
+                                }}
+                                renderHiddenItem={(data, rowMap) => {
+                                    return (
+                                        <View style={styles.rowBack}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    // 拍照
+                                                }}
+                                                style={[styles.photoLeftBtn]}>
+                                                <Text>拍照</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[styles.backRightBtn, styles.backRightBtnLeft]}
+                                                onPress={() => {
+                                                    rowMap[data.item.key].closeRow()
+                                                    // 打开弹窗，然后将当前的数据进行修改
+                                                    this.isTypeEdit = true
+                                                    this._editLifeLine(data.item)
+                                                }}
+                                            >
+                                                <Text style={styles.backTextWhite}>编辑</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[styles.backRightBtn, styles.backRightBtnRight]}
+                                                onPress={() => {
+                                                    this.deleteRow(rowMap, data.item.key, data.item)
+                                                }}
+                                            >
+                                                <Text style={styles.backTextWhite}>删除</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }}
+                                leftOpenValue={75}
+                                rightOpenValue={-150}
+                                previewOpenValue={-40}
+                                previewOpenDelay={1000}
+                                onRowDidOpen={(rowKey, rowMap, toValue) => this.onRowDidOpen(rowKey, rowMap)}/>
+                        </View>
+                    </View>
+                    <FloatingAction
+                        distanceToEdge={{vertical: 50, horizontal: 40}}
+                        buttonSize={60}
+                        ref={(ref) => {
+                            this.floatingActionRef = ref;
+                        }}
+                        actions={commonActions}
+                        onPressItem={(item) => {
+                            this.isTypeEdit = false
+                            this._addNewLifeline(item)
+                        }}
+                    />
+                    <AddNewLifeModal
+                        addNewLifeline={(item) => {
+                            this._insertNewlifeLineImpl(item)
+                        }}
+                        currentAddType={this.currentAddType}
+                        ref={ref => this.newlifeModalRef = ref}
+                    />
+                    {this._renderDatetimePicker()}
+                    {/*{this._renderExportAction()}*/}
                 </View>
             </SafeAreaView>
         )

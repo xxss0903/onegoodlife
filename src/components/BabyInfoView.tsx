@@ -4,10 +4,12 @@ import {mainData} from "../mainData";
 import moment from "moment";
 import {commonStyles} from "../commonStyle";
 import EventBus from "../utils/eventBus";
+import {logi} from "../utils/logutil";
 
 export default class BabyInfoView extends Component<any, any> {
 
     componentDidMount() {
+        logi("baby name ", this.props.baby)
         EventBus.addEventListener(EventBus.REFRESH_BABY_INFO, () => {
             this.forceUpdate()
         })
@@ -24,7 +26,7 @@ export default class BabyInfoView extends Component<any, any> {
                        source={{
                            uri: mainData.babyInfo.avatar,
                        }}/>
-                <Text>昵称：{mainData.babyInfo.nickname}</Text>
+                <Text>昵称：{this.props.baby.nickname}</Text>
                 <Text>宝宝出生：{this._getBirthDay()}天啦</Text>
             </View>
         )

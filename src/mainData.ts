@@ -58,8 +58,14 @@ export const mainData = {
     }, // 用户信息
     babies: [
         {
-            name: "", // 姓名
-            nickname: "", // 小名
+            name: "11", // 姓名
+            nickname: "11", // 小名
+            birthDay: moment().valueOf(), // 出生日期
+            avatar: "" // 头像
+        },
+        {
+            name: "22", // 姓名
+            nickname: "22", // 小名
             birthDay: moment().valueOf(), // 出生日期
             avatar: "" // 头像
         }
