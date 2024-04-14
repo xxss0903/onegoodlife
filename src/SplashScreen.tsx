@@ -10,6 +10,7 @@ export default class SplashScreen extends React.Component<any, any>{
     componentDidMount() {
         setTimeout(async () => {
             await this._initDb()
+            await DeviceStorage.getMainData()
             // 进入主页
             this.props.navigation.replace("MainScreen")
         }, 2000)

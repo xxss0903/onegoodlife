@@ -55,6 +55,7 @@ import App from "../App";
 import {decodeFuc, encodeFuc} from "./utils/base64";
 import {renderTagList} from "./components/commonViews";
 import BabyInfoView from "./components/BabyInfoView";
+import {commonStyles} from "./commonStyle";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
@@ -822,8 +823,7 @@ export default class HomeScreen extends React.Component<any, any> {
                 <View style={styles.timelineItemContent}>
                     <Text>时间：{time}</Text>
                     {item.dose ? <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text> : null}
-                    {item.typeId === commonTypeList[3].id ? <Text>    头：{item.jaundiceValue.header}</Text> : null}
-                    {item.typeId === commonTypeList[3].id ? <Text>胸口：{item.jaundiceValue.chest}</Text> : null}
+                    {item.typeId === commonTypeList[3].id ? <View style={commonStyles.flexRow}><Text>    头：{item.jaundiceValue.header}</Text><Text>    胸口：{item.jaundiceValue.chest}</Text></View> : null}
                     {item.typeId === commonTypeList[6].id ? <Text>身高：{item.height} cm</Text> : null}
                     {item.typeId === commonTypeList[7].id ? <Text>体重：{item.weight} kg</Text> : null}
                     {tagView ?

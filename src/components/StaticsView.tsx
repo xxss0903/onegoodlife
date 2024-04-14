@@ -132,10 +132,6 @@ export default class StaticsView extends Component<any, any> {
     render() {
         return (
             <View style={[commonStyles.flexColumn, {flex: 1, padding: 12}]}>
-                {/*用户信息*/}
-                <View style={{flex: 1}}>
-                    <Text>{mainData.babyInfo.nickname}</Text>
-                </View>
                 {/*统计的数字信息*/}
                 <View style={[commonStyles.flexRow, {flex: 1}]}>
                     {/*最近24小时统计*/}

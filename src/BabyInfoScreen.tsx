@@ -9,6 +9,9 @@ import {logi} from "./utils/logutil";
 import {Image} from "native-base";
 import moment from "moment";
 import DatePicker from "react-native-date-picker";
+import {formatTimeToDate} from "./utils/until";
+import {DeviceStorage} from "./utils/deviceStorage";
+import EventBus from "./utils/eventBus";
 
 export default class BabyInfoScreen extends Component<any, any> {
 
@@ -101,12 +104,13 @@ export default class BabyInfoScreen extends Component<any, any> {
                         }}
                         style={[commonStyles.flexRow, {alignItems: "center"}]}>
                         <Text style={{marginRight: 12}}>出生日期</Text>
+                        <Text style={{marginRight: 12}}>{formatTimeToDate(mainData.babyInfo.birthDay)}</Text>
                         <DatePicker
                             is24hourSource="locale"
                             open={this.state.datepickerOpen}
                             date={new Date(mainData.babyInfo.birthDay)}
                             modal={true}
-                            mode={"datetime"}
+                            mode={"date"}
                             onConfirm={(date) => {
                                 // 确认选择，将日期转为时间戳
                                 mainData.babyInfo.birthDay = moment(date).valueOf()
@@ -147,7 +151,9 @@ export default class BabyInfoScreen extends Component<any, any> {
                         style={[{flex: 1}, commonStyles.center]}
                         onPress={() => {
                             // 修改数据
-
+                            DeviceStorage.refreshMainData()
+                            EventBus.sendEvent(EventBus.REFRESH_BABY_INFO)
+                            this.props.navigation.goBack()
                         }}>
                         <Text>确认</Text>
                     </TouchableOpacity>
