@@ -24,6 +24,7 @@ import TypeMangeScreen from "./src/TypeMangeScreen";
 import NewLifeDetailScreen from "./src/NewLifeDetailScreen";
 import AllTypeScreen from "./src/AllTypeScreen";
 import {createLifeRecordTable, deleteTable, getDataList, getDBConnection, saveDataList} from "./src/utils/dbService";
+import BabyInfoScreen from "./src/BabyInfoScreen";
 
 const Stack = createNativeStackNavigator()
 const BottomTab = createBottomTabNavigator()
@@ -103,6 +104,7 @@ function MainStack() {
             <Stack.Screen name={"TypeMangeScreen"} component={TypeMangeScreen}/>
             <Stack.Screen name={"NewLifeDetailScreen"} component={NewLifeDetailScreen}/>
             <Stack.Screen name={"AllTypeScreen"} component={AllTypeScreen}/>
+            <Stack.Screen name={"BabyInfoScreen"} component={BabyInfoScreen}/>
         </Stack.Navigator>
     )
 }

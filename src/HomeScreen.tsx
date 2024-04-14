@@ -54,6 +54,7 @@ import {
 import App from "../App";
 import {decodeFuc, encodeFuc} from "./utils/base64";
 import {renderTagList} from "./components/commonViews";
+import BabyInfoView from "./components/BabyInfoView";
 
 const typeMapList = mainData.typeMapList // 类型列表
 const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
@@ -1159,6 +1160,7 @@ export default class HomeScreen extends React.Component<any, any> {
                     <View style={styles.scrollContainer}>
                         <View style={[styles.staticsContainer, {height: screenW * 0.6}]}>
                             {/*{this._renderSvgCharts()}*/}
+                            <BabyInfoView/>
                             <StaticsView
                                 ref={ref => this.staticsViewRef = ref}
                                 dataList={this.state.dataList}

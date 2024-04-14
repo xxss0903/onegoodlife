@@ -59,7 +59,8 @@ export const mainData = {
     babyInfo: {
         name: "", // 姓名
         nickname: "", // 小名
-        birthDay: 0 // 出生日期
+        birthDay: 0, // 出生日期
+        avatar: "" // 头像
     }, // 婴儿信息
     appConfigs: {
         showStatics: true, // 默认首页显示统计信息

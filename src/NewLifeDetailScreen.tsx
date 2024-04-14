@@ -6,6 +6,8 @@ import {logi} from "./utils/logutil";
 import DatePicker from "react-native-date-picker";
 import {commonStyles} from "./commonStyle";
 import {renderTagList} from "./components/commonViews";
+import {AndroidPermissions} from "./utils/permissionUtils";
+import {showToast} from "./utils/toastUtil";
 
 // 记录的记录详情
 export default class NewLifeDetailScreen extends React.Component<any, any> {
@@ -33,6 +35,20 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
 
     // 确认修改
     _confirmEditData(){
+
+    }
+
+    _selectImage(){
+        AndroidPermissions.checkStoragePermissions(() => {
+            AndroidPermissions.checkCameraPermissions(() => {
+                // 权限成功
+
+            }, () => {
+                showToast("请打开相机权限")
+            })
+        }, () => {
+            showToast("请打开存储权限")
+        })
 
     }
 
@@ -76,7 +92,12 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
                 </View>
                 {/*记录图片*/}
                 <View style={{flex: 1}}>
-                    <Image/>
+                    <TouchableOpacity
+                    onPress={() => {
+                        this._selectImage()
+                    }}>
+                        <Text>选择图片</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={[commonStyles.flexRow, {height: 60}]}>
                     <TouchableOpacity

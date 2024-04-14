@@ -48,16 +48,6 @@ export default class MineScreen extends React.Component<any, any> {
 
     }
 
-    // 设置出生日期等信息
-    _setBirthInfo() {
-        this.setState({
-            datepickerOpen: true
-        }, () => {
-            // 更新本地数据
-            DeviceStorage.refreshMainData()
-        })
-    }
-
     render() {
         return (
             <View style={styles.container}>
@@ -75,15 +65,14 @@ export default class MineScreen extends React.Component<any, any> {
                                 alignItems: 'center',
                             }}
                             onPress={() => {
-                                this._setBirthInfo()
+                                this.props.navigation.navigate("BabyInfoScreen")
                             }}>
                             <View style={{flexDirection: 'row'}}>
                                 <Image style={styles.titleImg}
                                        source={require('./assets/ic_version.png')}/>
-                                <Text style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>出生日期</Text>
+                                <Text style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>宝宝信息</Text>
                             </View>
                             <View>
-                                <Text>{moment(this.state.birthDay).format("yyyy-MM-DD")}</Text>
                             </View>
                         </TouchableOpacity>
                         <View style={commonStyles.lineWithMargin}/>
@@ -101,26 +90,26 @@ export default class MineScreen extends React.Component<any, any> {
                         this.props.navigation.navigate('VersionScreen');
                     })}
                 </View>
-                <DatePicker
-                    is24hourSource="locale"
-                    open={this.state.datepickerOpen}
-                    date={new Date(this.state.birthDay)}
-                    modal={true}
-                    mode={"date"}
-                    onConfirm={(date) => {
-                        // 确认选择，将日期转为时间戳
-                        this.setState({
-                            datepickerOpen: false,
-                            birthDay: moment(date).valueOf()
-                        })
-                        mainData.babyInfo.birthDay = moment(date).valueOf()
-                        DeviceStorage.refreshMainData()
-                    }}
-                    onCancel={() => {
-                        this.setState({
-                            datepickerOpen: false
-                        })
-                    }}/>
+                {/*<DatePicker*/}
+                {/*    is24hourSource="locale"*/}
+                {/*    open={this.state.datepickerOpen}*/}
+                {/*    date={new Date(this.state.birthDay)}*/}
+                {/*    modal={true}*/}
+                {/*    mode={"date"}*/}
+                {/*    onConfirm={(date) => {*/}
+                {/*        // 确认选择，将日期转为时间戳*/}
+                {/*        this.setState({*/}
+                {/*            datepickerOpen: false,*/}
+                {/*            birthDay: moment(date).valueOf()*/}
+                {/*        })*/}
+                {/*        mainData.babyInfo.birthDay = moment(date).valueOf()*/}
+                {/*        DeviceStorage.refreshMainData()*/}
+                {/*    }}*/}
+                {/*    onCancel={() => {*/}
+                {/*        this.setState({*/}
+                {/*            datepickerOpen: false*/}
+                {/*        })*/}
+                {/*    }}/>*/}
             </View>
         )
     }
