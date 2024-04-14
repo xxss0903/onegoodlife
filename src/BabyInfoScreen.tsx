@@ -82,6 +82,7 @@ export default class BabyInfoScreen extends Component<any, any> {
             mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)))
             mainData.babyInfo = mainData.babies[0] // 最新的宝贝数据作为更新的
             EventBus.sendEvent(EventBus.REFRESH_BABY_INFO)
+            DeviceStorage.refreshMainData()
             this.props.navigation.goBack()
         }
     }

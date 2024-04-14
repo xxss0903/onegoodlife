@@ -16,7 +16,7 @@ export default class BabiesScreen extends Component<any, any> {
         }
     }
 
-    _editBaby(baby){
+    _editBaby(baby) {
         this.props.navigation.navigate("BabyInfoScreen", {baby: baby})
     }
 
@@ -27,13 +27,12 @@ export default class BabiesScreen extends Component<any, any> {
                     this._editBaby(item)
                 }}
                 style={[commonStyles.flexColumn, {
-                display: "flex",
-                flexDirection: "row",
-                backgroundColor: "#ffffff",
-                padding: 12,
-                borderRadius: 12
-            }]}>
-                <Text>{item.name}</Text>
+                    backgroundColor: "#ffffff",
+                    padding: 12,
+                    borderRadius: 12,
+                    marginTop: 12
+                }]}>
+                <Text>{item.nickname}</Text>
                 <Text>{formatTimeToDate(item.birthDay)}</Text>
             </TouchableOpacity>
         )
@@ -46,7 +45,7 @@ export default class BabiesScreen extends Component<any, any> {
     deleteRow = (rowMap, rowKey, data) => {
     }
 
-    _addNewBaby(){
+    _addNewBaby() {
         this.props.navigation.navigate("BabyInfoScreen")
     }
 
