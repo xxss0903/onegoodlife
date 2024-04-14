@@ -56,6 +56,14 @@ export const mainData = {
         userName: "", // 登录用户名
         userId: "", // 用户ID
     }, // 用户信息
+    babies: [
+        {
+            name: "", // 姓名
+            nickname: "", // 小名
+            birthDay: moment().valueOf(), // 出生日期
+            avatar: "" // 头像
+        }
+    ], // 可以添加多个宝宝，比如双胞胎等
     babyInfo: {
         name: "", // 姓名
         nickname: "", // 小名

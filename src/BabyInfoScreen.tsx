@@ -18,10 +18,25 @@ export default class BabyInfoScreen extends Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {
-            datepickerOpen: false
+            datepickerOpen: false,
+            babyInfo: {
+                name: "", // 姓名
+                nickname: "", // 小名
+                birthDay: moment().valueOf(), // 出生日期
+                avatar: "" // 头像
+            }
         }
     }
 
+    componentDidMount() {
+        let babyInfo = this.props.route.params?.baby
+        if (babyInfo) {
+            // 编辑
+            this.setState({
+                babyInfo: JSON.parse(JSON.stringify(babyInfo))
+            })
+        }
+    }
 
     // 选择照片/拍照
     _choosePicture() {
@@ -56,6 +71,21 @@ export default class BabyInfoScreen extends Component<any, any> {
 
     }
 
+    _checkBabyInfo(){
+        return true
+    }
+
+    _confirmBabyInfo(){
+        if(this._checkBabyInfo()){
+            // 宝贝的id
+            this.state.babyInfo.id = mainData.babies.length + 1
+            mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)))
+            mainData.babyInfo = mainData.babies[0] // 最新的宝贝数据作为更新的
+            EventBus.sendEvent(EventBus.REFRESH_BABY_INFO)
+            this.props.navigation.goBack()
+        }
+    }
+
     render() {
         return (
             <View style={[styles.container, {flex: 1}]}>
@@ -70,9 +100,9 @@ export default class BabyInfoScreen extends Component<any, any> {
                                 backgroundColor: "#eeeeee",
                                 color: "#333333",
                             }]}
-                            value={mainData.babyInfo.name}
+                            value={this.state.babyInfo.name}
                             onChangeText={(text) => {
-                                mainData.babyInfo.name = text
+                                this.state.babyInfo.name = text
                                 this.forceUpdate()
                             }}
                             placeholderTextColor={"#bbbbbb"}
@@ -88,9 +118,9 @@ export default class BabyInfoScreen extends Component<any, any> {
                                 backgroundColor: "#eeeeee",
                                 color: "#333333",
                             }]}
-                            value={mainData.babyInfo.nickname}
+                            value={this.state.babyInfo.nickname}
                             onChangeText={(text) => {
-                                mainData.babyInfo.nickname = text
+                                this.state.babyInfo.nickname = text
                                 this.forceUpdate()
                             }}
                             placeholderTextColor={"#bbbbbb"}
@@ -104,16 +134,16 @@ export default class BabyInfoScreen extends Component<any, any> {
                         }}
                         style={[commonStyles.flexRow, {alignItems: "center"}]}>
                         <Text style={{marginRight: 12}}>出生日期</Text>
-                        <Text style={{marginRight: 12}}>{formatTimeToDate(mainData.babyInfo.birthDay)}</Text>
+                        <Text style={{marginRight: 12}}>{formatTimeToDate(this.state.babyInfo.birthDay)}</Text>
                         <DatePicker
                             is24hourSource="locale"
                             open={this.state.datepickerOpen}
-                            date={new Date(mainData.babyInfo.birthDay)}
+                            date={new Date(this.state.babyInfo.birthDay)}
                             modal={true}
                             mode={"date"}
                             onConfirm={(date) => {
                                 // 确认选择，将日期转为时间戳
-                                mainData.babyInfo.birthDay = moment(date).valueOf()
+                                this.state.babyInfo.birthDay = moment(date).valueOf()
                                 this.setState({
                                     datepickerOpen: false
                                 })
@@ -136,7 +166,7 @@ export default class BabyInfoScreen extends Component<any, any> {
                     </TouchableOpacity>
                     <Image style={{width: 78, height: 78, borderRadius: 40}}
                            source={{
-                               uri: mainData.babyInfo.avatar,
+                               uri: this.state.babyInfo.avatar,
                            }}/>
                 </View>
                 <View style={[commonStyles.flexRow, {height: 60}]}>
@@ -151,9 +181,8 @@ export default class BabyInfoScreen extends Component<any, any> {
                         style={[{flex: 1}, commonStyles.center]}
                         onPress={() => {
                             // 修改数据
-                            DeviceStorage.refreshMainData()
-                            EventBus.sendEvent(EventBus.REFRESH_BABY_INFO)
-                            this.props.navigation.goBack()
+                            this._confirmBabyInfo()
+
                         }}>
                         <Text>确认</Text>
                     </TouchableOpacity>

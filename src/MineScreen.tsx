@@ -65,7 +65,7 @@ export default class MineScreen extends React.Component<any, any> {
                                 alignItems: 'center',
                             }}
                             onPress={() => {
-                                this.props.navigation.navigate("BabyInfoScreen")
+                                this.props.navigation.navigate("BabiesScreen")
                             }}>
                             <View style={{flexDirection: 'row'}}>
                                 <Image style={styles.titleImg}
