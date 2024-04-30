@@ -15,7 +15,6 @@ import {
     TouchableWithoutFeedback,
     View
 } from "react-native";
-import {FloatingAction} from "react-native-floating-action";
 import Toast from 'react-native-toast-message';
 import {logi} from "../utils/logutil";
 import DatePicker from "react-native-date-picker";
@@ -71,7 +70,7 @@ echarts.use([SVGRenderer, LineChart, BarChart, TitleComponent,
 
 export default class BabyLifeListView extends React.Component<any, any> {
     private currentAddType = null; // 当前的添加类型
-    private floatingActionRef = null; // 悬浮按钮引用
+
     private staticsViewRef = null; // 统计数据view
     private cloneType = null; // 临时保存type的数据
     private oldMilkData = null // 已经有的最新的喝牛奶的数据，用来保存默认数据
@@ -112,7 +111,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
     // 获取数据库数据
     async _initDBData() {
         try {
-            let localData = await getDataListOrderByTime(App.db)
+            let localData = await getDataListOrderByTime(App.db, this.props.baby.babyId)
             if (localData && localData.length > 0) {
                 let dataList = []
                 // 获取列表数据
@@ -590,7 +589,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
     }
 
     _insertNewlifeLineImpl(data){
-        this._insertItemToDB(data)
+        this._insertItemToDB(data, this.props.baby.babyId)
         // 插入到最新的数据，这里还是根据时间进行设置
         let dataList = this._insertItemByResortTime(this.state.dataList, data)
         this.setState({
@@ -775,27 +774,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
         this.props.navigation.navigate("AllTypeScreen")
     }
 
-    // 添加新的时间线
-    _addNewLifeline(item) {
-        logi("add life line ", item)
-        this.cloneType = null
-        this.currentAddType = item
-        switch (item) {
-            case typeMapList[0].name:
-                this._addMilk(typeMapList[0])
-                break;
-            case typeMapList[1].name:
-                this._addPoop(typeMapList[1])
-                break;
-            case typeMapList[2].name:
-                this._addPee(typeMapList[2])
-                break;
-            case "全部":
-                this._toAllTypeScreen()
-                break;
-        }
-    }
-
     _renderTypeItem(item, index) {
         let typeName = item.name
         let time = moment(item.time).format("yyyy-MM-DD HH:mm")
@@ -904,8 +882,8 @@ export default class BabyLifeListView extends React.Component<any, any> {
     };
 
     // 插入数据到数据库
-    async _insertItemToDB(data){
-        await insertData(App.db, data,  encodeFuc(JSON.stringify(data)))
+    async _insertItemToDB(data, babyId){
+        await insertData(App.db, data,  encodeFuc(JSON.stringify(data)), babyId)
     }
 
     // 重新排序记录，根据时间插入
@@ -1209,18 +1187,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
                                 onRowDidOpen={(rowKey, rowMap, toValue) => this.onRowDidOpen(rowKey, rowMap)}/>
                         </View>
                     </View>
-                    <FloatingAction
-                        distanceToEdge={{vertical: 50, horizontal: 40}}
-                        buttonSize={60}
-                        ref={(ref) => {
-                            this.floatingActionRef = ref;
-                        }}
-                        actions={commonActions}
-                        onPressItem={(item) => {
-                            this.isTypeEdit = false
-                            this._addNewLifeline(item)
-                        }}
-                    />
+
                     <AddNewLifeModal
                         addNewLifeline={(item) => {
                             this._insertNewlifeLineImpl(item)

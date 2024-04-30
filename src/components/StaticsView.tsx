@@ -112,10 +112,10 @@ export default class StaticsView extends Component<any, any> {
 
     _renderDataMap(dataMap) {
         let keyArray = Array.from(dataMap.keys())
-        let mapView = keyArray.map(key => {
+        let mapView = keyArray.map((key, index) => {
             let data = dataMap.get(key)
             return (
-                <View style={commonStyles.flexRow}>
+                <View key={index} style={commonStyles.flexRow}>
                     <Text>{key}:{data.value}次</Text>
                     {data.dose > 0 ? <Text style={{}}>，共{data.dose}ml</Text> : null}
                 </View>

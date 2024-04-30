@@ -15,7 +15,7 @@ export const createLifeRecordTable = async (db) => {
     // 创建数据库的表
     // 插入name，就是类型名称，json是数据的json值，time是时间戳, typeId是类型id
     const query = `CREATE TABLE IF NOT EXISTS ${lifeRecordTableName}(
-         rowid integer PRIMARY KEY autoincrement, name TEXT NOT NULL, json TEXT, time bigint, typeId integer
+         rowid integer PRIMARY KEY autoincrement, babyId integer, name TEXT NOT NULL, json TEXT, time bigint, typeId integer
     );`;
 
     await db.executeSql(query);
@@ -38,10 +38,10 @@ export const getDataList = async (db) => {
     }
 };
 
-export const getDataListOrderByTime = async (db) => {
+export const getDataListOrderByTime = async (db, babyId) => {
     try {
         const dataList = [];
-        const results = await db.executeSql(`SELECT rowid, name, json, time FROM ${lifeRecordTableName} order by time desc`);
+        const results = await db.executeSql(`SELECT rowid, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} order by time desc`);
         results.forEach(result => {
             for (let index = 0; index < result.rows.length; index++) {
                 dataList.push(result.rows.item(index))
@@ -56,8 +56,8 @@ export const getDataListOrderByTime = async (db) => {
 
 
 // 插入单条数据
-export const insertData = async (db, data, dataStr) => {
-    const insertQuery = `INSERT INTO ${lifeRecordTableName} (name, time, json) values ("${data.name}", ${data.time}, "${dataStr}")`
+export const insertData = async (db, data, dataStr, babyId) => {
+    const insertQuery = `INSERT INTO ${lifeRecordTableName} (name, babyId, time, json) values ("${data.name}", ${babyId}, ${data.time}, "${dataStr}")`
     return db.executeSql(insertQuery)
 }
 

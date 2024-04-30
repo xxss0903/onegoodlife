@@ -4,8 +4,8 @@ import {mainData} from "./mainData";
 import {SwipeListView} from "react-native-swipe-list-view";
 import {formatTimeToDate} from "./utils/until";
 import {commonStyles} from "./commonStyle";
-import {DeviceStorage} from "./utils/deviceStorage";
 import EventBus from "./utils/eventBus";
+import {logi} from "./utils/logutil";
 
 export default class BabiesScreen extends Component<any, any> {
 
@@ -17,7 +17,11 @@ export default class BabiesScreen extends Component<any, any> {
     }
 
     _editBaby(baby) {
-        this.props.navigation.navigate("BabyInfoScreen", {baby: baby})
+        this.props.navigation.navigate("BabyInfoScreen", {
+            baby: baby, callback: () => {
+                this.forceUpdate()
+            }
+        })
     }
 
     _renderBabyItem(item, index) {
@@ -41,8 +45,18 @@ export default class BabiesScreen extends Component<any, any> {
     onRowDidOpen = (rowKey, rowMap) => {
     };
 
+    closeRow = (rowMap, rowKey) => {
+        if (rowMap[rowKey]) {
+            rowMap[rowKey].closeRow()
+        }
+    };
 
     deleteRow = (rowMap, rowKey, data) => {
+        this.closeRow(rowMap, rowKey)
+        let index = mainData.babies.indexOf(data)
+        mainData.babies.splice(index, 1)
+        EventBus.sendEvent(EventBus.REFRESH_BABY_LIST)
+        this.forceUpdate()
     }
 
     _addNewBaby() {

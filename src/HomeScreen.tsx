@@ -11,12 +11,17 @@ import {
 import {logi} from "./utils/logutil";
 import PagerView from 'react-native-pager-view';
 import {
+    commonActions,
+    commonTypeList,
     mainData
 } from "./mainData";
 import EventBus from "./utils/eventBus";
 import BabyLifeListView from "./components/BabyLifeListView";
+import {FloatingAction} from "react-native-floating-action";
 
 export default class HomeScreen extends React.Component<any, any> {
+
+    private floatingActionRef = null; // 悬浮按钮引用
 
     constructor(props) {
         super(props);
@@ -28,15 +33,14 @@ export default class HomeScreen extends React.Component<any, any> {
     }
 
     _initListeners() {
-        EventBus.addEventListener(EventBus.REFRESH_DATA, (data) => {
-            this._insertNewlifeLineImpl(data)
-        })
-        EventBus.addEventListener(EventBus.REFRESH_BABY_INFO, (data) => {
+        EventBus.addEventListener(EventBus.REFRESH_BABY_LIST, () => {
+            logi("refresh baby list")
             this.forceUpdate()
         })
     }
 
     componentWillUnmount() {
+        logi("remove all listeners")
         EventBus.clearAllListeners()
     }
 
@@ -52,6 +56,27 @@ export default class HomeScreen extends React.Component<any, any> {
         return babyView
     }
 
+    // 添加新的时间线
+    _addNewLifeline(item) {
+        logi("add life line ", item)
+        this.cloneType = null
+        this.currentAddType = item
+        switch (item) {
+            case typeMapList[0].name:
+                this._addMilk(typeMapList[0])
+                break;
+            case typeMapList[1].name:
+                this._addPoop(typeMapList[1])
+                break;
+            case typeMapList[2].name:
+                this._addPee(typeMapList[2])
+                break;
+            case "全部":
+                this._toAllTypeScreen()
+                break;
+        }
+    }
+
     render() {
         return (
             <SafeAreaView>
@@ -59,6 +84,18 @@ export default class HomeScreen extends React.Component<any, any> {
                     <PagerView style={{flex: 1}} initialPage={0}>
                         {this._renderBabyPages()}
                     </PagerView>
+                    <FloatingAction
+                        distanceToEdge={{vertical: 50, horizontal: 40}}
+                        buttonSize={60}
+                        ref={(ref) => {
+                            this.floatingActionRef = ref;
+                        }}
+                        actions={commonActions}
+                        onPressItem={(item) => {
+                            this.isTypeEdit = false
+                            this._addNewLifeline(item)
+                        }}
+                    />
                 </View>
             </SafeAreaView>
         )

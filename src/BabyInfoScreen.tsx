@@ -55,7 +55,7 @@ export default class BabyInfoScreen extends Component<any, any> {
                     if (res.assets && res.assets.length > 0) {
                         let imgFile = res.assets[0]
                         let imgPath = imgFile.originalPath
-                        mainData.babyInfo.avatar = imgPath ?? ""
+                        this.state.babyInfo.avatar = imgPath
                         this.forceUpdate()
                     }
 
@@ -76,15 +76,23 @@ export default class BabyInfoScreen extends Component<any, any> {
     }
 
     _confirmBabyInfo(){
-        if(this._checkBabyInfo()){
-            // 宝贝的id
-            this.state.babyInfo.id = mainData.babies.length + 1
-            mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)))
-            mainData.babyInfo = mainData.babies[0] // 最新的宝贝数据作为更新的
-            EventBus.sendEvent(EventBus.REFRESH_BABY_INFO)
-            DeviceStorage.refreshMainData()
-            this.props.navigation.goBack()
+        try {
+            if(this._checkBabyInfo()){
+                // 宝贝的id
+                this.state.babyInfo.babyId = mainData.babies.length + 1
+                mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)))
+                mainData.babyInfo = mainData.babies[0] // 最新的宝贝数据作为更新的
+                DeviceStorage.refreshMainData()
+                EventBus.sendEvent(EventBus.REFRESH_BABY_LIST)
+                if (this.props.route.params?.callback) {
+                    this.props.route.params?.callback()
+                }
+                this.props.navigation.goBack()
+            }
+        } catch (e) {
+            logi("error ", e.message)
         }
+
     }
 
     render() {

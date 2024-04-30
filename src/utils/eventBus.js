@@ -13,6 +13,7 @@ export default class EventBus {
     // 登录状态
     static REFRESH_DATA = 'REFRESH_DATA';
     static REFRESH_BABY_INFO = 'REFRESH_BABY_INFO';
+    static REFRESH_BABY_LIST = 'REFRESH_BABY_LIST';
 
 
 

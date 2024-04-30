@@ -61,13 +61,15 @@ export const mainData = {
             name: "11", // 姓名
             nickname: "11", // 小名
             birthDay: moment().valueOf(), // 出生日期
-            avatar: "" // 头像
+            avatar: "", // 头像
+            babyId: 0
         },
         {
             name: "22", // 姓名
             nickname: "22", // 小名
             birthDay: moment().valueOf(), // 出生日期
-            avatar: "" // 头像
+            avatar: "", // 头像
+            babyId: 1
         }
     ], // 可以添加多个宝宝，比如双胞胎等
     babyInfo: {
@@ -86,6 +88,12 @@ export const mainData = {
     }
 }
 
+// 常用按钮
+export const commonActions = [commonTypeList[0], commonTypeList[1], commonTypeList[2], {
+    id: 6,
+    name: "全部",
+    value: "type_6", text: "全部", position: 6
+}]
 
 // 牛奶的模板数据
 // 喝牛奶的模板数据
