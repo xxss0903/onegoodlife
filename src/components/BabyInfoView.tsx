@@ -3,6 +3,7 @@ import {View, Text, Image} from 'react-native';
 import moment from 'moment';
 import {commonStyles} from '../commonStyle';
 import EventBus from '../utils/eventBus';
+import {Margin} from "../space";
 
 export default class BabyInfoView extends Component<any, any> {
   componentDidMount() {
@@ -17,15 +18,7 @@ export default class BabyInfoView extends Component<any, any> {
 
   render() {
     return (
-      <View style={[{flex: 1, padding: 12}, commonStyles.center]}>
-        {this.props.baby.avatar ? (
-          <Image
-            style={{width: 48, height: 48, borderRadius: 24}}
-            source={{
-              uri: this.props.baby.avatar,
-            }}
-          />
-        ) : null}
+      <View style={[{paddingHorizontal: Margin.horizontal, paddingTop: Margin.vertical}]}>
         <Text>昵称：{this.props.baby.nickname}</Text>
         <Text>宝宝出生：{this._getBirthDay()}天啦</Text>
       </View>

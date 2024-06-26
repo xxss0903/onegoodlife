@@ -10,6 +10,7 @@ import {
 import {mainData} from '../mainData';
 import {commonStyles} from '../commonStyle';
 import moment from 'moment';
+import {Margin} from "../space";
 
 // 统计独立界面
 export default class StaticsView extends Component<any, any> {
@@ -138,7 +139,7 @@ export default class StaticsView extends Component<any, any> {
 
   render() {
     return (
-      <View style={[commonStyles.flexColumn, {flex: 1, padding: 12}]}>
+      <View style={[commonStyles.flexColumn, {flex: 1, paddingTop: Margin.vertical, paddingHorizontal: Margin.horizontal,}]}>
         {/*统计的数字信息*/}
         <View style={[commonStyles.flexRow, {flex: 1}]}>
           {/*最近24小时统计*/}
