@@ -12,7 +12,7 @@ const showLog = true;
  * @param data
  */
 export const logi = (msg, data = null) => {
-    if(showLog){
+    if (showLog) {
         logimpl(TAG_I, msg, data);
     }
 };
@@ -44,7 +44,7 @@ const logimpl = (tag, msg, data = null) => {
     if (data) {
         console.log(tag + ' # ' + msg, data);
 
-        if ( tag === TAG_E ) {
+        if (tag === TAG_E) {
         }
 
     } else {
@@ -53,7 +53,7 @@ const logimpl = (tag, msg, data = null) => {
             console.log(tag + msgStr);
         }
 
-        if ( tag === TAG_E ) {
+        if (tag === TAG_E) {
         }
 
     }
