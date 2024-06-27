@@ -38,7 +38,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   private milkDoseList = [30, 50, 60, 70];
   private currentAddType = null;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       showAddModal: false,
@@ -47,7 +47,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   // 新增类型
-  addNewType(currentAddType) {
+  addNewType(currentAddType: any) {
     logi('add type', currentAddType);
     this.currentAddType = currentAddType;
     this.cloneType = null;
@@ -55,26 +55,26 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   // 编辑类型
-  editType(currentAddType, cloneType) {
+  editType(currentAddType: any, cloneType: any) {
     logi('add type', currentAddType);
     this.cloneType = cloneType;
     this.currentAddType = currentAddType;
     this.showModal(true);
   }
 
-  showModal(show) {
+  showModal(show: any) {
     this.setState({
       showAddModal: show,
     });
   }
 
-  _toggleDatetimePicker(open) {
+  _toggleDatetimePicker(open: any) {
     this.setState({
       datepickerOpen: open,
     });
   }
 
-  _renderMilkContent(type) {
+  _renderMilkContent(type: any) {
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldMilkData) {

@@ -21,13 +21,21 @@ export const diaperTags = ['涂药膏', '肚脐消毒']; // 尿布类型
 
 // 内置的常用类型，不可更改和删除
 export const commonTypeList = [
-  {id: 1, name: '喝奶', value: 'type_1', text: '牛奶', position: 0},
+  {
+    id: 1,
+    name: '喝奶',
+    value: 'type_1',
+    text: '牛奶',
+    position: 0,
+    icon: require('./assets/ic_milk.png'),
+  },
   {
     id: 2,
     name: '拉屎',
     value: 'type_2',
     text: '拉屎',
     position: 1,
+    icon: require('./assets/ic_poop.png'),
   },
   {
     id: 3,
@@ -35,6 +43,7 @@ export const commonTypeList = [
     value: 'type_3',
     text: '撒尿',
     position: 2,
+    icon: require('./assets/ic_pee.png'),
   },
   {
     id: 4,
@@ -131,6 +140,7 @@ export const commonActions = [
     value: 'type_6',
     text: '全部',
     position: 6,
+    icon: require('./assets/ic_all.png'),
   },
 ];
 
