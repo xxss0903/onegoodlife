@@ -39,6 +39,18 @@ export default class HomeScreen extends React.Component<any, any> {
       currentBaby: {
         name: 'Jack',
       },
+      babyList: [
+        {
+          name: 'Jack',
+          avatar:
+            'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658',
+        },
+        {
+          name: 'Elitha',
+          avatar:
+            'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+        },
+      ],
     };
   }
 
@@ -119,49 +131,10 @@ export default class HomeScreen extends React.Component<any, any> {
           <FlatList
             horizontal={true}
             style={{height: 100, flex: 1}}
-            data={[
-              {
-                name: 'Jack',
-                avatar:
-                  'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658',
-              },
-              {
-                name: 'Elitha',
-                avatar:
-                  'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-              },
-            ]}
+            data={this.state.babyList}
             renderItem={({item, index}) => {
               console.log('avatar ', item.avatar);
-              return (
-                <View
-                  style={[
-                    commonStyles.flexColumn,
-                    commonStyles.center,
-                    {
-                      marginHorizontal: Margin.midHorizontal,
-                      marginVertical: Margin.smalHorizontal,
-                    },
-                  ]}>
-                  {!(item && item.avatar) ? (
-                    <Avatar source={require('./assets/ic_about_us.png')} />
-                  ) : (
-                    <Avatar
-                      source={{
-                        uri: item.avatar,
-                      }}
-                    />
-                  )}
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      marginTop: Margin.smalHorizontal,
-                      fontWeight: '400',
-                    }}>
-                    {item.name}
-                  </Text>
-                </View>
-              );
+              return this._renderBabyItem(item);
             }}
           />
         </View>
@@ -174,10 +147,41 @@ export default class HomeScreen extends React.Component<any, any> {
     );
   }
 
+  private _renderBabyItem(item: any) {
+    return (
+      <View
+        style={[
+          commonStyles.flexColumn,
+          commonStyles.center,
+          {
+            marginHorizontal: Margin.midHorizontal,
+            marginVertical: Margin.smalHorizontal,
+          },
+        ]}>
+        {!(item && item.avatar) ? (
+          <Avatar source={require('./assets/ic_about_us.png')} />
+        ) : (
+          <Avatar
+            source={{
+              uri: item.avatar,
+            }}
+          />
+        )}
+        <Text
+          style={{
+            fontSize: 16,
+            marginTop: Margin.smalHorizontal,
+            fontWeight: '400',
+          }}>
+          {item.name}
+        </Text>
+      </View>
+    );
+  }
+
   // 插入新的类型
   _insertNewlifeLineImpl(data: any) {
     EventBus.sendEvent(EventBus.REFRESH_DATA, data);
-    this.props.navigation.goBack();
   }
 
   render() {
@@ -185,13 +189,9 @@ export default class HomeScreen extends React.Component<any, any> {
       <SafeAreaView>
         <View style={styles.container}>
           {this._renderHomeView()}
-          {/*<PagerView style={{flex: 1}} initialPage={0}>*/}
-          {/*  {this._renderBabyPages()}*/}
-          {/*</PagerView>*/}
           <FloatingAction
             distanceToEdge={{vertical: 50, horizontal: 40}}
             buttonSize={60}
-            color={Colors.primary}
             ref={ref => {
               this.floatingActionRef = ref;
             }}
