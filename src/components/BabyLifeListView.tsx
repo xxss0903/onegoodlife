@@ -91,15 +91,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   private staticsViewRef = null; // 统计数据view
   private cloneType = null; // 临时保存type的数据
-  private oldMilkData = null; // 已经有的最新的喝牛奶的数据，用来保存默认数据
-  private milkDoseList = []; // 牛奶的最新3个量数据列表
-  private oldPoopData = null; // 已经有的最新的拉屎的数据，用来保存默认数据
-  private poopTagList = []; // 拉屎的最新3个量数据列表
-  private oldPeeData = null; // 已经有的最新的撒尿的数据，用来保存默认数据
-  private peeTagList = []; // 撒尿的最新3个量数据列表
-  private oldJaundiceData = null; // 已经有的最新的黄疸的数据，用来保存默认数据
-  private jaundiceList = []; // 黄疸的最新3个量数据列表
-  private isTypeEdit: boolean = false; // 是否是编辑模式
   private last24HourChartRef: any; // 统计数据的渲染引用
   private last24HourCharts: EChartsType; // 统计图表
   private todayChartRef: any; // 统计数据的渲染引用
@@ -186,24 +177,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
     );
     // this.state.dataList.unshift(this.cloneType)
     this._refreshLocalData();
-  }
-
-  _editLifeLine(item: any) {
-    this.cloneType = item;
-    switch (item.name) {
-      case typeMapList[0].name:
-        this.newlifeModalRef.editType(typeMapList[0], this.cloneType);
-        // this._addMilk(typeMapList[0])
-        break;
-      case typeMapList[1].name:
-        this.newlifeModalRef.editType(typeMapList[1], this.cloneType);
-        // this._addPoop(typeMapList[1])
-        break;
-      case typeMapList[2].name:
-        this.newlifeModalRef.editType(typeMapList[2], this.cloneType);
-        // this._addPee(typeMapList[2])
-        break;
-    }
   }
 
   _renderTypeItem(item, index) {
@@ -447,7 +420,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   timelineItemContainer: {
-    marginHorizontal: 12,
     display: 'flex',
     flexDirection: 'row',
     backgroundColor: '#ffffff',

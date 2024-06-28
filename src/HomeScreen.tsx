@@ -35,6 +35,7 @@ export default class HomeScreen extends React.Component<any, any> {
       currentBaby: {
         name: 'Jack',
       },
+      currentBabyIndex: 0,
       babyList: [
         {
           name: 'Jack',
@@ -146,6 +147,7 @@ export default class HomeScreen extends React.Component<any, any> {
   _changeBaby(index: Number) {
     this.setState({
       currentBaby: mainData.babies[index],
+      currentBabyIndex: index,
     });
     // 更改寶寶信息，切換pagerview的列表
     this.pagerRef && this.pagerRef.setPage(index);
@@ -167,13 +169,21 @@ export default class HomeScreen extends React.Component<any, any> {
             },
           ]}>
           {!(item && item.avatar) ? (
-            <Avatar source={require('./assets/ic_about_us.png')} />
+            <Avatar source={require('./assets/ic_about_us.png')}>
+              {this.state.currentBabyIndex === index ? (
+                <Avatar.Badge bg="green.500" />
+              ) : null}
+            </Avatar>
           ) : (
             <Avatar
+              size={'lg'}
               source={{
                 uri: item.avatar,
-              }}
-            />
+              }}>
+              {this.state.currentBabyIndex === index ? (
+                <Avatar.Badge bg="green.500" />
+              ) : null}
+            </Avatar>
           )}
           <Text
             style={{

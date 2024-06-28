@@ -8,9 +8,9 @@ import {
   View,
 } from 'react-native';
 import {mainData} from '../mainData';
-import {commonStyles} from '../commonStyle';
+import {COLOR_LINE, commonStyles} from '../commonStyle';
 import moment from 'moment';
-import {Margin} from "../space";
+import {Margin} from '../space';
 
 // 统计独立界面
 export default class StaticsView extends Component<any, any> {
@@ -120,12 +120,14 @@ export default class StaticsView extends Component<any, any> {
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
-  _renderDataMap(dataMap) {
+  _renderDataMap(dataMap: any) {
     let keyArray = Array.from(dataMap.keys());
     let mapView = keyArray.map((key, index) => {
       let data = dataMap.get(key);
       return (
-        <View key={index} style={commonStyles.flexRow}>
+        <View
+          key={index}
+          style={[commonStyles.flexRow, {marginBottom: Margin.smalHorizontal}]}>
           <Text>
             {key}:{data.value}次
           </Text>
@@ -139,17 +141,28 @@ export default class StaticsView extends Component<any, any> {
 
   render() {
     return (
-      <View style={[commonStyles.flexColumn, {flex: 1, paddingTop: Margin.vertical, paddingHorizontal: Margin.horizontal,}]}>
+      <View
+        style={[
+          commonStyles.flexColumn,
+          {
+            flex: 1,
+            paddingTop: Margin.vertical,
+          },
+        ]}>
         {/*统计的数字信息*/}
         <View style={[commonStyles.flexRow, {flex: 1}]}>
           {/*最近24小时统计*/}
           <View style={[commonStyles.flexColumn, {flex: 1}]}>
-            <Text>最近24小时</Text>
+            <Text style={[{marginBottom: Margin.smalHorizontal}]}>
+              最近24小时
+            </Text>
             {this._renderDataMap(this.state.last24Data)}
           </View>
           {/*当天的统计*/}
           <View style={[commonStyles.flexColumn, {flex: 1}]}>
-            <Text>当天数据</Text>
+            <Text style={[{marginBottom: Margin.smalHorizontal}]}>
+              当天数据
+            </Text>
             {this._renderDataMap(this.state.todayDataMap)}
           </View>
         </View>
