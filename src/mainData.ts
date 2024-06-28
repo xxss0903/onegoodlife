@@ -99,17 +99,19 @@ export const mainData = {
   }, // 用户信息
   babies: [
     {
-      name: '11', // 姓名
-      nickname: '11', // 小名
+      name: 'Jack', // 姓名
+      nickname: '小明', // 小名
       birthDay: moment().valueOf(), // 出生日期
-      avatar: '', // 头像
+      avatar:
+        'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658', // 头像
       babyId: 0,
     },
     {
-      name: '22', // 姓名
-      nickname: '22', // 小名
+      name: 'Zack', // 姓名
+      nickname: '辣椒', // 小名
       birthDay: moment().valueOf(), // 出生日期
-      avatar: '', // 头像
+      avatar:
+        'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80', // 头像
       babyId: 1,
     },
   ], // 可以添加多个宝宝，比如双胞胎等

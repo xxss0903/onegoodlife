@@ -12,6 +12,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableHighlight,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -57,6 +58,7 @@ import {renderTagList} from './commonViews';
 import BabyInfoView from './BabyInfoView';
 import {commonStyles} from '../commonStyle';
 import {Margin} from '../space';
+import {Colors} from '../colors';
 
 const typeMapList = mainData.typeMapList; // 类型列表
 const commonActions = [
@@ -215,11 +217,12 @@ export default class BabyLifeListView extends React.Component<any, any> {
     }
 
     return (
-      <TouchableOpacity
+      <TouchableHighlight
         onLongPress={() => {
           // 弹出删除弹窗
           this._showDeleteDialog(item, index);
         }}
+        underlayColor={Colors.grayD3}
         activeOpacity={1}
         onPress={() => {
           // 进入详情
@@ -227,36 +230,38 @@ export default class BabyLifeListView extends React.Component<any, any> {
         }}
         key={item.time}
         style={[styles.timelineItemContainer, {marginTop: Margin.vertical}]}>
-        <View style={styles.timelineItemType}>
-          <Text>{typeName}</Text>
+        <View style={[commonStyles.flexRow]}>
+          <View style={styles.timelineItemType}>
+            <Text>{typeName}</Text>
+          </View>
+          <View style={styles.timelineItemContent}>
+            <Text>时间：{time}</Text>
+            {item.dose ? (
+              <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text>
+            ) : null}
+            {item.typeId === commonTypeList[3].id ? (
+              <View style={commonStyles.flexRow}>
+                <Text> 头：{item.jaundiceValue.header}</Text>
+                <Text> 胸口：{item.jaundiceValue.chest}</Text>
+              </View>
+            ) : null}
+            {item.typeId === commonTypeList[6].id ? (
+              <Text>身高：{item.height} cm</Text>
+            ) : null}
+            {item.typeId === commonTypeList[7].id ? (
+              <Text>体重：{item.weight} kg</Text>
+            ) : null}
+            {tagView ? (
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                {tagView}
+              </View>
+            ) : null}
+            {item.remark ? (
+              <Text style={{marginTop: 12}}>{item.remark}</Text>
+            ) : null}
+          </View>
         </View>
-        <View style={styles.timelineItemContent}>
-          <Text>时间：{time}</Text>
-          {item.dose ? (
-            <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text>
-          ) : null}
-          {item.typeId === commonTypeList[3].id ? (
-            <View style={commonStyles.flexRow}>
-              <Text> 头：{item.jaundiceValue.header}</Text>
-              <Text> 胸口：{item.jaundiceValue.chest}</Text>
-            </View>
-          ) : null}
-          {item.typeId === commonTypeList[6].id ? (
-            <Text>身高：{item.height} cm</Text>
-          ) : null}
-          {item.typeId === commonTypeList[7].id ? (
-            <Text>体重：{item.weight} kg</Text>
-          ) : null}
-          {tagView ? (
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-              {tagView}
-            </View>
-          ) : null}
-          {item.remark ? (
-            <Text style={{marginTop: 12}}>{item.remark}</Text>
-          ) : null}
-        </View>
-      </TouchableOpacity>
+      </TouchableHighlight>
     );
   }
 
@@ -399,8 +404,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
   private _renderLifeLineStatics() {
     return (
       <View style={[styles.staticsContainer, {}]}>
-        {/*{this._renderSvgCharts()}*/}
-        <BabyInfoView baby={this.props.baby} />
         <StaticsView
           ref={ref => (this.staticsViewRef = ref)}
           dataList={this.state.dataList}

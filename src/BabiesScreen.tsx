@@ -12,6 +12,9 @@ import {SwipeListView} from 'react-native-swipe-list-view';
 import {formatTimeToDate} from './utils/until';
 import {commonStyles} from './commonStyle';
 import EventBus from './utils/eventBus';
+import {Colors} from './colors';
+import {Avatar} from 'native-base';
+import {Margin} from './space';
 
 export default class BabiesScreen extends Component<any, any> {
   constructor(props) {
@@ -31,22 +34,64 @@ export default class BabiesScreen extends Component<any, any> {
   }
 
   _renderBabyItem(item, index) {
+    let bgColor = '#ffffff';
+    if (index === 0) {
+      bgColor = Colors.primary5;
+    } else if (index % 1 === 0) {
+      bgColor = Colors.primary2;
+    } else if (index % 2 === 0) {
+      bgColor = Colors.primary3;
+    } else if (index % 3 === 0) {
+      bgColor = Colors.primary4;
+    } else {
+    }
     return (
       <TouchableOpacity
+        onLongPress={() => {
+          // 刪除寶寶
+        }}
         onPress={() => {
           this._editBaby(item);
         }}
         style={[
           commonStyles.flexColumn,
           {
-            backgroundColor: '#ffffff',
+            backgroundColor: bgColor,
             padding: 12,
             borderRadius: 12,
             marginTop: 12,
           },
         ]}>
-        <Text>{item.nickname}</Text>
-        <Text>{formatTimeToDate(item.birthDay)}</Text>
+        <View style={[commonStyles.flexColumn]}>
+          <View style={[commonStyles.flexRow]}>
+            {!(item && item.avatar) ? (
+              <Avatar
+                size={'xl'}
+                source={require('./assets/ic_about_us.png')}
+              />
+            ) : (
+              <Avatar
+                size={'xl'}
+                source={{
+                  uri: item.avatar,
+                }}
+              />
+            )}
+            <View
+              style={[
+                commonStyles.flexColumn,
+                {marginLeft: Margin.horizontal, justifyContent: 'center'},
+              ]}>
+              <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
+                {item.nickname}
+              </Text>
+              <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
+                {formatTimeToDate(item.birthDay)}
+              </Text>
+            </View>
+          </View>
+          <View></View>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -75,30 +120,11 @@ export default class BabiesScreen extends Component<any, any> {
     return (
       <View style={[styles.container, {flex: 1}]}>
         <View style={[commonStyles.flexColumn, {flex: 1}]}>
-          <SwipeListView
+          <FlatList
             data={mainData.babies}
             renderItem={({item, index}) => {
               return this._renderBabyItem(item, index);
             }}
-            renderHiddenItem={(data, rowMap) => {
-              return (
-                <View style={styles.rowBack}>
-                  <TouchableOpacity
-                    style={[styles.backRightBtn, styles.backRightBtnRight]}
-                    onPress={() => {
-                      this.deleteRow(rowMap, data.item.key, data.item);
-                    }}>
-                    <Text style={styles.backTextWhite}>删除</Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-            rightOpenValue={-75}
-            previewOpenValue={-40}
-            previewOpenDelay={1000}
-            onRowDidOpen={(rowKey, rowMap, toValue) =>
-              this.onRowDidOpen(rowKey, rowMap)
-            }
           />
         </View>
         <View style={[commonStyles.flexRow, {height: 60}]}>

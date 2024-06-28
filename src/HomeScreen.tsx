@@ -131,7 +131,7 @@ export default class HomeScreen extends React.Component<any, any> {
           <FlatList
             horizontal={true}
             style={{height: 100, flex: 1}}
-            data={this.state.babyList}
+            data={mainData.babies}
             renderItem={({item, index}) => {
               console.log('avatar ', item.avatar);
               return this._renderBabyItem(item);
