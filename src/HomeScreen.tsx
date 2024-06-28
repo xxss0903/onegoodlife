@@ -20,11 +20,7 @@ import {FloatingAction} from 'react-native-floating-action';
 import {commonStyles} from './commonStyle';
 import {Avatar} from 'native-base';
 import {Margin} from './space';
-import * as url from 'node:url';
-import {Colors} from './colors';
 import AddNewLifeModal from './components/AddNewLifeModal.tsx';
-
-const typeMapList = mainData.typeMapList;
 
 export default class HomeScreen extends React.Component<any, any> {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -82,13 +78,6 @@ export default class HomeScreen extends React.Component<any, any> {
     return babyView;
   }
 
-  _addType(type: any) {
-    switch (type.id) {
-      case commonTypeList[0].id:
-        break;
-    }
-  }
-
   // 添加新的时间线
   _addNewLifeline(item: any) {
     logi('add life line ', item);
@@ -105,21 +94,23 @@ export default class HomeScreen extends React.Component<any, any> {
           commonStyles.flexColumn,
           {flex: 1, padding: Margin.horizontal},
         ]}>
-        <TouchableOpacity
-          onPress={() => {
-            // 选择当前宝宝
-          }}>
+        <View>
           <View
             style={[
               commonStyles.flexColumn,
               {marginVertical: Margin.vertical},
             ]}>
-            <Text style={{fontSize: 20}}>Hello</Text>
-            <Text style={{fontSize: 40, fontWeight: 'bold'}}>
-              {this.state.currentBaby.name}
+            <Text style={{fontSize: 18}}>媽媽你好呀</Text>
+            <Text
+              style={{
+                fontSize: 28,
+                fontWeight: 'bold',
+                marginTop: Margin.smalHorizontal,
+              }}>
+              我是{this.state.currentBaby.name}，今天xx天啦
             </Text>
           </View>
-        </TouchableOpacity>
+        </View>
         <View
           style={[
             commonStyles.flexColumn,
@@ -134,12 +125,17 @@ export default class HomeScreen extends React.Component<any, any> {
             data={mainData.babies}
             renderItem={({item, index}) => {
               console.log('avatar ', item.avatar);
-              return this._renderBabyItem(item);
+              return this._renderBabyItem(item, index);
             }}
           />
         </View>
         <View style={[commonStyles.flexColumn, {flex: 1}]}>
-          <PagerView useNext={true} style={{flex: 1}} initialPage={0}>
+          <PagerView
+            scrollEnabled={false}
+            ref={ref => (this.pagerRef = ref)}
+            useNext={true}
+            style={{flex: 1}}
+            initialPage={0}>
             {this._renderBabyPages()}
           </PagerView>
         </View>
@@ -147,35 +143,48 @@ export default class HomeScreen extends React.Component<any, any> {
     );
   }
 
-  private _renderBabyItem(item: any) {
+  _changeBaby(index: Number) {
+    this.setState({
+      currentBaby: mainData.babies[index],
+    });
+    // 更改寶寶信息，切換pagerview的列表
+    this.pagerRef && this.pagerRef.setPage(index);
+  }
+
+  private _renderBabyItem(item: any, index: Number) {
     return (
-      <View
-        style={[
-          commonStyles.flexColumn,
-          commonStyles.center,
-          {
-            marginHorizontal: Margin.midHorizontal,
-            marginVertical: Margin.smalHorizontal,
-          },
-        ]}>
-        {!(item && item.avatar) ? (
-          <Avatar source={require('./assets/ic_about_us.png')} />
-        ) : (
-          <Avatar
-            source={{
-              uri: item.avatar,
-            }}
-          />
-        )}
-        <Text
-          style={{
-            fontSize: 16,
-            marginTop: Margin.smalHorizontal,
-            fontWeight: '400',
-          }}>
-          {item.name}
-        </Text>
-      </View>
+      <TouchableOpacity
+        onPress={() => {
+          this._changeBaby(index);
+        }}>
+        <View
+          style={[
+            commonStyles.flexColumn,
+            commonStyles.center,
+            {
+              marginHorizontal: Margin.midHorizontal,
+              marginVertical: Margin.smalHorizontal,
+            },
+          ]}>
+          {!(item && item.avatar) ? (
+            <Avatar source={require('./assets/ic_about_us.png')} />
+          ) : (
+            <Avatar
+              source={{
+                uri: item.avatar,
+              }}
+            />
+          )}
+          <Text
+            style={{
+              fontSize: 16,
+              marginTop: Margin.smalHorizontal,
+              fontWeight: '400',
+            }}>
+            {item.name}
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
   }
 
