@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {
+  FlatList,
+  Image,
   Modal,
   StyleSheet,
   Text,
@@ -23,6 +25,8 @@ import {logi} from '../utils/logutil';
 import DatePicker from 'react-native-date-picker';
 import {commonStyles} from '../commonStyle';
 import {renderTagList} from './commonViews';
+import {Checkbox} from 'native-base';
+import {Margin} from '../space';
 
 // 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
@@ -394,6 +398,16 @@ export default class AddNewLifeModal extends Component<any, any> {
     );
   }
 
+  _renderSelectPic(item) {
+    if (item.type === 'ADD') {
+      // 添加按钮
+      return <Image style={{}} source={require('../assets/ic_about_us.png')} />;
+    } else {
+      return <Image style={{}} source={{uri: item.url}} />;
+    }
+  }
+
+  // 拉屎
   _renderPoopContent(type) {
     // 拷贝一个新的数据
     if (!this.cloneType) {
@@ -417,7 +431,7 @@ export default class AddNewLifeModal extends Component<any, any> {
     );
     let formatTime = moment(this.cloneType.time).format('yyyy-MM-DD HH:mm');
     return (
-      <View>
+      <View style={{}}>
         <TouchableOpacity
           onPress={() => {
             this._toggleDatetimePicker(true);
@@ -425,6 +439,27 @@ export default class AddNewLifeModal extends Component<any, any> {
           <Text>{formatTime}</Text>
         </TouchableOpacity>
         <View>{tagView}</View>
+        {/*<View style={[commonStyles.flexColumn, {marginTop: Margin.vertical}]}>*/}
+        {/*  <Checkbox*/}
+        {/*    value={this.cloneType.addPicture}*/}
+        {/*    onChange={isSelected => {*/}
+        {/*      this.cloneType.addPicture = isSelected;*/}
+        {/*      this.forceUpdate();*/}
+        {/*    }}>*/}
+        {/*    添加照片*/}
+        {/*  </Checkbox>*/}
+        {/*  {this.cloneType.addPicture ? (*/}
+        {/*    <View style={[commonStyles.flexColumn, {height: 64}]}>*/}
+        {/*      <FlatList*/}
+        {/*        horizontal={true}*/}
+        {/*        data={this.cloneType.picList}*/}
+        {/*        renderItem={item => {*/}
+        {/*          return this._renderSelectPic(item);*/}
+        {/*        }}*/}
+        {/*      />*/}
+        {/*    </View>*/}
+        {/*  ) : null}*/}
+        {/*</View>*/}
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -766,7 +801,9 @@ export default class AddNewLifeModal extends Component<any, any> {
                 }}>
                 <Text>添加{this.currentAddType?.name}</Text>
               </View>
-              <View style={{flex: 1}}>{this._renderContentView()}</View>
+              <View style={{marginBottom: Margin.vertical}}>
+                {this._renderContentView()}
+              </View>
               <View style={styles.line} />
               <View style={styles.modalFooter}>
                 <TouchableOpacity
@@ -878,7 +915,6 @@ const styles = StyleSheet.create({
   },
   addContentContainer: {
     width: '80%',
-    minHeight: 400,
     backgroundColor: '#ffffff',
     shadowColor: '#bbbbbb',
     borderRadius: 12,
