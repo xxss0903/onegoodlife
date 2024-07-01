@@ -1,6 +1,7 @@
 import {Text, TouchableOpacity, View} from 'react-native';
 import {logi} from '../utils/logutil';
 import React from 'react';
+import {Colors} from '../colors';
 
 export const renderTagList = (
   tags,
@@ -19,12 +20,12 @@ export const renderTagList = (
       }
     }
     let bgColor = selected ? '#ff0000' : '#ffffff';
+    let textColor = selected ? Colors.white : Colors.black333;
     return (
       <TouchableOpacity
         disabled={!callback}
         onPress={() => {
           let tagIndex = selectedTags.indexOf(value);
-          logi('tag index', tagIndex + ' # ' + value);
           if (isMultiSelect) {
             // 多选
             if (tagIndex >= 0) {
@@ -52,7 +53,7 @@ export const renderTagList = (
           marginRight: 12,
           marginTop: 12,
         }}>
-        <Text style={{color: '#333333'}}>{value}</Text>
+        <Text style={{color: textColor}}>{value}</Text>
       </TouchableOpacity>
     );
   });

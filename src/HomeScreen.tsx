@@ -82,10 +82,15 @@ export default class HomeScreen extends React.Component<any, any> {
   // 添加新的时间线
   _addNewLifeline(item: any) {
     logi('add life line ', item);
-    this.cloneType = null;
-    this.currentAddType = item;
+    if (item.name === '全部') {
+      // 进入全部
+      this.props.navigation.navigate('AllTypeScreen');
+    } else {
+      this.cloneType = null;
+      this.currentAddType = item;
 
-    this.newlifeModalRef.addNewType(item);
+      this.newlifeModalRef.addNewType(item);
+    }
   }
 
   _renderHomeView() {
