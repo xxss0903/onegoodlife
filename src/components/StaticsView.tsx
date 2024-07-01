@@ -128,7 +128,7 @@ export default class StaticsView extends Component<any, any> {
         <View
           key={index}
           style={[commonStyles.flexRow, {marginBottom: Margin.smalHorizontal}]}>
-          <Text>
+          <Text style={[styles.contentText]}>
             {key}:{data.value}次
           </Text>
           {data.dose > 0 ? <Text style={{}}>，共{data.dose}ml</Text> : null}
@@ -153,14 +153,16 @@ export default class StaticsView extends Component<any, any> {
         <View style={[commonStyles.flexRow, {flex: 1}]}>
           {/*最近24小时统计*/}
           <View style={[commonStyles.flexColumn, {flex: 1}]}>
-            <Text style={[{marginBottom: Margin.smalHorizontal}]}>
+            <Text
+              style={[{marginBottom: Margin.smalHorizontal}, styles.titleText]}>
               最近24小时
             </Text>
             {this._renderDataMap(this.state.last24Data)}
           </View>
           {/*当天的统计*/}
           <View style={[commonStyles.flexColumn, {flex: 1}]}>
-            <Text style={[{marginBottom: Margin.smalHorizontal}]}>
+            <Text
+              style={[{marginBottom: Margin.smalHorizontal}, styles.titleText]}>
               当天数据
             </Text>
             {this._renderDataMap(this.state.todayDataMap)}
@@ -171,4 +173,12 @@ export default class StaticsView extends Component<any, any> {
   }
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  titleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  contentText: {
+    fontSize: 16,
+  },
+});

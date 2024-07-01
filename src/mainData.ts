@@ -53,6 +53,7 @@ export const commonTypeList = [
     value: 'type_4',
     text: '测黄疸',
     position: 3,
+    icon: require('./assets/ic_jaundice.png'),
   },
   {
     id: 5,
@@ -60,6 +61,7 @@ export const commonTypeList = [
     value: 'type_5',
     text: '吐奶',
     position: 4,
+    icon: require('./assets/ic_spitting.png'),
   },
   {
     id: 6,
@@ -67,6 +69,7 @@ export const commonTypeList = [
     value: 'type_6',
     text: '其他',
     position: 5,
+    icon: require('./assets/ic_other.png'),
   },
   {
     id: 7,
@@ -74,6 +77,7 @@ export const commonTypeList = [
     value: 'type_7',
     text: '身高',
     position: 6,
+    icon: require('./assets/ic_height.png'),
   },
   {
     id: 8,
@@ -81,6 +85,7 @@ export const commonTypeList = [
     value: 'type_8',
     text: '体重',
     position: 7,
+    icon: require('./assets/ic_weight.png'),
   },
   {
     id: 9,
@@ -88,6 +93,7 @@ export const commonTypeList = [
     value: 'type_9',
     text: '换尿布',
     position: 8,
+    icon: require('./assets/ic_pee_wrapper.png'),
   },
 ];
 

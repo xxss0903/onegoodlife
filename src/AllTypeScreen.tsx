@@ -6,6 +6,9 @@ import {mainData} from './mainData';
 import AddNewLifeModal from './components/AddNewLifeModal';
 import EventBus from './utils/eventBus';
 import {screenW} from './utils/until';
+import {Margin} from './space';
+import {Colors} from './colors';
+import {logi} from './utils/logutil';
 
 // 存储本地数据的key
 const KEY_LOCAL_DATA = 'key_local_key';
@@ -23,7 +26,19 @@ export default class AllTypeScreen extends React.Component<any, any> {
     };
   }
 
-  _renderItem(value) {
+  _renderItem(value, index) {
+    logi('render type item index', value);
+    let bgColor = Colors.primary;
+    if (index === 1) {
+      bgColor = Colors.primary3;
+    } else if (index % 3 === 0) {
+      bgColor = Colors.primary4;
+    } else if (index % 3 === 0) {
+      bgColor = Colors.primary5;
+    } else if (index % 4 === 0) {
+      bgColor = Colors.primary1;
+    }
+
     return (
       <TouchableOpacity
         onPress={() => {
@@ -35,19 +50,29 @@ export default class AllTypeScreen extends React.Component<any, any> {
             width: (screenW - 60) / 3,
             height: 60,
             marginBottom: 12,
-            backgroundColor: '#ff0000',
+            borderRadius: Margin.corners,
             marginHorizontal: 6,
+            backgroundColor: bgColor,
           },
           commonStyles.center,
         ]}>
-        <Text>{value.name}</Text>
+        <View style={[commonStyles.flexRow]}>
+          <Image
+            style={{width: 22, height: 22, marginRight: Margin.midHorizontal}}
+            source={value.icon}
+          />
+          <Text
+            style={[{color: Colors.white, fontWeight: 'bold', fontSize: 16}]}>
+            {value.name}
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   }
 
   _renderCommonItem() {
-    let view = mainData.commonActions.map(value => {
-      return this._renderItem(value);
+    let view = mainData.commonActions.map((value, index) => {
+      return this._renderItem(value, index);
     });
     return (
       <View
@@ -56,7 +81,6 @@ export default class AllTypeScreen extends React.Component<any, any> {
             display: 'flex',
             flexDirection: 'row',
             flexWrap: 'wrap',
-            backgroundColor: '#ff00ff',
             justifyContent: 'flex-start',
           },
         ]}>
@@ -82,8 +106,8 @@ export default class AllTypeScreen extends React.Component<any, any> {
         otherType.push(value);
       }
     });
-    let view = otherType.map(value => {
-      return this._renderItem(value);
+    let view = otherType.map((value, index) => {
+      return this._renderItem(value, index);
     });
     return (
       <View
@@ -92,7 +116,6 @@ export default class AllTypeScreen extends React.Component<any, any> {
             display: 'flex',
             flexDirection: 'row',
             flexWrap: 'wrap',
-            backgroundColor: '#ff00ff',
             justifyContent: 'flex-start',
           },
         ]}>
@@ -133,7 +156,6 @@ export default class AllTypeScreen extends React.Component<any, any> {
 const styles = StyleSheet.create({
   userInfoContainer: {
     height: 200,
-    backgroundColor: '#ff0000',
   },
   container: {
     padding: 12,
