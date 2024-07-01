@@ -1,5 +1,7 @@
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 import moment from 'moment';
+import {Image} from 'react-native';
+import {Component, createElement} from 'react';
 
 export const milkTags = ['纯奶粉', '母乳', '混合喂养']; // 牛奶类型
 export const poopTags = [

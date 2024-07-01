@@ -2,6 +2,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {logi} from '../utils/logutil';
 import React from 'react';
 import {Colors} from '../colors';
+import {Margin} from '../space';
 
 export const renderTagList = (
   tags,
@@ -51,15 +52,21 @@ export const renderTagList = (
           backgroundColor: bgColor,
           borderRadius: 12,
           marginRight: 12,
-          marginTop: 12,
+          marginTop: isMultiSelect ? Margin.vertical : 0,
         }}>
-        <Text style={{color: textColor}}>{value}</Text>
+        <Text style={{color: textColor, fontSize: 16}}>{value}</Text>
       </TouchableOpacity>
     );
   });
 
   return (
-    <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: isMultiSelect ? Margin.vertical : 0,
+      }}>
       {tagView}
     </View>
   );

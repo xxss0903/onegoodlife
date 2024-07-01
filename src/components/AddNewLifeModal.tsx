@@ -27,6 +27,7 @@ import {commonStyles} from '../commonStyle';
 import {renderTagList} from './commonViews';
 import {Checkbox} from 'native-base';
 import {Margin} from '../space';
+import {Colors} from '../colors';
 
 // 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
@@ -110,10 +111,12 @@ export default class AddNewLifeModal extends Component<any, any> {
     return (
       <View>
         <TouchableOpacity
+          style={[commonStyles.flexRow]}
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.rowTitleText]}>选择日期：</Text>
+          <Text style={[styles.rowContentText]}>{formatTime}</Text>
         </TouchableOpacity>
         <View
           style={[
@@ -121,7 +124,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             commonStyles.flexRow,
             commonStyles.center,
           ]}>
-          <Text>喝奶量：</Text>
+          <Text style={[styles.rowTitleText]}>喝奶量：</Text>
           <TextInput
             style={[
               {
@@ -148,8 +151,15 @@ export default class AddNewLifeModal extends Component<any, any> {
             placeholder={'请输入喝奶量'}
           />
         </View>
-        <View>{commonDoseTagView}</View>
-        <View>{tagView}</View>
+        <View
+          style={[
+            commonStyles.flexRow,
+            {alignItems: 'center', marginTop: Margin.vertical},
+          ]}>
+          <Text style={styles.rowTitleText}>最近奶量：</Text>
+          {commonDoseTagView}
+        </View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -203,7 +213,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
         <View
           style={[
@@ -232,7 +242,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             placeholder={'请输入喝奶量'}
           />
         </View>
-        <View>{tagView}</View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -287,9 +297,9 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
-        <View>{tagView}</View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -343,7 +353,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
         <View
           style={[
@@ -372,7 +382,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             placeholder={'请输入喝奶量'}
           />
         </View>
-        <View>{tagView}</View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -436,31 +446,10 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
-        <View>{tagView}</View>
-        {/*<View style={[commonStyles.flexColumn, {marginTop: Margin.vertical}]}>*/}
-        {/*  <Checkbox*/}
-        {/*    value={this.cloneType.addPicture}*/}
-        {/*    onChange={isSelected => {*/}
-        {/*      this.cloneType.addPicture = isSelected;*/}
-        {/*      this.forceUpdate();*/}
-        {/*    }}>*/}
-        {/*    添加照片*/}
-        {/*  </Checkbox>*/}
-        {/*  {this.cloneType.addPicture ? (*/}
-        {/*    <View style={[commonStyles.flexColumn, {height: 64}]}>*/}
-        {/*      <FlatList*/}
-        {/*        horizontal={true}*/}
-        {/*        data={this.cloneType.picList}*/}
-        {/*        renderItem={item => {*/}
-        {/*          return this._renderSelectPic(item);*/}
-        {/*        }}*/}
-        {/*      />*/}
-        {/*    </View>*/}
-        {/*  ) : null}*/}
-        {/*</View>*/}
-        <View style={{minHeight: 80, marginTop: 12}}>
+        <View style={{}}>{tagView}</View>
+        <View style={{minHeight: 80, marginTop: Margin.vertical}}>
           <TextInput
             style={[
               {
@@ -514,9 +503,9 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
-        <View>{tagView}</View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -571,7 +560,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
         <View
           style={[
@@ -643,7 +632,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             placeholder={'请输入胸口黄疸值'}
           />
         </View>
-        <View>{tagView}</View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -701,9 +690,9 @@ export default class AddNewLifeModal extends Component<any, any> {
           onPress={() => {
             this._toggleDatetimePicker(true);
           }}>
-          <Text>{formatTime}</Text>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
-        <View>{tagView}</View>
+        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
             style={[
@@ -799,7 +788,9 @@ export default class AddNewLifeModal extends Component<any, any> {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <Text>添加{this.currentAddType?.name}</Text>
+                <Text style={[styles.titleText]}>
+                  添加{this.currentAddType?.name}
+                </Text>
               </View>
               <View style={{marginBottom: Margin.vertical}}>
                 {this._renderContentView()}
@@ -1004,5 +995,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'blue',
+  },
+  dateText: {
+    fontSize: 16,
+    color: Colors.black333,
+  },
+  rowContentText: {
+    fontSize: 16,
+    color: Colors.black333,
+  },
+  rowTitleText: {
+    textAlign: 'right',
+    fontSize: 16,
+    color: Colors.black333,
+    width: 80,
+  },
+  titleText: {
+    fontSize: 16,
+    color: Colors.black333,
+    fontWeight: 'bold',
   },
 });

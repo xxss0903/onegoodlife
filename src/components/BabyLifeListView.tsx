@@ -7,6 +7,7 @@ import moment from 'moment';
 import {
   Alert,
   FlatList,
+  Image,
   Modal,
   SafeAreaView,
   StyleSheet,
@@ -179,6 +180,8 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this._refreshLocalData();
   }
 
+  _renderTypeIcon() {}
+
   _renderTypeItem(item, index) {
     let typeName = item.name;
     let time = moment(item.time).format('yyyy-MM-DD HH:mm');
@@ -189,6 +192,11 @@ export default class BabyLifeListView extends React.Component<any, any> {
       tagView = renderTagList(tags, [], null, true);
     }
 
+    logi('render type item ', item);
+    // 根据typeId查找type
+    let type = mainData.typeMapList.filter(
+      value => value.id === item.typeId,
+    )[0];
     return (
       <TouchableHighlight
         onLongPress={() => {
@@ -205,32 +213,70 @@ export default class BabyLifeListView extends React.Component<any, any> {
         style={[styles.timelineItemContainer, {marginTop: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
-            <Text>{typeName}</Text>
+            <Image
+              style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
+              source={type.icon}
+            />
           </View>
           <View style={styles.timelineItemContent}>
-            <Text>时间：{time}</Text>
+            <Text style={[styles.rowTitleText]}>宝宝{item.name}啦</Text>
+            <Text
+              style={[styles.rowCommonText, {marginTop: Margin.midHorizontal}]}>
+              时间：{time}
+            </Text>
             {item.dose ? (
-              <Text style={{marginTop: 12}}>剂量：{item.dose}ml</Text>
+              <Text
+                style={[
+                  {marginTop: Margin.midHorizontal},
+                  styles.rowCommonText,
+                ]}>
+                剂量：{item.dose}ml
+              </Text>
             ) : null}
             {item.typeId === commonTypeList[3].id ? (
               <View style={commonStyles.flexRow}>
-                <Text> 头：{item.jaundiceValue.header}</Text>
-                <Text> 胸口：{item.jaundiceValue.chest}</Text>
+                <Text style={[styles.rowCommonText]}>
+                  {' '}
+                  头：{item.jaundiceValue.header}
+                </Text>
+                <Text style={[styles.rowCommonText]}>
+                  {' '}
+                  胸口：{item.jaundiceValue.chest}
+                </Text>
               </View>
             ) : null}
             {item.typeId === commonTypeList[6].id ? (
-              <Text>身高：{item.height} cm</Text>
+              <Text
+                style={[
+                  {marginTop: Margin.midHorizontal},
+                  styles.rowCommonText,
+                ]}>
+                身高：{item.height} cm
+              </Text>
             ) : null}
             {item.typeId === commonTypeList[7].id ? (
-              <Text>体重：{item.weight} kg</Text>
+              <Text
+                style={[
+                  {marginTop: Margin.midHorizontal},
+                  styles.rowCommonText,
+                ]}>
+                体重：{item.weight} kg
+              </Text>
             ) : null}
             {tagView ? (
-              <View style={{display: 'flex', flexDirection: 'row'}}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginTop: Margin.vertical,
+                }}>
                 {tagView}
               </View>
             ) : null}
             {item.remark ? (
-              <Text style={{marginTop: 12}}>{item.remark}</Text>
+              <Text style={{marginTop: Margin.midHorizontal}}>
+                {item.remark}
+              </Text>
             ) : null}
           </View>
         </View>
@@ -549,5 +595,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'blue',
+  },
+  rowCommonText: {
+    fontSize: 16,
+    color: Colors.black333,
+  },
+  rowTitleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.black333,
   },
 });
