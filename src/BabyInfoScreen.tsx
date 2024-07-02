@@ -11,12 +11,14 @@ import {commonStyles} from './commonStyle';
 import {launchCamera} from 'react-native-image-picker';
 import {AndroidPermissions} from './utils/permissionUtils';
 import {logi} from './utils/logutil';
-import {Image} from 'native-base';
+import {Avatar, Column, Image, VStack} from 'native-base';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
 import {formatTimeToDate} from './utils/until';
 import {DeviceStorage} from './utils/deviceStorage';
 import EventBus from './utils/eventBus';
+import {Margin} from './space';
+import {Colors} from './colors';
 
 export default class BabyInfoScreen extends Component<any, any> {
   constructor(props) {
@@ -39,6 +41,9 @@ export default class BabyInfoScreen extends Component<any, any> {
       this.setState({
         babyInfo: JSON.parse(JSON.stringify(babyInfo)),
       });
+      this.props.navigation.setOptions({title: babyInfo.name});
+    } else {
+      this.props.navigation.setOptions({title: '添加宝宝'});
     }
   }
 
@@ -108,101 +113,151 @@ export default class BabyInfoScreen extends Component<any, any> {
 
   render() {
     return (
-      <View style={[styles.container, {flex: 1}]}>
-        <View
-          style={[
-            commonStyles.flexColumn,
-            {backgroundColor: '#ff0000', padding: 12},
-          ]}>
-          <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
-            <Text style={{marginRight: 12}}>姓名</Text>
-            <TextInput
+      <View style={[{flex: 1}]}>
+        <VStack style={{flex: 1, padding: Margin.horizontal}}>
+          <View
+            style={[
+              commonStyles.flexColumn,
+              {
+                padding: Margin.horizontal,
+                backgroundColor: Colors.white,
+                borderRadius: Margin.corners,
+              },
+            ]}>
+            <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
+              <Text
+                style={[
+                  {width: 80, textAlign: 'right'},
+                  commonStyles.commonContentText,
+                ]}>
+                姓名：
+              </Text>
+              <TextInput
+                style={[
+                  {
+                    textAlign: 'left',
+                    fontSize: 16,
+                    flex: 1,
+                    backgroundColor: '#eeeeee',
+                    color: '#333333',
+                  },
+                ]}
+                value={this.state.babyInfo.name}
+                onChangeText={text => {
+                  this.state.babyInfo.name = text;
+                  this.forceUpdate();
+                }}
+                placeholderTextColor={'#bbbbbb'}
+                placeholder={'请输入宝宝姓名'}
+              />
+            </View>
+            <View
               style={[
-                {
-                  textAlign: 'left',
-                  fontSize: 16,
-                  flex: 1,
-                  backgroundColor: '#eeeeee',
-                  color: '#333333',
-                },
-              ]}
-              value={this.state.babyInfo.name}
-              onChangeText={text => {
-                this.state.babyInfo.name = text;
-                this.forceUpdate();
-              }}
-              placeholderTextColor={'#bbbbbb'}
-              placeholder={'请输入宝宝姓名'}
-            />
-          </View>
-          <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
-            <Text style={{marginRight: 12}}>昵称</Text>
-            <TextInput
-              style={[
-                {
-                  textAlign: 'left',
-                  fontSize: 16,
-                  flex: 1,
-                  backgroundColor: '#eeeeee',
-                  color: '#333333',
-                },
-              ]}
-              value={this.state.babyInfo.nickname}
-              onChangeText={text => {
-                this.state.babyInfo.nickname = text;
-                this.forceUpdate();
-              }}
-              placeholderTextColor={'#bbbbbb'}
-              placeholder={'请输入宝宝昵称'}
-            />
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                datepickerOpen: true,
-              });
-            }}
-            style={[commonStyles.flexRow, {alignItems: 'center'}]}>
-            <Text style={{marginRight: 12}}>出生日期</Text>
-            <Text style={{marginRight: 12}}>
-              {formatTimeToDate(this.state.babyInfo.birthDay)}
-            </Text>
-            <DatePicker
-              is24hourSource="locale"
-              open={this.state.datepickerOpen}
-              date={new Date(this.state.babyInfo.birthDay)}
-              modal={true}
-              mode={'date'}
-              onConfirm={date => {
-                // 确认选择，将日期转为时间戳
-                this.state.babyInfo.birthDay = moment(date).valueOf();
+                commonStyles.flexRow,
+                {alignItems: 'center', marginTop: Margin.vertical},
+              ]}>
+              <Text
+                style={[
+                  {width: 80, textAlign: 'right'},
+                  commonStyles.commonContentText,
+                ]}>
+                昵称：
+              </Text>
+              <TextInput
+                style={[
+                  {
+                    textAlign: 'left',
+                    fontSize: 16,
+                    flex: 1,
+                    backgroundColor: '#eeeeee',
+                    color: '#333333',
+                  },
+                ]}
+                value={this.state.babyInfo.nickname}
+                onChangeText={text => {
+                  this.state.babyInfo.nickname = text;
+                  this.forceUpdate();
+                }}
+                placeholderTextColor={'#bbbbbb'}
+                placeholder={'请输入宝宝昵称'}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => {
                 this.setState({
-                  datepickerOpen: false,
+                  datepickerOpen: true,
                 });
               }}
-              onCancel={() => {
-                this.setState({
-                  datepickerOpen: false,
-                });
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={[commonStyles.flexColumn, {flex: 1}]}>
-          <TouchableOpacity
-            onPress={() => {
-              this._choosePicture();
-            }}>
-            <Text>宝宝头像</Text>
-          </TouchableOpacity>
-          <Image
-            style={{width: 78, height: 78, borderRadius: 40}}
-            source={{
-              uri: this.state.babyInfo.avatar,
-            }}
-          />
-        </View>
-        <View style={[commonStyles.flexRow, {height: 60}]}>
+              style={[
+                commonStyles.flexRow,
+                {alignItems: 'center', marginTop: Margin.vertical},
+              ]}>
+              <Text style={[{width: 80}, commonStyles.commonContentText]}>
+                出生日期：
+              </Text>
+              <Text
+                style={[
+                  {marginRight: Margin.horizontal},
+                  commonStyles.commonContentText,
+                ]}>
+                {formatTimeToDate(this.state.babyInfo.birthDay)}
+              </Text>
+              <DatePicker
+                is24hourSource="locale"
+                open={this.state.datepickerOpen}
+                date={new Date(this.state.babyInfo.birthDay)}
+                modal={true}
+                mode={'date'}
+                style={[commonStyles.commonTextStyle]}
+                onConfirm={date => {
+                  // 确认选择，将日期转为时间戳
+                  this.state.babyInfo.birthDay = moment(date).valueOf();
+                  this.setState({
+                    datepickerOpen: false,
+                  });
+                }}
+                onCancel={() => {
+                  this.setState({
+                    datepickerOpen: false,
+                  });
+                }}
+              />
+            </TouchableOpacity>
+            <View
+              style={[
+                commonStyles.flexRow,
+                {alignItems: 'center', marginTop: Margin.vertical},
+              ]}>
+              <Text
+                style={[
+                  commonStyles.commonContentText,
+                  {width: 80, textAlign: 'right'},
+                ]}>
+                宝宝头像：
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  this._choosePicture();
+                }}>
+                {this.state.babyInfo.avatar ? (
+                  <Avatar
+                    style={{width: 78, height: 78}}
+                    source={{
+                      uri: this.state.babyInfo.avatar,
+                    }}
+                  />
+                ) : (
+                  <Image
+                    style={{width: 78, height: 78, borderRadius: 40}}
+                    source={require('./assets/ic_user_default.png')}
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </VStack>
+
+        <View style={[commonStyles.bottomContainer]}>
           <TouchableOpacity
             onPress={() => {
               this.props.navigation.goBack();

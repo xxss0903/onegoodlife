@@ -22,6 +22,7 @@ export const Colors = {
   primary3: '#eea0ff',
   primary4: '#a9ebf9',
   primary5: '#92e498',
+  primary6: '#40A3FF',
   scoreColor: '#FFCB00',
   answerWrong: '#D0261E',
   wcy: '#D0261E',

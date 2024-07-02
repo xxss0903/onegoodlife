@@ -173,6 +173,12 @@ export const commonStyles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  bottomContainer: {
+    height: 60,
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: Colors.white,
+  },
   fullScreen: {
     width: screenW,
     height: screenH,
@@ -416,6 +422,11 @@ export const commonStyles = StyleSheet.create({
   rowContentText: {
     fontSize: FONT_SIZE_ROW,
     color: COLOR_MAIN_THEME,
+  },
+  // 通用的普通文本样式
+  commonContentText: {
+    fontSize: 16,
+    color: Colors.black333,
   },
   // 字体样式，不带宽度
   commonTextStyle: {

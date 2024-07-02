@@ -234,13 +234,20 @@ export default class BabyLifeListView extends React.Component<any, any> {
               </Text>
             ) : null}
             {item.typeId === commonTypeList[3].id ? (
-              <View style={commonStyles.flexRow}>
+              <View
+                style={[
+                  commonStyles.flexRow,
+                  {marginTop: Margin.midHorizontal},
+                ]}>
                 <Text style={[styles.rowCommonText]}>
-                  {' '}
-                  头：{item.jaundiceValue.header}
+                  {'额头：'}
+                  {item.jaundiceValue.header}
                 </Text>
-                <Text style={[styles.rowCommonText]}>
-                  {' '}
+                <Text
+                  style={[
+                    styles.rowCommonText,
+                    {marginLeft: Margin.horizontal},
+                  ]}>
                   胸口：{item.jaundiceValue.chest}
                 </Text>
               </View>

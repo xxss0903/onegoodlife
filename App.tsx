@@ -21,20 +21,38 @@ const Stack = createNativeStackNavigator();
 function MainStack() {
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-      initialRouteName={'SplashScreen'}>
-      <Stack.Screen name={'SplashScreen'} component={SplashScreen} />
-      <Stack.Screen name={'MainScreen'} component={MainScreen} />
+      initialRouteName={'SplashScreen'}
+      screenOptions={{headerTitleAlign: 'center'}}>
+      <Stack.Screen
+        name={'SplashScreen'}
+        component={SplashScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={'MainScreen'}
+        component={MainScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name={'TypeMangeScreen'} component={TypeMangeScreen} />
       <Stack.Screen
         name={'NewLifeDetailScreen'}
         component={NewLifeDetailScreen}
       />
-      <Stack.Screen name={'AllTypeScreen'} component={AllTypeScreen} />
+      <Stack.Screen
+        name={'AllTypeScreen'}
+        component={AllTypeScreen}
+        options={{title: '全部类型'}}
+      />
       <Stack.Screen name={'BabyInfoScreen'} component={BabyInfoScreen} />
-      <Stack.Screen name={'BabiesScreen'} component={BabiesScreen} />
+      <Stack.Screen
+        name={'BabiesScreen'}
+        component={BabiesScreen}
+        options={{title: '宝宝列表'}}
+      />
     </Stack.Navigator>
   );
 }

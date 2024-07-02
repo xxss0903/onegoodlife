@@ -8,6 +8,7 @@ import {commonStyles} from './commonStyle';
 import {renderTagList} from './components/commonViews';
 import {AndroidPermissions} from './utils/permissionUtils';
 import {showToast} from './utils/toastUtil';
+import {Margin} from './space';
 
 // 记录的记录详情
 export default class NewLifeDetailScreen extends React.Component<any, any> {
@@ -20,7 +21,10 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    logi('type detail ', this.state.data);
+    this.props.navigation.setOptions({title: this.state.data.name});
+  }
 
   _toggleDatetimePicker(open) {
     this.setState({
@@ -55,17 +59,29 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
       <View style={[commonStyles.flexColumn, {flex: 1, padding: 12}]}>
         {/*记录内容*/}
         <View>
-          <Text>类型：{name}</Text>
           <TouchableOpacity
             onPress={() => {
               this._toggleDatetimePicker(true);
             }}>
-            <Text>时间：{formatTime(time)}</Text>
+            <Text
+              style={[
+                commonStyles.commonContentText,
+                {marginTop: Margin.vertical},
+              ]}>
+              时间：{formatTime(time)}
+            </Text>
           </TouchableOpacity>
           <View>
-            <Text>标签</Text>
-            {selectedTags
-              ? renderTagList(
+            <Text
+              style={[
+                commonStyles.commonContentText,
+                {marginTop: Margin.vertical},
+              ]}>
+              标签
+            </Text>
+            {selectedTags ? (
+              <View style={{marginTop: Margin.vertical}}>
+                {renderTagList(
                   tags,
                   selectedTags,
                   tag => {
@@ -73,8 +89,9 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
                   },
                   false,
                   name.indexOf('奶') < 0,
-                )
-              : null}
+                )}
+              </View>
+            ) : null}
           </View>
           <View style={{minHeight: 80, marginTop: 12}}>
             <TextInput

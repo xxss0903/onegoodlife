@@ -119,7 +119,11 @@ export default class BabiesScreen extends Component<any, any> {
   render() {
     return (
       <View style={[styles.container, {flex: 1}]}>
-        <View style={[commonStyles.flexColumn, {flex: 1}]}>
+        <View
+          style={[
+            commonStyles.flexColumn,
+            {flex: 1, padding: Margin.horizontal},
+          ]}>
           <FlatList
             data={mainData.babies}
             renderItem={({item, index}) => {
@@ -127,7 +131,7 @@ export default class BabiesScreen extends Component<any, any> {
             }}
           />
         </View>
-        <View style={[commonStyles.flexRow, {height: 60}]}>
+        <View style={[commonStyles.bottomContainer]}>
           <TouchableOpacity
             onPress={() => {
               this._addNewBaby();
@@ -142,9 +146,7 @@ export default class BabiesScreen extends Component<any, any> {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 12,
-  },
+  container: {},
   titleImg: {
     width: 20,
     height: 20,

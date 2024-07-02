@@ -2,6 +2,7 @@
 import moment from 'moment';
 import {Image} from 'react-native';
 import {Component, createElement} from 'react';
+import {Colors} from './colors';
 
 export const milkTags = ['纯奶粉', '母乳', '混合喂养']; // 牛奶类型
 export const poopTags = [
@@ -30,6 +31,7 @@ export const commonTypeList = [
     text: '牛奶',
     position: 0,
     icon: require('./assets/ic_milk.png'),
+    bgColor: Colors.primary4,
   },
   {
     id: 2,
@@ -38,6 +40,7 @@ export const commonTypeList = [
     text: '拉屎',
     position: 1,
     icon: require('./assets/ic_poop.png'),
+    bgColor: Colors.primary5,
   },
   {
     id: 3,
@@ -46,6 +49,7 @@ export const commonTypeList = [
     text: '撒尿',
     position: 2,
     icon: require('./assets/ic_pee.png'),
+    bgColor: Colors.primary6,
   },
   {
     id: 4,
@@ -54,6 +58,7 @@ export const commonTypeList = [
     text: '测黄疸',
     position: 3,
     icon: require('./assets/ic_jaundice.png'),
+    bgColor: Colors.primary1,
   },
   {
     id: 5,
@@ -62,6 +67,7 @@ export const commonTypeList = [
     text: '吐奶',
     position: 4,
     icon: require('./assets/ic_spitting.png'),
+    bgColor: Colors.primary2,
   },
   {
     id: 6,
@@ -70,6 +76,7 @@ export const commonTypeList = [
     text: '其他',
     position: 5,
     icon: require('./assets/ic_other.png'),
+    bgColor: Colors.primary3,
   },
   {
     id: 7,
@@ -78,6 +85,7 @@ export const commonTypeList = [
     text: '身高',
     position: 6,
     icon: require('./assets/ic_height.png'),
+    bgColor: Colors.primary4,
   },
   {
     id: 8,
@@ -86,6 +94,7 @@ export const commonTypeList = [
     text: '体重',
     position: 7,
     icon: require('./assets/ic_weight.png'),
+    bgColor: Colors.primary5,
   },
   {
     id: 9,
@@ -94,6 +103,7 @@ export const commonTypeList = [
     text: '换尿布',
     position: 8,
     icon: require('./assets/ic_pee_wrapper.png'),
+    bgColor: Colors.primary6,
   },
 ];
 

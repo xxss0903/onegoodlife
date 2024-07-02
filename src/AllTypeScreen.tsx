@@ -28,16 +28,6 @@ export default class AllTypeScreen extends React.Component<any, any> {
 
   _renderItem(value, index) {
     logi('render type item index', value);
-    let bgColor = Colors.primary;
-    if (index === 1) {
-      bgColor = Colors.primary3;
-    } else if (index % 3 === 0) {
-      bgColor = Colors.primary4;
-    } else if (index % 3 === 0) {
-      bgColor = Colors.primary5;
-    } else if (index % 4 === 0) {
-      bgColor = Colors.primary1;
-    }
 
     return (
       <TouchableOpacity
@@ -52,7 +42,7 @@ export default class AllTypeScreen extends React.Component<any, any> {
             marginBottom: 12,
             borderRadius: Margin.corners,
             marginHorizontal: 6,
-            backgroundColor: bgColor,
+            backgroundColor: value.bgColor,
           },
           commonStyles.center,
         ]}>
