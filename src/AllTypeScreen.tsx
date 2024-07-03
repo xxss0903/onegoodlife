@@ -27,8 +27,6 @@ export default class AllTypeScreen extends React.Component<any, any> {
   }
 
   _renderItem(value, index) {
-    logi('render type item index', value);
-
     return (
       <TouchableOpacity
         onPress={() => {

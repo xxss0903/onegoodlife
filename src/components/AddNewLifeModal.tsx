@@ -299,8 +299,8 @@ export default class AddNewLifeModal extends Component<any, any> {
           }}>
           <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
         </TouchableOpacity>
-        <View style={{marginTop: Margin.vertical}}>{tagView}</View>
-        <View style={{minHeight: 80, marginTop: 12}}>
+        <View style={{}}>{tagView}</View>
+        <View style={{minHeight: 80, marginTop: Margin.vertical}}>
           <TextInput
             style={[
               {

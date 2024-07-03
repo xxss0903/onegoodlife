@@ -124,12 +124,10 @@ export default class BabyLifeListView extends React.Component<any, any> {
   // 获取数据库数据
   async _initDBData() {
     try {
-      logi('get baby data ', this.props.baby);
       let localData = await getDataListOrderByTime(
         App.db,
         this.props.baby.babyId,
       );
-      logi('init localdata 22', localData);
       if (localData && localData.length > 0) {
         let dataList = [];
         // 获取列表数据
@@ -158,11 +156,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
     }
   }
 
-  _initListeners() {
-    EventBus.addEventListener(EventBus.REFRESH_DATA, data => {
-      this._insertNewlifeLineImpl(data);
-    });
-  }
+  _initListeners() {}
 
   componentWillUnmount() {
     EventBus.clearAllListeners();
@@ -171,18 +165,13 @@ export default class BabyLifeListView extends React.Component<any, any> {
   _refreshLocalData() {
     DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
       data => {
-        logi('save data ', data);
-
-        DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA).then(res => {
-          logi('get data list', res);
-        });
+        DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA).then(res => {});
       },
     );
   }
 
   _insertNewlifeLineImpl(data) {
-    logi('insert data to baby 2' + this.props.baby);
-    this._insertItemToDB(data, this.props.baby.babyId);
+    this._insertItemToDB(data, mainData.babyInfo.babyId);
     // 插入到最新的数据，这里还是根据时间进行设置
     let dataList = this._insertItemByResortTime(this.state.dataList, data);
     this.setState(
@@ -209,7 +198,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
       tagView = renderTagList(tags, [], null, true);
     }
 
-    logi('render type item ', item);
     // 根据typeId查找type
     let type = mainData.typeMapList.filter(
       value => value.id === item.typeId,
@@ -388,6 +376,22 @@ export default class BabyLifeListView extends React.Component<any, any> {
     return dataList;
   }
 
+  insertNewData(data) {
+    logi('insert new data', data);
+    this._insertNewlifeLineImpl(data);
+  }
+
+  refreshData(dataList: any) {
+    this.setState(
+      {
+        dataList: dataList,
+      },
+      () => {
+        this.staticsViewRef?.refreshData();
+      },
+    );
+  }
+
   // 刷新统计数据图标
   _refreshStaticsCharts() {
     // setTimeout(() => {
@@ -422,7 +426,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
             <FlatList
               data={this.state.dataList}
               renderItem={({item, index}) => {
-                logi('render data item223 ', item);
                 if (item.itemType === 1) {
                   return this._renderLifeLineStatics();
                 } else {
@@ -432,13 +435,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
             />
           </View>
         </View>
-        <AddNewLifeModal
-          addNewLifeline={item => {
-            this._insertNewlifeLineImpl(item);
-          }}
-          currentAddType={this.currentAddType}
-          ref={ref => (this.newlifeModalRef = ref)}
-        />
+
         {this._renderDatetimePicker()}
         {/*{this._renderExportAction()}*/}
       </View>

@@ -22,6 +22,9 @@ import {Avatar} from 'native-base';
 import {Margin} from './space';
 import AddNewLifeModal from './components/AddNewLifeModal.tsx';
 import {DeviceStorage} from './utils/deviceStorage';
+import {insertData} from './utils/dbService';
+import App from '../App.tsx';
+import {encodeFuc} from './utils/base64';
 
 export default class HomeScreen extends React.Component<any, any> {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -29,6 +32,8 @@ export default class HomeScreen extends React.Component<any, any> {
   private currentAddType = null; // 当前的添加类型
   private newlifeModalRef: any;
   private cloneType: any;
+  private babyPageRefs = []; // 宝宝的分页列表
+  private currentBabyPageRef = null; // 当前宝宝分页
 
   constructor(props) {
     super(props);
@@ -70,10 +75,14 @@ export default class HomeScreen extends React.Component<any, any> {
 
   _renderBabyPages() {
     let babyView = mainData.babies.map((value, index) => {
-      logi('init baby ' + index, value);
+      logi('init baby page ' + index, value);
       return (
         <View key={index} style={[{flex: 1}]}>
-          <BabyLifeListView navigation={this.props.navigation} baby={value} />
+          <BabyLifeListView
+            ref={ref => (this.babyPageRefs[index] = ref)}
+            navigation={this.props.navigation}
+            baby={value}
+          />
         </View>
       );
     });
@@ -151,10 +160,12 @@ export default class HomeScreen extends React.Component<any, any> {
   }
 
   _changeBaby(index: Number) {
+    this.currentBabyPageRef = this.babyPageRefs[index];
     this.setState({
       currentBaby: mainData.babies[index],
       currentBabyIndex: index,
     });
+    mainData.babyInfo = mainData.babies[index];
     // 更改寶寶信息，切換pagerview的列表
     this.pagerRef && this.pagerRef.setPage(index);
   }
@@ -204,10 +215,56 @@ export default class HomeScreen extends React.Component<any, any> {
     );
   }
 
+  // 插入数据到数据库
+  async _insertItemToDB(data, babyId) {
+    await insertData(App.db, data, encodeFuc(JSON.stringify(data)), babyId);
+  }
+
+  // 重新排序记录，根据时间插入
+  _insertItemByResortTime(dataList, newData) {
+    if (!newData) {
+      return dataList;
+    }
+    if (dataList && dataList.length > 0) {
+      if (dataList[0].time < newData.time) {
+        dataList.unshift(newData);
+      } else {
+        for (let i = 0; i < dataList.length; i++) {
+          let value = dataList[i];
+          if (value.time < newData.time) {
+            dataList.splice(i, 0, newData);
+            return dataList;
+          }
+        }
+        dataList.push(newData);
+      }
+    } else {
+      dataList = [newData];
+    }
+    return dataList;
+  }
+
+  // 刷新统计数据图标
+  _refreshStaticsCharts() {
+    this.currentBabyPageRef?.refreshData();
+  }
+
+  _refreshLocalData() {
+    // DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
+    //   data => {},
+    // );
+  }
+
   // 插入新的类型
-  _insertNewlifeLineImpl(data: any) {
-    logi('insert new data', data);
-    EventBus.sendEvent(EventBus.REFRESH_DATA, data);
+  _insertNewlifeLineImpl(data) {
+    if (!this.currentBabyPageRef) {
+      this.currentBabyPageRef = this.babyPageRefs[this.state.currentBabyIndex];
+    }
+    logi('homescreen insert newdata', this.currentBabyPageRef);
+    // this._insertItemToDB(data, mainData.babyInfo.babyId);
+    // // 插入到最新的数据，这里还是根据时间进行设置
+    // let dataList = this._insertItemByResortTime(this.state.dataList, data);
+    this.currentBabyPageRef?.insertNewData(data);
   }
 
   render() {
@@ -233,6 +290,7 @@ export default class HomeScreen extends React.Component<any, any> {
           addNewLifeline={(item: any) => {
             this._insertNewlifeLineImpl(item);
           }}
+          baby={mainData.babyInfo} // current babyinfo
           currentAddType={this.currentAddType}
           ref={ref => (this.newlifeModalRef = ref)}
         />
