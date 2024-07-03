@@ -17,11 +17,11 @@ export default {
 };
 
 export const Colors = {
-  primary1: '#2f2e2d',
-  primary2: '#fdf00e',
-  primary3: '#eea0ff',
-  primary4: '#a9ebf9',
-  primary5: '#92e498',
+  primary1: '#CDB4DB',
+  primary2: '#FFC8DD',
+  primary3: '#FFAFCC',
+  primary4: '#BDE0FE',
+  primary5: '#A2D2FF',
   primary6: '#40A3FF',
   scoreColor: '#FFCB00',
   answerWrong: '#D0261E',

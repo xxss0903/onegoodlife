@@ -124,10 +124,12 @@ export default class BabyLifeListView extends React.Component<any, any> {
   // 获取数据库数据
   async _initDBData() {
     try {
+      logi('get baby data ', this.props.baby);
       let localData = await getDataListOrderByTime(
         App.db,
         this.props.baby.babyId,
       );
+      logi('init localdata 22', localData);
       if (localData && localData.length > 0) {
         let dataList = [];
         // 获取列表数据
@@ -136,10 +138,20 @@ export default class BabyLifeListView extends React.Component<any, any> {
           let dataObj = JSON.parse(data);
           dataList.push(dataObj);
         }
+        // 如果第一个不是统计则添加统计
+        if (dataList[0].itemType !== 1) {
+          dataList.unshift({itemType: 1});
+        }
+        logi('init data with itemtype = 1', dataList);
         // 更新界面数据
-        this.setState({
-          dataList: dataList,
-        });
+        this.setState(
+          {
+            dataList: dataList,
+          },
+          () => {
+            this.staticsViewRef?.refreshData();
+          },
+        );
       }
     } catch (e) {
       logi('get data error', e);
@@ -160,11 +172,16 @@ export default class BabyLifeListView extends React.Component<any, any> {
     DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
       data => {
         logi('save data ', data);
+
+        DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA).then(res => {
+          logi('get data list', res);
+        });
       },
     );
   }
 
   _insertNewlifeLineImpl(data) {
+    logi('insert data to baby 2' + this.props.baby);
     this._insertItemToDB(data, this.props.baby.babyId);
     // 插入到最新的数据，这里还是根据时间进行设置
     let dataList = this._insertItemByResortTime(this.state.dataList, data);
@@ -377,7 +394,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
     //     this._refreshLast24HourCharts()
     //     this._refreshTodayCharts()
     // }, 0)
-    this.staticsViewRef.refreshData();
+    this.staticsViewRef?.refreshData();
   }
 
   _initEcharts() {
@@ -405,6 +422,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
             <FlatList
               data={this.state.dataList}
               renderItem={({item, index}) => {
+                logi('render data item223 ', item);
                 if (item.itemType === 1) {
                   return this._renderLifeLineStatics();
                 } else {

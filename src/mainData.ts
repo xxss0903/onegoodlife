@@ -122,7 +122,7 @@ export const mainData = {
       birthDay: moment().valueOf(), // 出生日期
       avatar:
         'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658', // 头像
-      babyId: 0,
+      babyId: 1,
     },
     {
       name: 'Zack', // 姓名
@@ -130,7 +130,7 @@ export const mainData = {
       birthDay: moment().valueOf(), // 出生日期
       avatar:
         'https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80', // 头像
-      babyId: 1,
+      babyId: 2,
     },
   ], // 可以添加多个宝宝，比如双胞胎等
   babyInfo: {

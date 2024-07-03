@@ -21,6 +21,7 @@ import {commonStyles} from './commonStyle';
 import {Avatar} from 'native-base';
 import {Margin} from './space';
 import AddNewLifeModal from './components/AddNewLifeModal.tsx';
+import {DeviceStorage} from './utils/deviceStorage';
 
 export default class HomeScreen extends React.Component<any, any> {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -205,6 +206,7 @@ export default class HomeScreen extends React.Component<any, any> {
 
   // 插入新的类型
   _insertNewlifeLineImpl(data: any) {
+    logi('insert new data', data);
     EventBus.sendEvent(EventBus.REFRESH_DATA, data);
   }
 
