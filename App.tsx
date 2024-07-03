@@ -15,6 +15,7 @@ import NewLifeDetailScreen from './src/NewLifeDetailScreen';
 import AllTypeScreen from './src/AllTypeScreen';
 import BabyInfoScreen from './src/BabyInfoScreen';
 import BabiesScreen from './src/BabiesScreen';
+import UserInfoScreen from './src/UserInfoScreen.tsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,11 @@ function MainStack() {
         name={'BabiesScreen'}
         component={BabiesScreen}
         options={{title: '宝宝列表'}}
+      />
+      <Stack.Screen
+        name={'UserInfoScreen'}
+        component={UserInfoScreen}
+        options={{title: '我的信息'}}
       />
     </Stack.Navigator>
   );

@@ -25,6 +25,7 @@ import {DeviceStorage} from './utils/deviceStorage';
 import {insertData} from './utils/dbService';
 import App from '../App.tsx';
 import {encodeFuc} from './utils/base64';
+import moment from 'moment';
 
 export default class HomeScreen extends React.Component<any, any> {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -38,9 +39,7 @@ export default class HomeScreen extends React.Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {
-      currentBaby: {
-        name: 'Jack',
-      },
+      currentBaby: {},
       currentBabyIndex: 0,
       babyList: [
         {
@@ -59,12 +58,19 @@ export default class HomeScreen extends React.Component<any, any> {
 
   componentDidMount() {
     this._initListeners();
+    this.setState({
+      currentBaby: mainData.babies[0],
+      currentBabyIndex: 0,
+    });
   }
 
   _initListeners() {
     EventBus.addEventListener(EventBus.REFRESH_BABY_LIST, () => {
-      logi('refresh baby list');
       this.forceUpdate();
+    });
+    // 在全部页面插入之后，在这里使用本地插入和刷新当前宝宝的页面
+    EventBus.addEventListener(EventBus.INSERT_NEW_LIFETIME, data => {
+      this._insertNewlifeLineImpl(data);
     });
   }
 
@@ -75,7 +81,6 @@ export default class HomeScreen extends React.Component<any, any> {
 
   _renderBabyPages() {
     let babyView = mainData.babies.map((value, index) => {
-      logi('init baby page ' + index, value);
       return (
         <View key={index} style={[{flex: 1}]}>
           <BabyLifeListView
@@ -91,7 +96,6 @@ export default class HomeScreen extends React.Component<any, any> {
 
   // 添加新的时间线
   _addNewLifeline(item: any) {
-    logi('add life line ', item);
     if (item.name === '全部') {
       // 进入全部
       this.props.navigation.navigate('AllTypeScreen');
@@ -101,6 +105,15 @@ export default class HomeScreen extends React.Component<any, any> {
 
       this.newlifeModalRef.addNewType(item);
     }
+  }
+
+  /**
+   * 获取出生天数
+   * @param birthDay
+   */
+  _getBirthDay(birthDay) {
+    let diffDay = moment().diff(moment(birthDay), 'day');
+    return diffDay + 1;
   }
 
   _renderHomeView() {
@@ -116,14 +129,15 @@ export default class HomeScreen extends React.Component<any, any> {
               commonStyles.flexColumn,
               {marginVertical: Margin.vertical},
             ]}>
-            <Text style={{fontSize: 18}}>媽媽你好呀</Text>
+            <Text style={{fontSize: 18}}>妈妈你好呀</Text>
             <Text
               style={{
                 fontSize: 28,
                 fontWeight: 'bold',
                 marginTop: Margin.smalHorizontal,
               }}>
-              我是{this.state.currentBaby.name}，今天xx天啦
+              我是{this.state.currentBaby.name}，今天
+              {this._getBirthDay(this.state.currentBaby.birthDay)}天啦
             </Text>
           </View>
         </View>
@@ -215,55 +229,11 @@ export default class HomeScreen extends React.Component<any, any> {
     );
   }
 
-  // 插入数据到数据库
-  async _insertItemToDB(data, babyId) {
-    await insertData(App.db, data, encodeFuc(JSON.stringify(data)), babyId);
-  }
-
-  // 重新排序记录，根据时间插入
-  _insertItemByResortTime(dataList, newData) {
-    if (!newData) {
-      return dataList;
-    }
-    if (dataList && dataList.length > 0) {
-      if (dataList[0].time < newData.time) {
-        dataList.unshift(newData);
-      } else {
-        for (let i = 0; i < dataList.length; i++) {
-          let value = dataList[i];
-          if (value.time < newData.time) {
-            dataList.splice(i, 0, newData);
-            return dataList;
-          }
-        }
-        dataList.push(newData);
-      }
-    } else {
-      dataList = [newData];
-    }
-    return dataList;
-  }
-
-  // 刷新统计数据图标
-  _refreshStaticsCharts() {
-    this.currentBabyPageRef?.refreshData();
-  }
-
-  _refreshLocalData() {
-    // DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
-    //   data => {},
-    // );
-  }
-
   // 插入新的类型
   _insertNewlifeLineImpl(data) {
     if (!this.currentBabyPageRef) {
       this.currentBabyPageRef = this.babyPageRefs[this.state.currentBabyIndex];
     }
-    logi('homescreen insert newdata', this.currentBabyPageRef);
-    // this._insertItemToDB(data, mainData.babyInfo.babyId);
-    // // 插入到最新的数据，这里还是根据时间进行设置
-    // let dataList = this._insertItemByResortTime(this.state.dataList, data);
     this.currentBabyPageRef?.insertNewData(data);
   }
 

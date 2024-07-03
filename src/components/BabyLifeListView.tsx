@@ -394,10 +394,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   // 刷新统计数据图标
   _refreshStaticsCharts() {
-    // setTimeout(() => {
-    //     this._refreshLast24HourCharts()
-    //     this._refreshTodayCharts()
-    // }, 0)
     this.staticsViewRef?.refreshData();
   }
 

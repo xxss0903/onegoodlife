@@ -114,7 +114,7 @@ export default class AllTypeScreen extends React.Component<any, any> {
 
   // 插入新的类型
   _insertNewlifeLineImpl(data) {
-    EventBus.sendEvent(EventBus.REFRESH_DATA, data);
+    EventBus.sendEvent(EventBus.INSERT_NEW_LIFETIME, data);
     this.props.navigation.goBack();
   }
 
@@ -122,12 +122,16 @@ export default class AllTypeScreen extends React.Component<any, any> {
     return (
       <View style={styles.container}>
         <View>
-          <Text>常用类型</Text>
-          <View>{this._renderCommonItem()}</View>
+          <Text style={[commonStyles.commonContentText]}>常用类型</Text>
+          <View style={{marginTop: Margin.vertical}}>
+            {this._renderCommonItem()}
+          </View>
         </View>
         <View>
-          <Text>全部类型</Text>
-          <View>{this._renderOtherItem()}</View>
+          <Text style={[commonStyles.commonContentText]}>全部类型</Text>
+          <View style={{marginTop: Margin.vertical}}>
+            {this._renderOtherItem()}
+          </View>
         </View>
         <AddNewLifeModal
           addNewLifeline={item => {

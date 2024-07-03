@@ -92,36 +92,30 @@ export default class MineScreen extends React.Component<any, any> {
               marginTop: -2 * Margin.vertical,
             },
           ]}>
-          <View>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingVertical: Margin.bigTop,
-                paddingHorizontal: Margin.horizontal,
-                alignItems: 'center',
-              }}
-              onPress={() => {
-                this.props.navigation.navigate('BabiesScreen');
-              }}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  style={styles.titleImg}
-                  source={require('./assets/ic_version.png')}
-                />
-                <Text
-                  style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>
-                  宝宝信息
-                </Text>
-              </View>
-              <View></View>
-            </TouchableOpacity>
-            <View style={commonStyles.lineWithMargin} />
-          </View>
           {ItemRow(
             <Image
               style={styles.titleImg}
-              source={require('./assets/ic_version.png')}
+              source={require('./assets/ic_mine_n.png')}
+            />,
+            '我的信息',
+            () => {
+              this.props.navigation.navigate('UserInfoScreen');
+            },
+          )}
+          {ItemRow(
+            <Image
+              style={styles.titleImg}
+              source={require('./assets/ic_baby.png')}
+            />,
+            '宝宝信息',
+            () => {
+              this.props.navigation.navigate('BabiesScreen');
+            },
+          )}
+          {ItemRow(
+            <Image
+              style={styles.titleImg}
+              source={require('./assets/ic_type.png')}
             />,
             '类型管理',
             () => {
@@ -131,7 +125,7 @@ export default class MineScreen extends React.Component<any, any> {
           {ItemRow(
             <Image
               style={styles.titleImg}
-              source={require('./assets/ic_version.png')}
+              source={require('./assets/ic_setting.png')}
             />,
             '应用设置',
             () => {
