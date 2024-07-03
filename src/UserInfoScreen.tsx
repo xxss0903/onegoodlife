@@ -131,15 +131,6 @@ export default class UserInfoScreen extends BaseScreen {
             }}
           />
         </View>
-        <View style={[commonStyles.bottomContainer]}>
-          <TouchableOpacity
-            onPress={() => {
-              this._addNewBaby();
-            }}
-            style={[{flex: 1}, commonStyles.center]}>
-            <Text>添加宝宝</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   }

@@ -65,6 +65,7 @@ export default class HomeScreen extends React.Component<any, any> {
   }
 
   _initListeners() {
+    // 更新了宝宝信息之后刷新列表
     EventBus.addEventListener(EventBus.REFRESH_BABY_LIST, () => {
       this.forceUpdate();
     });

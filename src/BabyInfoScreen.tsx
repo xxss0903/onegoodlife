@@ -93,12 +93,15 @@ export default class BabyInfoScreen extends Component<any, any> {
   _confirmBabyInfo() {
     try {
       if (this._checkBabyInfo()) {
-        // 宝贝的id
-        this.state.babyInfo.babyId = mainData.babies.length + 1;
-        mainData.babies.unshift(
-          JSON.parse(JSON.stringify(this.state.babyInfo)),
-        );
-        mainData.babyInfo = mainData.babies[0]; // 最新的宝贝数据作为更新的
+        let maxBabyId = 1;
+
+        mainData.babies.forEach(value => {
+          if (value.babyId > maxBabyId) {
+            maxBabyId = value.babyId;
+          }
+        });
+        this.state.babyInfo.babyId = maxBabyId;
+        mainData.babies.push(JSON.parse(JSON.stringify(this.state.babyInfo)));
         DeviceStorage.refreshMainData();
         EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
         if (this.props.route.params?.callback) {

@@ -113,7 +113,11 @@ export default class BabiesScreen extends Component<any, any> {
   };
 
   _addNewBaby() {
-    this.props.navigation.navigate('BabyInfoScreen');
+    this.props.navigation.navigate('BabyInfoScreen', {
+      callback: () => {
+        this.forceUpdate();
+      },
+    });
   }
 
   render() {
