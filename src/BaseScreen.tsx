@@ -1,14 +1,9 @@
 import React from 'react';
-import {View} from 'react-native';
-import {commonStyles} from './commonStyle';
+import {SafeAreaView, View} from 'react-native';
 
 export default class BaseScreen extends React.Component<any, any> {
   render() {
-    return (
-      <View style={[commonStyles.flexColumn, {flex: 1}]}>
-        {this.renderScreen()}
-      </View>
-    );
+    return <SafeAreaView>{this.renderScreen()}</SafeAreaView>;
   }
 
   renderScreen() {

@@ -4,8 +4,9 @@ import {DeviceStorage} from './utils/deviceStorage';
 import {createLifeRecordTable, getDBConnection} from './utils/dbService';
 import {logi} from './utils/logutil';
 import App from '../App';
+import BaseScreen from './BaseScreen.tsx';
 
-export default class SplashScreen extends React.Component<any, any> {
+export default class SplashScreen extends BaseScreen {
   componentDidMount() {
     setTimeout(async () => {
       await this._initDb();
@@ -26,7 +27,7 @@ export default class SplashScreen extends React.Component<any, any> {
     }
   }
 
-  render() {
+  renderScreen() {
     return <View />;
   }
 }

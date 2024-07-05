@@ -1,13 +1,5 @@
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import {mainData} from './mainData';
-import {SwipeListView} from 'react-native-swipe-list-view';
 import {formatTimeToDate} from './utils/until';
 import {commonStyles} from './commonStyle';
 import EventBus from './utils/eventBus';

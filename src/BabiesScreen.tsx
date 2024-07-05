@@ -1,23 +1,23 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  SafeAreaView,
 } from 'react-native';
 import {mainData} from './mainData';
-import {SwipeListView} from 'react-native-swipe-list-view';
 import {formatTimeToDate} from './utils/until';
 import {commonStyles} from './commonStyle';
 import EventBus from './utils/eventBus';
 import {Colors} from './colors';
 import {Avatar} from 'native-base';
 import {Margin} from './space';
+import BaseScreen from './BaseScreen.tsx';
 
-export default class BabiesScreen extends Component<any, any> {
-  constructor(props) {
+export default class BabiesScreen extends BaseScreen {
+  constructor(props: any) {
     super(props);
     this.state = {
       datepickerOpen: false,
@@ -120,7 +120,7 @@ export default class BabiesScreen extends Component<any, any> {
     });
   }
 
-  render() {
+  renderScreen() {
     return (
       <View style={[styles.container, {flex: 1}]}>
         <View

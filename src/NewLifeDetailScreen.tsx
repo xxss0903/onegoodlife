@@ -9,9 +9,10 @@ import {renderTagList} from './components/commonViews';
 import {AndroidPermissions} from './utils/permissionUtils';
 import {showToast} from './utils/toastUtil';
 import {Margin} from './space';
+import BaseScreen from './BaseScreen.tsx';
 
 // 记录的记录详情
-export default class NewLifeDetailScreen extends React.Component<any, any> {
+export default class NewLifeDetailScreen extends BaseScreen {
   constructor(props) {
     super(props);
     let data = JSON.parse(JSON.stringify(this.props.route.params?.data));
@@ -53,7 +54,7 @@ export default class NewLifeDetailScreen extends React.Component<any, any> {
     );
   }
 
-  render() {
+  renderScreen() {
     const {time, remark, name, selectedTags, tags} = this.state.data;
     return (
       <View style={[commonStyles.flexColumn, {flex: 1, padding: 12}]}>

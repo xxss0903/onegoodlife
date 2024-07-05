@@ -13,9 +13,7 @@ import {Colors} from './colors';
 import moment from 'moment';
 import {mainData} from './mainData';
 import {Avatar} from 'native-base';
-import {Font} from './font';
-import {FontStyle} from '@shopify/react-native-skia';
-import {background} from 'native-base/lib/typescript/theme/styled-system';
+import BaseScreen from './BaseScreen.tsx';
 
 const ItemRow = (img, title, callback, showLine = true) => {
   return (
@@ -42,7 +40,7 @@ const ItemRow = (img, title, callback, showLine = true) => {
   );
 };
 
-export default class MineScreen extends React.Component<any, any> {
+export default class MineScreen extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
@@ -53,7 +51,7 @@ export default class MineScreen extends React.Component<any, any> {
 
   componentDidMount() {}
 
-  render() {
+  renderScreen() {
     return (
       <View
         style={[

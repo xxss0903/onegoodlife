@@ -11,7 +11,7 @@ import {commonStyles} from './commonStyle';
 import {launchCamera} from 'react-native-image-picker';
 import {AndroidPermissions} from './utils/permissionUtils';
 import {logi} from './utils/logutil';
-import {Avatar, Column, Image, VStack} from 'native-base';
+import {Avatar, Image, VStack} from 'native-base';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
 import {formatTimeToDate} from './utils/until';
@@ -19,9 +19,10 @@ import {DeviceStorage} from './utils/deviceStorage';
 import EventBus from './utils/eventBus';
 import {Margin} from './space';
 import {Colors} from './colors';
+import BaseScreen from './BaseScreen.tsx';
 
-export default class BabyInfoScreen extends Component<any, any> {
-  constructor(props) {
+export default class BabyInfoScreen extends BaseScreen {
+  constructor(props: any) {
     super(props);
     this.state = {
       datepickerOpen: false,
@@ -58,6 +59,7 @@ export default class BabyInfoScreen extends Component<any, any> {
             launchCamera({
               cameraType: 'back',
               saveToPhotos: true,
+              mediaType: 'photo',
             })
               .then(res => {
                 logi('camera res', res);
@@ -114,7 +116,7 @@ export default class BabyInfoScreen extends Component<any, any> {
     }
   }
 
-  render() {
+  renderScreen() {
     return (
       <View style={[{flex: 1}]}>
         <VStack style={{flex: 1, padding: Margin.horizontal}}>

@@ -1,39 +1,12 @@
 import React from 'react';
 import {TouchableOpacity, View, Text, StyleSheet, Image} from 'react-native';
-import {commonStyles} from './commonStyle';
-import {Margin} from './space';
-import {Colors} from './colors';
 import moment from 'moment';
 import {DeviceStorage} from './utils/deviceStorage';
 import {mainData} from './mainData';
-
-const ItemRow = (img, title, callback, showLine = true) => {
-  return (
-    <View>
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingVertical: Margin.bigTop,
-          paddingHorizontal: Margin.horizontal,
-          alignItems: 'center',
-        }}
-        onPress={callback}>
-        <View style={{flexDirection: 'row'}}>
-          {img}
-          <Text style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>
-            {title}
-          </Text>
-        </View>
-        <View></View>
-      </TouchableOpacity>
-      {showLine ? <View style={commonStyles.lineWithMargin} /> : null}
-    </View>
-  );
-};
+import BaseScreen from './BaseScreen.tsx';
 
 // 标签管理界面
-export default class TypeMangeScreen extends React.Component<any, any> {
+export default class TypeMangeScreen extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,7 +30,7 @@ export default class TypeMangeScreen extends React.Component<any, any> {
     );
   }
 
-  render() {
+  renderScreen() {
     return (
       <View style={styles.container}>
         <View>

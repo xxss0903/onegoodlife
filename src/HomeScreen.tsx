@@ -26,8 +26,9 @@ import {insertData} from './utils/dbService';
 import App from '../App.tsx';
 import {encodeFuc} from './utils/base64';
 import moment from 'moment';
+import BaseScreen from './BaseScreen.tsx';
 
-export default class HomeScreen extends React.Component<any, any> {
+export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
   private isTypeEdit = false;
   private currentAddType = null; // 当前的添加类型
@@ -238,9 +239,9 @@ export default class HomeScreen extends React.Component<any, any> {
     this.currentBabyPageRef?.insertNewData(data);
   }
 
-  render() {
+  renderScreen() {
     return (
-      <SafeAreaView>
+      <View>
         <View style={styles.container}>
           {this._renderHomeView()}
           <FloatingAction
@@ -265,7 +266,7 @@ export default class HomeScreen extends React.Component<any, any> {
           currentAddType={this.currentAddType}
           ref={ref => (this.newlifeModalRef = ref)}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 }

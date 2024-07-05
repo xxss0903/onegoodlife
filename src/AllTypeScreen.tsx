@@ -8,13 +8,10 @@ import EventBus from './utils/eventBus';
 import {screenW} from './utils/until';
 import {Margin} from './space';
 import {Colors} from './colors';
-import {logi} from './utils/logutil';
-
-// 存储本地数据的key
-const KEY_LOCAL_DATA = 'key_local_key';
+import BaseScreen from './BaseScreen.tsx';
 
 // 所有类型界面，选择类型然后添加
-export default class AllTypeScreen extends React.Component<any, any> {
+export default class AllTypeScreen extends BaseScreen {
   private currentAddType = null; // 当前的添加类型
   private newlifeModalRef = null;
 
@@ -113,12 +110,12 @@ export default class AllTypeScreen extends React.Component<any, any> {
   }
 
   // 插入新的类型
-  _insertNewlifeLineImpl(data) {
+  _insertNewlifeLineImpl(data: any) {
     EventBus.sendEvent(EventBus.INSERT_NEW_LIFETIME, data);
     this.props.navigation.goBack();
   }
 
-  render() {
+  renderScreen() {
     return (
       <View style={styles.container}>
         <View>
