@@ -14,8 +14,6 @@ import {Colors} from './colors';
 import {commonStyles} from './commonStyle';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import {logi} from './utils/logutil';
-import {deleteDataByTime} from './utils/dbService';
-import App from '../App';
 
 export default class MemoryScreen extends React.Component<any, any> {
   private isTypeEdit: boolean = false; // 是否是编辑模式
@@ -35,18 +33,6 @@ export default class MemoryScreen extends React.Component<any, any> {
 
   deleteRow = (rowMap, rowKey, data) => {
     this.closeRow(rowMap, rowKey);
-    let index = this.state.dataList.findIndex(value => value.key === rowKey);
-    logi('delete index ', index);
-    // 删除数据
-    let dataList = this.state.dataList;
-    dataList.splice(index, 1);
-    this.setState({
-      dataList: dataList,
-    });
-    this._refreshLocalData();
-    // 数据库删除数据
-    this._refreshStaticsCharts();
-    deleteDataByTime(App.db, data.time);
   };
 
   render() {

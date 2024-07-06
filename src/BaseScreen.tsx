@@ -1,9 +1,9 @@
 import React from 'react';
-import {SafeAreaView, View} from 'react-native';
+import {View} from 'react-native';
 
 export default class BaseScreen extends React.Component<any, any> {
   render() {
-    return <SafeAreaView>{this.renderScreen()}</SafeAreaView>;
+    return <View style={{flex: 1}}>{this.renderScreen()}</View>;
   }
 
   renderScreen() {

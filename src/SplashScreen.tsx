@@ -3,8 +3,9 @@ import {View} from 'react-native';
 import {DeviceStorage} from './utils/deviceStorage';
 import {createLifeRecordTable, getDBConnection} from './utils/dbService';
 import {logi} from './utils/logutil';
-import App from '../App';
 import BaseScreen from './BaseScreen.tsx';
+import LottieView from 'lottie-react-native';
+import {db} from './dataBase.ts';
 
 export default class SplashScreen extends BaseScreen {
   componentDidMount() {
@@ -20,14 +21,22 @@ export default class SplashScreen extends BaseScreen {
   async _initDb() {
     try {
       // 首先创建数据库链接
-      App.db = await getDBConnection();
-      await createLifeRecordTable(App.db);
-    } catch (e) {
+      db.database = await getDBConnection();
+      await createLifeRecordTable(db.database);
+    } catch (e: any) {
       logi('init db error ', e);
     }
   }
 
   renderScreen() {
-    return <View />;
+    return (
+      <View style={{flex: 1}}>
+        <LottieView
+          source={require('./animations/splash_animation.json')}
+          style={{width: '100%', height: '100%'}}
+          autoPlay
+        />
+      </View>
+    );
   }
 }

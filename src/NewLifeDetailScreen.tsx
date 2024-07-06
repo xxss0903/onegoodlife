@@ -151,10 +151,6 @@ export default class NewLifeDetailScreen extends BaseScreen {
           onConfirm={date => {
             // 确认选择，将日期转为时间戳
             this.state.data.time = moment(date).valueOf();
-            let formatTime = moment(this.state.data.time).format(
-              'yyyy-MM-DD HH:mm',
-            );
-            logi('confirm date', date + ' # ' + formatTime);
             this._toggleDatetimePicker(false);
           }}
           onCancel={() => {

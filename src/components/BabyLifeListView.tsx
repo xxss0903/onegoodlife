@@ -8,24 +8,18 @@ import {
   Alert,
   FlatList,
   Image,
-  Modal,
-  SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableHighlight,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {logi} from '../utils/logutil';
 import DatePicker from 'react-native-date-picker';
 import {DeviceStorage} from '../utils/deviceStorage';
 import {AndroidPermissions} from '../utils/permissionUtils';
-import {SwipeListView} from 'react-native-swipe-list-view';
 import {BarChart, LineChart} from 'echarts/charts';
 import * as echarts from 'echarts/core';
-import SvgChart, {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
+import {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
 import {EChartsType} from 'echarts/core';
 import {
   GridComponent,
@@ -33,47 +27,16 @@ import {
   TooltipComponent,
 } from 'echarts/components';
 import {screenW} from '../utils/until';
-import PagerView from 'react-native-pager-view';
-import {AlertDialog, Checkbox} from 'native-base';
-import {
-  mainData,
-  milkTemplateData,
-  poopTemplateData,
-  peeTemplateData,
-  otherTemplateData,
-  commonTypeList,
-} from '../mainData';
-import AddNewLifeModal from './AddNewLifeModal';
+import {mainData, commonTypeList} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
-import Share from 'react-native-share';
-import {
-  deleteDataByTime,
-  getDataListOrderByTime,
-  insertData,
-  saveDataList,
-} from '../utils/dbService';
-import App from '../../App';
+import {getDataListOrderByTime, insertData} from '../utils/dbService';
 import {decodeFuc, encodeFuc} from '../utils/base64';
 import {renderTagList} from './commonViews';
-import BabyInfoView from './BabyInfoView';
 import {commonStyles} from '../commonStyle';
 import {Margin} from '../space';
 import {Colors} from '../colors';
-
-const typeMapList = mainData.typeMapList; // 类型列表
-const commonActions = [
-  commonTypeList[0],
-  commonTypeList[1],
-  commonTypeList[2],
-  {
-    id: 6,
-    name: '全部',
-    value: 'type_6',
-    text: '全部',
-    position: 6,
-  },
-]; // 放在主页的主要使用的类型action
+import {db} from '../dataBase.ts';
 
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {dataList: [{itemType: 1}]};
@@ -88,8 +51,6 @@ echarts.use([
 ]);
 
 export default class BabyLifeListView extends React.Component<any, any> {
-  private currentAddType = null; // 当前的添加类型
-
   private staticsViewRef = null; // 统计数据view
   private cloneType = null; // 临时保存type的数据
   private last24HourChartRef: any; // 统计数据的渲染引用
@@ -125,7 +86,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
   async _initDBData() {
     try {
       let localData = await getDataListOrderByTime(
-        App.db,
+        db.database,
         this.props.baby.babyId,
       );
       if (localData && localData.length > 0) {
@@ -151,7 +112,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
           },
         );
       }
-    } catch (e) {
+    } catch (e: any) {
       logi('get data error', e);
     }
   }
@@ -189,7 +150,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
   _renderTypeIcon() {}
 
   _renderTypeItem(item, index) {
-    let typeName = item.name;
     let time = moment(item.time).format('yyyy-MM-DD HH:mm');
     let tags = item.selectedTags;
 
@@ -313,7 +273,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
         mode={'datetime'}
         onConfirm={date => {
           // 确认选择，将日期转为时间戳
-          this.cloneType.time = moment(date).valueOf();
+          this.cloneType?.time = moment(date).valueOf();
           let formatTime = moment(this.cloneType.time).format(
             'yyyy-MM-DD HH:mm',
           );
@@ -349,7 +309,12 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   // 插入数据到数据库
   async _insertItemToDB(data, babyId) {
-    await insertData(App.db, data, encodeFuc(JSON.stringify(data)), babyId);
+    await insertData(
+      db.database,
+      data,
+      encodeFuc(JSON.stringify(data)),
+      babyId,
+    );
   }
 
   // 重新排序记录，根据时间插入
