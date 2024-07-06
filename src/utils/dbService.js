@@ -4,6 +4,7 @@ import {
   SQLiteDatabase,
 } from 'react-native-sqlite-storage';
 import {logi} from './logutil';
+import {decodeFuc} from './base64';
 
 enablePromise(true);
 const lifeRecordTableName = 'liferecord'; // 记录生活的表
@@ -45,18 +46,26 @@ export const getDataList = async db => {
 
 export const getDataListOrderByTime = async (db, babyId) => {
   try {
-    const dataList = [];
+    if (!babyId) {
+      return [];
+    }
     const results = await db.executeSql(
       `SELECT rowid, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} order by time desc`,
     );
+    let babyList = [];
     results.forEach(result => {
+      let dataList = result.rows;
       for (let index = 0; index < result.rows.length; index++) {
-        dataList.push(result.rows.item(index));
+        let dbData = dataList.item(index);
+        let data = decodeFuc(dbData.json);
+        let dataObj = JSON.parse(data);
+        dataObj.rowid = dbData.rowid;
+        babyList.push(dataObj);
       }
     });
-    return dataList;
+    return babyList;
   } catch (error) {
-    logi(error);
+    logi('get baby timeline data err', error);
     throw Error('Failed to get todoItems !!!');
   }
 };

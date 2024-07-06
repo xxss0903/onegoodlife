@@ -23,6 +23,7 @@ import AddNewLifeModal from './components/AddNewLifeModal.tsx';
 import moment from 'moment';
 import BaseScreen from './BaseScreen.tsx';
 import {Colors} from './colors';
+import {logi} from './utils/logutil';
 
 export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -78,15 +79,20 @@ export default class HomeScreen extends BaseScreen {
 
   _renderBabyPages() {
     let babyView = mainData.babies.map((value, index) => {
-      return (
-        <View key={index} style={[{flex: 1}]}>
-          <BabyLifeListView
-            ref={ref => (this.babyPageRefs[index] = ref)}
-            navigation={this.props.navigation}
-            baby={value}
-          />
-        </View>
-      );
+      logi('render pagerview ', value);
+      if (value.itemType !== 1) {
+        return (
+          <View key={index} style={[{flex: 1}]}>
+            <BabyLifeListView
+              ref={ref => (this.babyPageRefs[index] = ref)}
+              navigation={this.props.navigation}
+              baby={value}
+            />
+          </View>
+        );
+      } else {
+        return null;
+      }
     });
     return babyView;
   }

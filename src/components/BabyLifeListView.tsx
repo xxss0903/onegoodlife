@@ -89,33 +89,24 @@ export default class BabyLifeListView extends React.Component<any, any> {
   // 获取数据库数据
   async _initDBData() {
     try {
-      let localData = await getDataListOrderByTime(
+      let babyList = await getDataListOrderByTime(
         db.database,
         this.props.baby.babyId,
       );
-      if (localData && localData.length > 0) {
-        let dataList = [];
-        // 获取列表数据
-        for (const value of localData) {
-          let data = decodeFuc(value.json);
-          let dataObj = JSON.parse(data);
-          dataList.push(dataObj);
-        }
-        // 如果第一个不是统计则添加统计
-        if (dataList[0].itemType !== 1) {
-          dataList.unshift({itemType: 1});
-        }
-        logi('init data with itemtype = 1', dataList);
-        // 更新界面数据
-        this.setState(
-          {
-            dataList: dataList,
-          },
-          () => {
-            this.staticsViewRef?.refreshData();
-          },
-        );
+      // 如果第一个不是统计则添加统计
+      if (babyList.length === 0) {
+        babyList.push({itemType: 1});
+      } else if (babyList[0].itemType !== 1) {
+        babyList.unshift({itemType: 1});
       }
+      this.setState(
+        {
+          dataList: babyList,
+        },
+        () => {
+          this.staticsViewRef?.refreshData();
+        },
+      );
     } catch (e: any) {
       logi('get data error', e);
     }
