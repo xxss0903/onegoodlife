@@ -17,6 +17,7 @@ import {Avatar} from 'native-base';
 import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
 import {DeviceStorage} from './utils/deviceStorage';
+import {logi} from './utils/logutil';
 
 export default class BabiesScreen extends BaseScreen {
   constructor(props: any) {
@@ -26,12 +27,22 @@ export default class BabiesScreen extends BaseScreen {
     };
   }
 
+  componentDidMount() {
+    this.refreshEvent = EventBus.addEventListener(
+      EventBus.REFRESH_BABIES_SCREEN,
+      () => {
+        this.forceUpdate();
+      },
+    );
+  }
+
+  componentWillUnmount() {
+    this.refreshEvent && this.refreshEvent.remove();
+  }
+
   _editBaby(baby) {
     this.props.navigation.navigate('BabyInfoScreen', {
       baby: baby,
-      callback: () => {
-        this.forceUpdate();
-      },
     });
   }
 
@@ -40,13 +51,14 @@ export default class BabiesScreen extends BaseScreen {
     // 更新本地存储
     DeviceStorage.refreshMainData();
     this.forceUpdate();
-    EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+    logi('send refresh babis home list');
+    mainData.refreshBabies = true;
   }
 
   _showRemoveBabyDialog(baby: any, index: Number) {
     Alert.alert(
       '提示',
-      '确认移除' + baby.name + '吗？',
+      '确认移除' + (baby.name ? baby.name : baby.nickname) + '吗？',
       [
         {
           text: '取消',
@@ -71,13 +83,13 @@ export default class BabiesScreen extends BaseScreen {
       item.bgColor = Colors.grayEe;
       if (index === 0) {
         item.bgColor = Colors.primary5;
-      } else if (index % 1 === 0) {
-        item.bgColor = Colors.primary2;
       } else if (index % 2 === 0) {
-        item.bgColor = Colors.primary3;
+        item.bgColor = Colors.primary2;
       } else if (index % 3 === 0) {
-        item.bgColor = Colors.primary4;
+        item.bgColor = Colors.primary3;
       } else if (index % 4 === 0) {
+        item.bgColor = Colors.primary4;
+      } else if (index % 5 === 0) {
         item.bgColor = Colors.primary6;
       }
     }
@@ -104,8 +116,9 @@ export default class BabiesScreen extends BaseScreen {
           <View style={[commonStyles.flexRow]}>
             {!(item && item.avatar) ? (
               <Avatar
+                bg={'transparent'}
                 size={'xl'}
-                source={require('./assets/ic_about_us.png')}
+                source={require('./assets/ic_baby.png')}
               />
             ) : (
               <Avatar
@@ -121,10 +134,15 @@ export default class BabiesScreen extends BaseScreen {
                 {marginLeft: Margin.horizontal, justifyContent: 'center'},
               ]}>
               <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                {item.nickname}
+                姓名：{item.name}
               </Text>
+              {item.nickname ? (
+                <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
+                  小名：{item.name}
+                </Text>
+              ) : null}
               <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
-                {formatTimeToDate(item.birthDay)}
+                生日：{formatTimeToDate(item.birthDay)}
               </Text>
             </View>
           </View>
@@ -135,11 +153,7 @@ export default class BabiesScreen extends BaseScreen {
   }
 
   _addNewBaby() {
-    this.props.navigation.navigate('BabyInfoScreen', {
-      callback: () => {
-        this.forceUpdate();
-      },
-    });
+    this.props.navigation.navigate('BabyInfoScreen', {});
   }
 
   renderScreen() {

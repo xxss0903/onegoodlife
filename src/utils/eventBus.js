@@ -15,6 +15,7 @@ export default class EventBus {
   static REFRESH_BABY_LIST = 'REFRESH_BABY_LIST';
   // 插入新的数据
   static INSERT_NEW_LIFETIME = 'INSERT_NEW_LIFETIME';
+  static REFRESH_BABIES_SCREEN = 'REFRESH_BABIES_SCREEN';
 
   static sendEvent = (key, value) => {
     DeviceEventEmitter.emit(key, value);
@@ -23,13 +24,11 @@ export default class EventBus {
   static addEventListener = (key, callback) => {
     const listener = DeviceEventEmitter.addListener(key, callback);
     this.listeners.push(listener);
-    this.listenersMap.set(key, listener);
     return listener;
   };
 
   static clearAllListeners() {
     if (this.listeners && this.listeners.length > 0) {
-      this.listenersMap.clear();
       this.listeners.forEach(value => {
         value.remove();
       });

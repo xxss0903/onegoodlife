@@ -24,6 +24,7 @@ import moment from 'moment';
 import BaseScreen from './BaseScreen.tsx';
 import {Colors} from './colors';
 import {logi} from './utils/logutil';
+import {screenH, screenW} from './utils/until';
 
 export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -55,6 +56,7 @@ export default class HomeScreen extends BaseScreen {
   }
 
   componentDidMount() {
+    mainData.refreshBabies = false;
     this._initListeners();
     this.setState({
       currentBaby: mainData.babies[0],
@@ -62,10 +64,22 @@ export default class HomeScreen extends BaseScreen {
     });
   }
 
-  _initListeners() {
-    // 更新了宝宝信息之后刷新列表
-    EventBus.addEventListener(EventBus.REFRESH_BABY_LIST, () => {
+  _refreshData() {
+    try {
+      logi('force update refresh home data');
       this.forceUpdate();
+    } catch (e) {
+      logi('refresh data err', e);
+    }
+  }
+
+  _initListeners() {
+    this.props.navigation.addListener('focus', () => {
+      logi('home navigation will focus');
+      if (mainData.refreshBabies) {
+        this._refreshData();
+        mainData.refreshBabies = false;
+      }
     });
     // 在全部页面插入之后，在这里使用本地插入和刷新当前宝宝的页面
     EventBus.addEventListener(EventBus.INSERT_NEW_LIFETIME, data => {
@@ -73,13 +87,8 @@ export default class HomeScreen extends BaseScreen {
     });
   }
 
-  componentWillUnmount() {
-    EventBus.clearAllListeners();
-  }
-
   _renderBabyPages() {
     let babyView = mainData.babies.map((value, index) => {
-      logi('render pagerview ', value);
       if (value.itemType !== 1) {
         return (
           <View key={index} style={[{flex: 1}]}>
@@ -142,6 +151,10 @@ export default class HomeScreen extends BaseScreen {
   }
 
   _renderHomeView() {
+    let babiesWidth = mainData.babies.length * 80;
+    if (babiesWidth > screenW - 120) {
+      babiesWidth = screenW - 120;
+    }
     return (
       <View
         style={[
@@ -151,25 +164,27 @@ export default class HomeScreen extends BaseScreen {
         <View>{this._renderBabyInfo()}</View>
         <View
           style={[
-            commonStyles.flexColumn,
+            commonStyles.flexRow,
             {
               height: 100,
-              justifyContent: 'center',
             },
           ]}>
-          <FlatList
-            horizontal={true}
-            style={{height: 100, flex: 1}}
-            data={mainData.babies}
-            renderItem={({item, index}) => {
-              console.log('avatar ', item.avatar);
-              if (item.type === 'ADD') {
-                return this._renderAddBabyItem(item, index);
-              } else {
-                return this._renderBabyItem(item, index);
-              }
-            }}
-          />
+          <View style={{}}>
+            <FlatList
+              horizontal={true}
+              style={{height: 100, width: babiesWidth}}
+              data={mainData.babies}
+              renderItem={({item, index}) => {
+                console.log('avatar ', item.avatar);
+                if (item.type === 'ADD') {
+                  return this._renderAddBabyItem(item, index);
+                } else {
+                  return this._renderBabyItem(item, index);
+                }
+              }}
+            />
+          </View>
+          {this._renderAddBabyItem()}
         </View>
         <PagerView
           scrollEnabled={false}
@@ -194,7 +209,7 @@ export default class HomeScreen extends BaseScreen {
     this.pagerRef && this.pagerRef.setPage(index);
   }
 
-  _renderAddBabyItem(item, index) {
+  _renderAddBabyItem() {
     return (
       <TouchableOpacity
         onPress={() => {

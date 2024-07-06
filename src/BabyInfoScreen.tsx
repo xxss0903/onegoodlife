@@ -109,7 +109,8 @@ export default class BabyInfoScreen extends BaseScreen {
       if (mainData.babies[i].babyId === this.state.babyInfo.babyId) {
         mainData.babies[i] = {...this.state.babyInfo};
         DeviceStorage.refreshMainData();
-        EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+        EventBus.sendEvent(EventBus.REFRESH_BABIES_SCREEN);
+        mainData.refreshBabies = true;
         this.props.navigation.goBack();
         return;
       }
@@ -124,10 +125,12 @@ export default class BabyInfoScreen extends BaseScreen {
         maxBabyId = value.babyId;
       }
     });
-    this.state.babyInfo.babyId = maxBabyId;
+    this.state.babyInfo.babyId = maxBabyId + 1;
+    logi('insert new baby', this.state.babyInfo);
     mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
     DeviceStorage.refreshMainData();
-    EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+    EventBus.sendEvent(EventBus.REFRESH_BABIES_SCREEN);
+    mainData.refreshBabies = true;
     this.props.navigation.goBack();
   }
 
@@ -278,6 +281,7 @@ export default class BabyInfoScreen extends BaseScreen {
                   />
                 ) : (
                   <Image
+                    alt={''}
                     style={{width: 78, height: 78, borderRadius: 40}}
                     source={require('./assets/ic_user_default.png')}
                   />
