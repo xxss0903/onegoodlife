@@ -118,14 +118,9 @@ export default class BabyLifeListView extends React.Component<any, any> {
     EventBus.clearAllListeners();
   }
 
-  _refreshLocalData(item) {
-    // DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
-    //   data => {
-    //     DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA).then(res => {});
-    //   },
-    // );
+  async _refreshLocalData(item) {
     // 数据库删除数据
-    deleteDataByRowId(db.database);
+    await deleteDataByRowId(db.database, item.rowid);
   }
 
   _insertNewlifeLineImpl(data) {
@@ -291,16 +286,17 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this.props.navigation.navigate('NewLifeDetailScreen', {data: item});
   }
 
-  _deleteRow(index: Number) {
+  async _deleteRow(item: any, index: Number) {
+    // 数据库删除数据
+    await deleteDataByRowId(db.database, item.rowid);
     // 删除数据
     let dataList = this.state.dataList;
     dataList.splice(index, 1);
+    // 刷新统计信息
+    this._refreshStaticsCharts();
     this.setState({
       dataList: dataList,
     });
-    this._refreshLocalData();
-    // 刷新统计信息
-    this._refreshStaticsCharts();
   }
 
   // 插入数据到数据库
@@ -422,7 +418,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
         {
           text: '删除',
           onPress: () => {
-            this._deleteRow(index);
+            this._deleteRow(item, index);
           },
         },
       ],

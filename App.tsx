@@ -16,6 +16,7 @@ import AllTypeScreen from './src/AllTypeScreen';
 import BabyInfoScreen from './src/BabyInfoScreen';
 import BabiesScreen from './src/BabiesScreen';
 import UserInfoScreen from './src/UserInfoScreen.tsx';
+import {RootSiblingParent} from 'react-native-root-siblings';
 
 const Stack = createNativeStackNavigator();
 
@@ -76,7 +77,9 @@ export default class App extends Component<any, any> {
   render() {
     return (
       <NativeBaseProvider>
-        <NavigationContainer>{MainStack()}</NavigationContainer>
+        <RootSiblingParent>
+          <NavigationContainer>{MainStack()}</NavigationContainer>
+        </RootSiblingParent>
       </NativeBaseProvider>
     );
   }

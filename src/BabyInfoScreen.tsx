@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,13 @@ import {logi} from './utils/logutil';
 import {Avatar, Image, VStack} from 'native-base';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
-import {formatTimeToDate} from './utils/until';
+import {formatTimeToDate, isEmpty} from './utils/until';
 import {DeviceStorage} from './utils/deviceStorage';
 import EventBus from './utils/eventBus';
 import {Margin} from './space';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
+import {showToast} from './utils/toastUtil';
 
 export default class BabyInfoScreen extends BaseScreen {
   constructor(props: any) {
@@ -91,6 +92,15 @@ export default class BabyInfoScreen extends BaseScreen {
   }
 
   _checkBabyInfo() {
+    const {name, birthDay} = this.state.babyInfo;
+    if (isEmpty(name)) {
+      showToast('请输入宝宝姓名');
+      return false;
+    }
+    if (moment() < moment(birthDay)) {
+      showToast('宝宝生日不能大于当前日期');
+      return false;
+    }
     return true;
   }
 

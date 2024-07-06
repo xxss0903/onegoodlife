@@ -1,8 +1,5 @@
-import {useToast} from "native-base";
+import Toast from 'react-native-root-toast';
 
-const toast = useToast()
-export const showToast = (msg: string) => {
-    toast.show({
-        description: msg
-    })
-}
+export const showToast = msg => {
+  Toast.show(msg);
+};
