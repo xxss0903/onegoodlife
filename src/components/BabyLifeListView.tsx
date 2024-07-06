@@ -30,7 +30,11 @@ import {screenW} from '../utils/until';
 import {mainData, commonTypeList} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
-import {getDataListOrderByTime, insertData} from '../utils/dbService';
+import {
+  deleteDataByRowId,
+  getDataListOrderByTime,
+  insertData,
+} from '../utils/dbService';
 import {decodeFuc, encodeFuc} from '../utils/base64';
 import {renderTagList} from './commonViews';
 import {commonStyles} from '../commonStyle';
@@ -123,12 +127,14 @@ export default class BabyLifeListView extends React.Component<any, any> {
     EventBus.clearAllListeners();
   }
 
-  _refreshLocalData() {
-    DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
-      data => {
-        DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA).then(res => {});
-      },
-    );
+  _refreshLocalData(item) {
+    // DeviceStorage.save(DeviceStorage.KEY_LOCAL_DATA, this.state.dataList).then(
+    //   data => {
+    //     DeviceStorage.get(DeviceStorage.KEY_LOCAL_DATA).then(res => {});
+    //   },
+    // );
+    // 数据库删除数据
+    deleteDataByRowId(db.database);
   }
 
   _insertNewlifeLineImpl(data) {
@@ -144,7 +150,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
       },
     );
     // this.state.dataList.unshift(this.cloneType)
-    this._refreshLocalData();
   }
 
   _renderTypeIcon() {}
@@ -303,7 +308,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
       dataList: dataList,
     });
     this._refreshLocalData();
-    // 数据库删除数据
+    // 刷新统计信息
     this._refreshStaticsCharts();
   }
 

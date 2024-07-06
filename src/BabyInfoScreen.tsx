@@ -32,6 +32,7 @@ export default class BabyInfoScreen extends BaseScreen {
         birthDay: moment().valueOf(), // 出生日期
         avatar: '', // 头像
       },
+      isEdit: false,
     };
   }
 
@@ -41,8 +42,9 @@ export default class BabyInfoScreen extends BaseScreen {
       // 编辑
       this.setState({
         babyInfo: JSON.parse(JSON.stringify(babyInfo)),
+        isEdit: true,
       });
-      this.props.navigation.setOptions({title: babyInfo.name});
+      this.props.navigation.setOptions({title: `编辑宝宝信息`});
     } else {
       this.props.navigation.setOptions({title: '添加宝宝'});
     }
@@ -92,23 +94,40 @@ export default class BabyInfoScreen extends BaseScreen {
     return true;
   }
 
+  _editBaby() {
+    for (let i = 0; i < mainData.babies.length; i++) {
+      if (mainData.babies[i].babyId === this.state.babyInfo.babyId) {
+        mainData.babies[i] = {...this.state.babyInfo};
+        DeviceStorage.refreshMainData();
+        EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+        this.props.navigation.goBack();
+        return;
+      }
+    }
+  }
+
+  _addNewBaby() {
+    let maxBabyId = 1;
+
+    mainData.babies.forEach(value => {
+      if (value.babyId > maxBabyId) {
+        maxBabyId = value.babyId;
+      }
+    });
+    this.state.babyInfo.babyId = maxBabyId;
+    mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
+    DeviceStorage.refreshMainData();
+    EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+    this.props.navigation.goBack();
+  }
+
   _confirmBabyInfo() {
     if (this._checkBabyInfo()) {
-      let maxBabyId = 1;
-
-      mainData.babies.forEach(value => {
-        if (value.babyId > maxBabyId) {
-          maxBabyId = value.babyId;
-        }
-      });
-      this.state.babyInfo.babyId = maxBabyId;
-      mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
-      DeviceStorage.refreshMainData();
-      EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
-      if (this.props.route.params?.callback) {
-        this.props.route.params?.callback();
+      if (this.state.isEdit) {
+        this._editBaby();
+      } else {
+        this._addNewBaby();
       }
-      this.props.navigation.goBack();
     }
   }
 

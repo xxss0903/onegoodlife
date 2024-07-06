@@ -120,14 +120,7 @@ export const mainData = {
       type: 'ADD',
     },
   ], // 可以添加多个宝宝，比如双胞胎等
-  babyInfo: {
-    name: 'Jack1', // 姓名
-    nickname: '小明', // 小名
-    birthDay: moment('2024-4-26').valueOf(), // 出生日期
-    avatar:
-      'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658', // 头像
-    babyId: 1,
-  }, // 婴儿信息
+  babyInfo: {}, // 婴儿信息
   appConfigs: {
     showStatics: true, // 默认首页显示统计信息
   }, // app默认设置
