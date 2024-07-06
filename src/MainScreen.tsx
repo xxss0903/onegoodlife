@@ -8,7 +8,6 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {commonStyles} from './commonStyle';
 import {Colors} from './colors';
 import HomeScreen from './HomeScreen';
-import CommonKnowedgeScreen from './CommonKnowedgeScreen';
 import MemoryScreen from './MemoryScreen';
 import MineScreen from './MineScreen';
 
@@ -23,12 +22,10 @@ function CustomTabBar({state, descriptors, navigation}) {
 
   const homeOptions = descriptors[state.routes[0].key].options;
   const momentOptions = descriptors[state.routes[1].key].options;
-  const knowedgeOptions = descriptors[state.routes[2].key].options;
-  const mineOptions = descriptors[state.routes[3].key].options;
+  const mineOptions = descriptors[state.routes[2].key].options;
   const homeFocused = state.index === 0;
   const momentFocused = state.index === 1;
-  const knowedgeFocused = state.index === 2;
-  const mineFocused = state.index === 3;
+  const mineFocused = state.index === 2;
 
   return (
     <View
@@ -97,32 +94,8 @@ function CustomTabBar({state, descriptors, navigation}) {
             canPreventDefault: true,
           });
 
-          if (!knowedgeFocused && !event.defaultPrevented) {
-            navigation.navigate(state.routes[2].name);
-          }
-        }}>
-        <View style={[{flex: 1}, commonStyles.center]}>
-          {knowedgeOptions.tabBarIcon({focused: knowedgeFocused})}
-          <Text
-            style={{
-              fontSize: 12,
-              color: knowedgeFocused ? Colors.loginTouch : Colors.black333,
-            }}>
-            知识
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback
-        style={{flex: 1}}
-        onPress={() => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: state.routes[3].key,
-            canPreventDefault: true,
-          });
-
           if (!mineFocused && !event.defaultPrevented) {
-            navigation.navigate(state.routes[3].name);
+            navigation.navigate(state.routes[2].name);
           }
         }}>
         <View style={[{flex: 1}, commonStyles.center]}>
@@ -197,30 +170,6 @@ export default class MainScreen extends React.Component<any, any> {
                 return (
                   <Image
                     source={require('./assets/ic_moment_n.png')}
-                    style={{width: 20, height: 20}}
-                  />
-                );
-              }
-            },
-          }}
-        />
-        <MainTab.Screen
-          name={'知识'}
-          component={CommonKnowedgeScreen}
-          options={{
-            tabBarLabel: '知识',
-            tabBarIcon: ({focused, color, size}) => {
-              if (focused) {
-                return (
-                  <Image
-                    source={require('./assets/ic_knowedge.png')}
-                    style={{width: 20, height: 20}}
-                  />
-                );
-              } else {
-                return (
-                  <Image
-                    source={require('./assets/ic_knowedge_n.png')}
                     style={{width: 20, height: 20}}
                   />
                 );

@@ -273,7 +273,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
         mode={'datetime'}
         onConfirm={date => {
           // 确认选择，将日期转为时间戳
-          this.cloneType?.time = moment(date).valueOf();
+          this.cloneType.time = moment(date).valueOf();
           let formatTime = moment(this.cloneType.time).format(
             'yyyy-MM-DD HH:mm',
           );

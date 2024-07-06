@@ -12,9 +12,9 @@ const showLog = true;
  * @param data
  */
 export const logi = (msg, data = null) => {
-    if (showLog) {
-        logimpl(TAG_I, msg, data);
-    }
+  if (showLog) {
+    logimpl(TAG_I, msg, data);
+  }
 };
 
 /**
@@ -23,40 +23,36 @@ export const logi = (msg, data = null) => {
  * @param data
  */
 export const loge = (msg, data = null) => {
-    logimpl(TAG_E, msg, data);
+  logimpl(TAG_E, msg, data);
 };
 
 const logimpl = (tag, msg, data = null) => {
-    function getMsgString(msg) {
-        if (msg instanceof String) {
-            return msg;
-        } else {
-            try {
-                return JSON.stringify(msg);
-            } catch (e) {
-                console.log(tag + e.message);
-                console.log(tag, msg);
-                return null;
-            }
-        }
-    }
-
-    if (data) {
-        console.log(tag + ' # ' + msg, data);
-
-        if (tag === TAG_E) {
-        }
-
+  function getMsgString(msg) {
+    if (msg instanceof String) {
+      return msg;
     } else {
-        const msgStr = getMsgString(msg);
-        if (msgStr) {
-            console.log(tag + msgStr);
-        }
-
-        if (tag === TAG_E) {
-        }
-
+      try {
+        return JSON.stringify(msg);
+      } catch (e) {
+        console.log(tag + e.message);
+        console.log(tag, msg);
+        return null;
+      }
     }
+  }
+
+  if (data) {
+    console.log(tag + ' # ' + msg, data);
+
+    if (tag === TAG_E) {
+    }
+  } else {
+    const msgStr = getMsgString(msg);
+    if (msgStr) {
+      console.log(tag + msgStr);
+    }
+
+    if (tag === TAG_E) {
+    }
+  }
 };
-
-

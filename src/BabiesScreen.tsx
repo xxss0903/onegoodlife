@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import {mainData} from './mainData';
 import {formatTimeToDate} from './utils/until';
@@ -15,6 +16,7 @@ import {Colors} from './colors';
 import {Avatar} from 'native-base';
 import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
+import {DeviceStorage} from './utils/deviceStorage';
 
 export default class BabiesScreen extends BaseScreen {
   constructor(props: any) {
@@ -33,22 +35,58 @@ export default class BabiesScreen extends BaseScreen {
     });
   }
 
-  _renderBabyItem(item, index) {
-    let bgColor = '#ffffff';
-    if (index === 0) {
-      bgColor = Colors.primary5;
-    } else if (index % 1 === 0) {
-      bgColor = Colors.primary2;
-    } else if (index % 2 === 0) {
-      bgColor = Colors.primary3;
-    } else if (index % 3 === 0) {
-      bgColor = Colors.primary4;
-    } else {
+  _deleteRow(index) {
+    mainData.babies.splice(index, 1);
+    // 更新本地存储
+    DeviceStorage.refreshMainData();
+    this.forceUpdate();
+    EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+  }
+
+  _showRemoveBabyDialog(baby: any, index: Number) {
+    Alert.alert(
+      '提示',
+      '确认移除' + baby.name + '吗？',
+      [
+        {
+          text: '取消',
+          onPress: () => {},
+        },
+        {
+          text: '删除',
+          onPress: () => {
+            this._deleteRow(index);
+          },
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => {},
+      },
+    );
+  }
+
+  _renderBabyItem(item: any, index: any) {
+    if (!item.bgColor) {
+      item.bgColor = Colors.grayEe;
+      if (index === 0) {
+        item.bgColor = Colors.primary5;
+      } else if (index % 1 === 0) {
+        item.bgColor = Colors.primary2;
+      } else if (index % 2 === 0) {
+        item.bgColor = Colors.primary3;
+      } else if (index % 3 === 0) {
+        item.bgColor = Colors.primary4;
+      } else if (index % 4 === 0) {
+        item.bgColor = Colors.primary6;
+      }
     }
+
     return (
       <TouchableOpacity
         onLongPress={() => {
-          // 刪除寶寶
+          // 移除
+          this._showRemoveBabyDialog(item, index);
         }}
         onPress={() => {
           this._editBaby(item);
@@ -56,10 +94,10 @@ export default class BabiesScreen extends BaseScreen {
         style={[
           commonStyles.flexColumn,
           {
-            backgroundColor: bgColor,
-            padding: 12,
-            borderRadius: 12,
-            marginTop: 12,
+            backgroundColor: item.bgColor,
+            padding: Margin.horizontal,
+            borderRadius: Margin.corners,
+            marginTop: index === 0 ? 0 : Margin.vertical,
           },
         ]}>
         <View style={[commonStyles.flexColumn]}>
@@ -95,22 +133,6 @@ export default class BabiesScreen extends BaseScreen {
       </TouchableOpacity>
     );
   }
-
-  onRowDidOpen = (rowKey, rowMap) => {};
-
-  closeRow = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-      rowMap[rowKey].closeRow();
-    }
-  };
-
-  deleteRow = (rowMap, rowKey, data) => {
-    this.closeRow(rowMap, rowKey);
-    let index = mainData.babies.indexOf(data);
-    mainData.babies.splice(index, 1);
-    EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
-    this.forceUpdate();
-  };
 
   _addNewBaby() {
     this.props.navigation.navigate('BabyInfoScreen', {

@@ -11,6 +11,7 @@ export default class EventBus {
   // 登录状态
   static REFRESH_DATA = 'REFRESH_DATA';
   static REFRESH_BABY_INFO = 'REFRESH_BABY_INFO';
+  // 刷新宝宝列表，首页要进行更新
   static REFRESH_BABY_LIST = 'REFRESH_BABY_LIST';
   // 插入新的数据
   static INSERT_NEW_LIFETIME = 'INSERT_NEW_LIFETIME';
@@ -20,14 +21,10 @@ export default class EventBus {
   };
 
   static addEventListener = (key, callback) => {
-    if (this.listenersMap.has(key)) {
-      return this.listenersMap.get(key);
-    } else {
-      const listener = DeviceEventEmitter.addListener(key, callback);
-      this.listeners.push(listener);
-      this.listenersMap.set(key, listener);
-      return listener;
-    }
+    const listener = DeviceEventEmitter.addListener(key, callback);
+    this.listeners.push(listener);
+    this.listenersMap.set(key, listener);
+    return listener;
   };
 
   static clearAllListeners() {

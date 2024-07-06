@@ -5,28 +5,24 @@
 import React from 'react';
 import {
   FlatList,
-  SafeAreaView,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {logi} from './utils/logutil';
 import PagerView from 'react-native-pager-view';
 import {commonActions, commonTypeList, mainData} from './mainData';
 import EventBus from './utils/eventBus';
 import BabyLifeListView from './components/BabyLifeListView';
 import {FloatingAction} from 'react-native-floating-action';
 import {commonStyles} from './commonStyle';
-import {Avatar} from 'native-base';
+import {Avatar, Center, HStack} from 'native-base';
 import {Margin} from './space';
 import AddNewLifeModal from './components/AddNewLifeModal.tsx';
-import {DeviceStorage} from './utils/deviceStorage';
-import {insertData} from './utils/dbService';
-import App from '../App.tsx';
-import {encodeFuc} from './utils/base64';
 import moment from 'moment';
 import BaseScreen from './BaseScreen.tsx';
+import {Colors} from './colors';
 
 export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -77,7 +73,6 @@ export default class HomeScreen extends BaseScreen {
   }
 
   componentWillUnmount() {
-    logi('remove all listeners');
     EventBus.clearAllListeners();
   }
 
@@ -118,6 +113,28 @@ export default class HomeScreen extends BaseScreen {
     return diffDay + 1;
   }
 
+  _renderBabyInfo() {
+    if (this.state.currentBaby) {
+      return (
+        <View
+          style={[commonStyles.flexColumn, {marginVertical: Margin.vertical}]}>
+          <Text style={{fontSize: 18}}>妈妈你好呀</Text>
+          <Text
+            style={{
+              fontSize: 28,
+              fontWeight: 'bold',
+              marginTop: Margin.smalHorizontal,
+            }}>
+            我是{this.state.currentBaby.name}，今天
+            {this._getBirthDay(this.state.currentBaby.birthDay)}天啦
+          </Text>
+        </View>
+      );
+    } else {
+      return <View></View>;
+    }
+  }
+
   _renderHomeView() {
     return (
       <View
@@ -125,24 +142,7 @@ export default class HomeScreen extends BaseScreen {
           commonStyles.flexColumn,
           {flex: 1, padding: Margin.horizontal},
         ]}>
-        <View>
-          <View
-            style={[
-              commonStyles.flexColumn,
-              {marginVertical: Margin.vertical},
-            ]}>
-            <Text style={{fontSize: 18}}>妈妈你好呀</Text>
-            <Text
-              style={{
-                fontSize: 28,
-                fontWeight: 'bold',
-                marginTop: Margin.smalHorizontal,
-              }}>
-              我是{this.state.currentBaby.name}，今天
-              {this._getBirthDay(this.state.currentBaby.birthDay)}天啦
-            </Text>
-          </View>
-        </View>
+        <View>{this._renderBabyInfo()}</View>
         <View
           style={[
             commonStyles.flexColumn,
@@ -157,20 +157,22 @@ export default class HomeScreen extends BaseScreen {
             data={mainData.babies}
             renderItem={({item, index}) => {
               console.log('avatar ', item.avatar);
-              return this._renderBabyItem(item, index);
+              if (item.type === 'ADD') {
+                return this._renderAddBabyItem(item, index);
+              } else {
+                return this._renderBabyItem(item, index);
+              }
             }}
           />
         </View>
-        <View style={[commonStyles.flexColumn, {flex: 1}]}>
-          <PagerView
-            scrollEnabled={false}
-            ref={ref => (this.pagerRef = ref)}
-            useNext={true}
-            style={{flex: 1}}
-            initialPage={0}>
-            {this._renderBabyPages()}
-          </PagerView>
-        </View>
+        <PagerView
+          scrollEnabled={false}
+          ref={ref => (this.pagerRef = ref)}
+          useNext={true}
+          style={{flex: 1}}
+          initialPage={0}>
+          {this._renderBabyPages()}
+        </PagerView>
       </View>
     );
   }
@@ -186,6 +188,38 @@ export default class HomeScreen extends BaseScreen {
     this.pagerRef && this.pagerRef.setPage(index);
   }
 
+  _renderAddBabyItem(item, index) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          this.props.navigation.navigate('BabyInfoScreen');
+        }}>
+        <View
+          style={[
+            commonStyles.flexColumn,
+            commonStyles.center,
+            {
+              marginHorizontal: Margin.midHorizontal,
+              marginVertical: Margin.smalHorizontal,
+            },
+          ]}>
+          <Image
+            style={{width: 65, height: 65}}
+            source={require('./assets/ic_add_baby.png')}
+          />
+          <Text
+            style={{
+              fontSize: 16,
+              marginTop: Margin.smalHorizontal,
+              fontWeight: '400',
+            }}>
+            添加宝宝
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
   private _renderBabyItem(item: any, index: Number) {
     return (
       <TouchableOpacity
@@ -197,12 +231,15 @@ export default class HomeScreen extends BaseScreen {
             commonStyles.flexColumn,
             commonStyles.center,
             {
-              marginHorizontal: Margin.midHorizontal,
+              marginLeft: Margin.midHorizontal,
               marginVertical: Margin.smalHorizontal,
             },
           ]}>
           {!(item && item.avatar) ? (
-            <Avatar source={require('./assets/ic_about_us.png')}>
+            <Avatar
+              size={'lg'}
+              bg={'transparent'}
+              source={require('./assets/ic_baby.png')}>
               {this.state.currentBabyIndex === index ? (
                 <Avatar.Badge bg="green.500" />
               ) : null}
@@ -210,6 +247,7 @@ export default class HomeScreen extends BaseScreen {
           ) : (
             <Avatar
               size={'lg'}
+              bg={'transparent'}
               source={{
                 uri: item.avatar,
               }}>
@@ -244,19 +282,23 @@ export default class HomeScreen extends BaseScreen {
       <View>
         <View style={styles.container}>
           {this._renderHomeView()}
-          <FloatingAction
-            distanceToEdge={{vertical: 50, horizontal: 40}}
-            buttonSize={60}
-            ref={ref => {
-              this.floatingActionRef = ref;
-            }}
-            actions={commonActions}
-            onPressItem={typeName => {
-              this.isTypeEdit = false;
-              let items = commonActions.filter(item => item.name === typeName);
-              items && items.length > 0 && this._addNewLifeline(items[0]);
-            }}
-          />
+          {mainData.babies.length > 1 ? (
+            <FloatingAction
+              distanceToEdge={{vertical: 50, horizontal: 40}}
+              buttonSize={60}
+              ref={ref => {
+                this.floatingActionRef = ref;
+              }}
+              actions={commonActions}
+              onPressItem={typeName => {
+                this.isTypeEdit = false;
+                let items = commonActions.filter(
+                  item => item.name === typeName,
+                );
+                items && items.length > 0 && this._addNewLifeline(items[0]);
+              }}
+            />
+          ) : null}
         </View>
         <AddNewLifeModal
           addNewLifeline={(item: any) => {

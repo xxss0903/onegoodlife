@@ -93,26 +93,22 @@ export default class BabyInfoScreen extends BaseScreen {
   }
 
   _confirmBabyInfo() {
-    try {
-      if (this._checkBabyInfo()) {
-        let maxBabyId = 1;
+    if (this._checkBabyInfo()) {
+      let maxBabyId = 1;
 
-        mainData.babies.forEach(value => {
-          if (value.babyId > maxBabyId) {
-            maxBabyId = value.babyId;
-          }
-        });
-        this.state.babyInfo.babyId = maxBabyId;
-        mainData.babies.push(JSON.parse(JSON.stringify(this.state.babyInfo)));
-        DeviceStorage.refreshMainData();
-        EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
-        if (this.props.route.params?.callback) {
-          this.props.route.params?.callback();
+      mainData.babies.forEach(value => {
+        if (value.babyId > maxBabyId) {
+          maxBabyId = value.babyId;
         }
-        this.props.navigation.goBack();
+      });
+      this.state.babyInfo.babyId = maxBabyId;
+      mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
+      DeviceStorage.refreshMainData();
+      EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
+      if (this.props.route.params?.callback) {
+        this.props.route.params?.callback();
       }
-    } catch (e) {
-      logi('error ', e.message);
+      this.props.navigation.goBack();
     }
   }
 
