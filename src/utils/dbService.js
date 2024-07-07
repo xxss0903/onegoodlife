@@ -85,6 +85,12 @@ export const saveDataList = async (db, dataList) => {
   return db.executeSql(insertQuery);
 };
 
+// 删除宝宝的数据
+export const deleteDataByBabyId = async (db, babyId) => {
+  const deleteQuery = `DELETE from ${lifeRecordTableName} where babyId = ${babyId}`;
+  await db.executeSql(deleteQuery);
+};
+
 // 删除数据
 export const deleteDataByRowId = async (db, id) => {
   const deleteQuery = `DELETE from ${lifeRecordTableName} where rowid = ${id}`;

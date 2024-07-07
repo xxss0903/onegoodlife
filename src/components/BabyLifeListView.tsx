@@ -73,7 +73,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   componentDidMount() {
-    this._initListeners();
     this._initEcharts();
     AndroidPermissions.checkStoragePermissions(
       () => {
@@ -89,6 +88,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
   // 获取数据库数据
   async _initDBData() {
     try {
+      logi('get baby life list  ', this.props.baby);
       let babyList = await getDataListOrderByTime(
         db.database,
         this.props.baby.babyId,
@@ -111,8 +111,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
       logi('get data error', e);
     }
   }
-
-  _initListeners() {}
 
   componentWillUnmount() {
     EventBus.clearAllListeners();
@@ -338,15 +336,8 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this._insertNewlifeLineImpl(data);
   }
 
-  refreshData(dataList: any) {
-    this.setState(
-      {
-        dataList: dataList,
-      },
-      () => {
-        this.staticsViewRef?.refreshData();
-      },
-    );
+  refreshData() {
+    this._initDBData();
   }
 
   // 刷新统计数据图标

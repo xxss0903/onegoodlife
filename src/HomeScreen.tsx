@@ -67,7 +67,7 @@ export default class HomeScreen extends BaseScreen {
   _refreshData() {
     try {
       logi('force update refresh home data');
-      this.forceUpdate();
+      this.forceUpdate(() => {});
     } catch (e) {
       logi('refresh data err', e);
     }
@@ -75,10 +75,22 @@ export default class HomeScreen extends BaseScreen {
 
   _initListeners() {
     this.props.navigation.addListener('focus', () => {
-      logi('home navigation will focus');
+      logi('home navigation will focus: ' + mainData.refreshBabies);
       if (mainData.refreshBabies) {
-        this._refreshData();
         mainData.refreshBabies = false;
+        mainData.babyInfo = mainData.babies[0];
+        this.setState(
+          {
+            currentBaby: mainData.babies[0],
+            currentBabyIndex: 0,
+          },
+          () => {
+            this.pagerRef && this.pagerRef.setPage(0);
+            this.babyPageRefs.forEach(value => {
+              value.refreshData();
+            });
+          },
+        );
       }
     });
     // 在全部页面插入之后，在这里使用本地插入和刷新当前宝宝的页面
@@ -89,19 +101,16 @@ export default class HomeScreen extends BaseScreen {
 
   _renderBabyPages() {
     let babyView = mainData.babies.map((value, index) => {
-      if (value.itemType !== 1) {
-        return (
-          <View key={index} style={[{flex: 1}]}>
-            <BabyLifeListView
-              ref={ref => (this.babyPageRefs[index] = ref)}
-              navigation={this.props.navigation}
-              baby={value}
-            />
-          </View>
-        );
-      } else {
-        return null;
-      }
+      logi('rerender baby pager view ', value);
+      return (
+        <View key={index} style={[{flex: 1}]}>
+          <BabyLifeListView
+            ref={ref => (this.babyPageRefs[index] = ref)}
+            navigation={this.props.navigation}
+            baby={value}
+          />
+        </View>
+      );
     });
     return babyView;
   }

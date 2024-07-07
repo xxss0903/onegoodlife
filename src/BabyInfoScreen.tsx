@@ -127,10 +127,10 @@ export default class BabyInfoScreen extends BaseScreen {
     });
     this.state.babyInfo.babyId = maxBabyId + 1;
     logi('insert new baby', this.state.babyInfo);
+    mainData.refreshBabies = true;
     mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
     DeviceStorage.refreshMainData();
     EventBus.sendEvent(EventBus.REFRESH_BABIES_SCREEN);
-    mainData.refreshBabies = true;
     this.props.navigation.goBack();
   }
 

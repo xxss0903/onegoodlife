@@ -18,6 +18,8 @@ import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
 import {DeviceStorage} from './utils/deviceStorage';
 import {logi} from './utils/logutil';
+import {deleteDataByBabyId} from './utils/dbService';
+import {db} from './dataBase.ts';
 
 export default class BabiesScreen extends BaseScreen {
   constructor(props: any) {
@@ -46,8 +48,10 @@ export default class BabiesScreen extends BaseScreen {
     });
   }
 
-  _deleteRow(index) {
+  async _deleteRow(baby, index) {
     mainData.babies.splice(index, 1);
+    // 删除这个宝宝对应的所有数据
+    await deleteDataByBabyId(db.database, baby.babyId);
     // 更新本地存储
     DeviceStorage.refreshMainData();
     this.forceUpdate();
@@ -67,7 +71,7 @@ export default class BabiesScreen extends BaseScreen {
         {
           text: '删除',
           onPress: () => {
-            this._deleteRow(index);
+            this._deleteRow(baby, index);
           },
         },
       ],
