@@ -23,7 +23,7 @@ export default class SplashScreen extends BaseScreen {
       .finally(() => {
         setTimeout(async () => {
           // 进入主页
-          this.props.navigation.replace('MainScreen');
+          // this.props.navigation.replace('MainScreen');
         }, 2500);
       });
   }
@@ -43,9 +43,11 @@ export default class SplashScreen extends BaseScreen {
     return (
       <View style={{flex: 1}}>
         <LottieView
+          resizeMode={'cover'}
           source={require('./animations/splash_animation.json')}
           style={{width: '100%', height: '100%'}}
           autoPlay
+          loop={false}
         />
       </View>
     );
