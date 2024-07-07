@@ -116,11 +116,7 @@ export const mainData = {
     userName: '', // 登录用户名
     userId: '', // 用户ID
   }, // 用户信息
-  babies: [
-    {
-      type: 'ADD',
-    },
-  ], // 可以添加多个宝宝，比如双胞胎等
+  babies: [], // 可以添加多个宝宝，比如双胞胎等
   babyInfo: {}, // 婴儿信息
   appConfigs: {
     showStatics: true, // 默认首页显示统计信息

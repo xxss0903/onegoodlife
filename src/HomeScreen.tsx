@@ -75,9 +75,8 @@ export default class HomeScreen extends BaseScreen {
 
   _initListeners() {
     this.props.navigation.addListener('focus', () => {
-      logi('home navigation will focus: ' + mainData.refreshBabies);
-      if (mainData.refreshBabies) {
-        mainData.refreshBabies = false;
+      if (mainData.babies && mainData.babies.length > 0) {
+        logi('render many babies', mainData.babies);
         mainData.babyInfo = mainData.babies[0];
         this.setState(
           {
@@ -85,12 +84,22 @@ export default class HomeScreen extends BaseScreen {
             currentBabyIndex: 0,
           },
           () => {
+            let newPageRefs = this.babyPageRefs.filter(value => {
+              if (value) {
+                return value;
+              }
+            });
+            this.babyPageRefs = newPageRefs;
             this.pagerRef && this.pagerRef.setPage(0);
+            logi('baby page refs', this.babyPageRefs);
             this.babyPageRefs.forEach(value => {
-              value.refreshData();
+              value && value.refreshData();
             });
           },
         );
+      } else {
+        logi('render empty babies');
+        this.forceUpdate();
       }
     });
     // 在全部页面插入之后，在这里使用本地插入和刷新当前宝宝的页面
@@ -155,7 +164,20 @@ export default class HomeScreen extends BaseScreen {
         </View>
       );
     } else {
-      return <View></View>;
+      return (
+        <View
+          style={[commonStyles.flexColumn, {marginVertical: Margin.vertical}]}>
+          <Text style={{fontSize: 18}}>妈妈你好呀</Text>
+          <Text
+            style={{
+              fontSize: 28,
+              fontWeight: 'bold',
+              marginTop: Margin.smalHorizontal,
+            }}>
+            请先添加宝宝
+          </Text>
+        </View>
+      );
     }
   }
 
@@ -307,12 +329,44 @@ export default class HomeScreen extends BaseScreen {
     this.currentBabyPageRef?.insertNewData(data);
   }
 
+  _renderEmptyAddView() {
+    return (
+      <View style={[commonStyles.flexColumn, commonStyles.center, {flex: 1}]}>
+        <View style={commonStyles.center}>
+          <Text style={[{fontSize: 24, fontWeight: 'bold'}]}>
+            还没有添加宝宝哦~
+          </Text>
+          <Text style={[{fontSize: 24, fontWeight: 'bold'}]}>
+            请点击添加您的小宝宝
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            this.props.navigation.navigate('BabyInfoScreen');
+          }}
+          style={[
+            {
+              marginTop: Margin.vertical,
+              backgroundColor: Colors.primary,
+              paddingHorizontal: Margin.horizontal,
+              paddingVertical: Margin.vertical,
+              borderRadius: Margin.corners,
+            },
+          ]}>
+          <Text style={[{fontSize: 16, color: Colors.white}]}>添加宝宝</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   renderScreen() {
     return (
       <View>
         <View style={styles.container}>
-          {this._renderHomeView()}
-          {mainData.babies.length > 1 ? (
+          {mainData.babies && mainData.babies.length > 0
+            ? this._renderHomeView()
+            : this._renderEmptyAddView()}
+          {mainData.babies.length > 0 ? (
             <FloatingAction
               distanceToEdge={{vertical: 50, horizontal: 40}}
               buttonSize={60}
