@@ -83,18 +83,22 @@ export default class BabiesScreen extends BaseScreen {
   }
 
   _renderBabyItem(item: any, index: any) {
+    let colorIndex = mainData.babies.length - index;
     if (!item.bgColor) {
-      item.bgColor = Colors.grayEe;
-      if (index === 0) {
+      if (colorIndex === 0) {
         item.bgColor = Colors.primary5;
-      } else if (index % 2 === 0) {
-        item.bgColor = Colors.primary2;
-      } else if (index % 3 === 0) {
-        item.bgColor = Colors.primary3;
-      } else if (index % 4 === 0) {
+      } else if (colorIndex === 1) {
+        item.bgColor = Colors.primary1;
+      } else if (colorIndex % 2 === 0) {
         item.bgColor = Colors.primary4;
-      } else if (index % 5 === 0) {
-        item.bgColor = Colors.primary6;
+      } else if (colorIndex % 3 === 0) {
+        item.bgColor = Colors.primary2;
+      } else if (colorIndex % 4 === 0) {
+        item.bgColor = Colors.primary5;
+      } else if (colorIndex % 5 === 0) {
+        item.bgColor = Colors.primary1;
+      } else {
+        item.bgColor = Colors.fab;
       }
     }
 
