@@ -1,111 +1,53 @@
-import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
 import {mainData} from './mainData';
-import {formatTimeToDate} from './utils/until';
 import {commonStyles} from './commonStyle';
-import EventBus from './utils/eventBus';
-import {Colors} from './colors';
-import {Avatar} from 'native-base';
+import {Avatar, CheckIcon, Select} from 'native-base';
 import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
+import React from 'react';
+import {Colors} from './colors';
+import {DeviceStorage} from './utils/deviceStorage';
+import {isEmpty} from './utils/until';
+import {showToast} from './utils/toastUtil';
 
 export default class UserInfoScreen extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
       datepickerOpen: false,
+      userInfo: {
+        userName: '',
+        role: 'father',
+      },
     };
   }
 
-  _editBaby(baby) {
-    this.props.navigation.navigate('BabyInfoScreen', {
-      baby: baby,
-      callback: () => {
-        this.forceUpdate();
-      },
+  componentDidMount() {
+    this.setState({
+      userInfo: mainData.userInfo,
     });
   }
 
-  _renderBabyItem(item, index) {
-    let bgColor = '#ffffff';
-    if (index === 0) {
-      bgColor = Colors.primary5;
-    } else if (index % 1 === 0) {
-      bgColor = Colors.primary2;
-    } else if (index % 2 === 0) {
-      bgColor = Colors.primary3;
-    } else if (index % 3 === 0) {
-      bgColor = Colors.primary4;
-    } else {
+  _checkUserInfo() {
+    if (isEmpty(this.state.userInfo.userName)) {
+      showToast('请输入用户名');
+      return false;
     }
-    return (
-      <TouchableOpacity
-        onLongPress={() => {
-          // 刪除寶寶
-        }}
-        onPress={() => {
-          this._editBaby(item);
-        }}
-        style={[
-          commonStyles.flexColumn,
-          {
-            backgroundColor: bgColor,
-            padding: 12,
-            borderRadius: 12,
-            marginTop: 12,
-          },
-        ]}>
-        <View style={[commonStyles.flexColumn]}>
-          <View style={[commonStyles.flexRow]}>
-            {!(item && item.avatar) ? (
-              <Avatar
-                size={'xl'}
-                source={require('./assets/ic_about_us.png')}
-              />
-            ) : (
-              <Avatar
-                size={'xl'}
-                source={{
-                  uri: item.avatar,
-                }}
-              />
-            )}
-            <View
-              style={[
-                commonStyles.flexColumn,
-                {marginLeft: Margin.horizontal, justifyContent: 'center'},
-              ]}>
-              <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                {item.nickname}
-              </Text>
-              <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
-                {formatTimeToDate(item.birthDay)}
-              </Text>
-            </View>
-          </View>
-          <View></View>
-        </View>
-      </TouchableOpacity>
-    );
+    return true;
   }
 
-  onRowDidOpen = (rowKey, rowMap) => {};
-
-  closeRow = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-      rowMap[rowKey].closeRow();
+  _confirmUserInfo() {
+    if (this._checkUserInfo()) {
+      mainData.userInfo = this.state.userInfo;
+      DeviceStorage.refreshMainData();
+      this.props.navigation.goBack();
     }
-  };
-
-  deleteRow = (rowMap, rowKey, data) => {
-    this.closeRow(rowMap, rowKey);
-    let index = mainData.babies.indexOf(data);
-    mainData.babies.splice(index, 1);
-    EventBus.sendEvent(EventBus.REFRESH_BABY_LIST);
-    this.forceUpdate();
-  };
-
-  _addNewBaby() {
-    this.props.navigation.navigate('BabyInfoScreen');
   }
 
   renderScreen() {
@@ -114,14 +56,80 @@ export default class UserInfoScreen extends BaseScreen {
         <View
           style={[
             commonStyles.flexColumn,
-            {flex: 1, padding: Margin.horizontal},
+            {flex: 1, padding: Margin.horizontal, alignItems: 'center'},
           ]}>
-          <FlatList
-            data={mainData.babies}
-            renderItem={({item, index}) => {
-              return this._renderBabyItem(item, index);
+          <Avatar
+            size={'lg'}
+            bg={'transparent'}
+            source={require('./assets/ic_baby.png')}>
+            <Avatar.Badge bg="green.500" />
+          </Avatar>
+          <View
+            style={[
+              {height: 40, marginTop: 12},
+              commonStyles.flexRow,
+              commonStyles.center,
+            ]}>
+            <Text style={[styles.rowTitleText]}>用户名：</Text>
+            <TextInput
+              style={[
+                {
+                  textAlign: 'left',
+                  fontSize: 16,
+                  flex: 1,
+                  backgroundColor: '#eeeeee',
+                  color: '#333333',
+                },
+              ]}
+              value={this.state.userInfo.userName}
+              onChangeText={text => {
+                this.state.userInfo.userName = text;
+                this.forceUpdate();
+              }}
+              placeholderTextColor={'#bbbbbb'}
+              placeholder={'请输入用户名'}
+            />
+          </View>
+          <View
+            style={[
+              {height: 40, marginTop: 12},
+              commonStyles.flexRow,
+              commonStyles.center,
+            ]}>
+            <Text style={[styles.rowTitleText]}>我是：</Text>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: '#eeeeee',
+              }}>
+              <Select
+                selectedValue={this.state.userInfo.role}
+                minWidth="200"
+                accessibilityLabel="请选择"
+                placeholder="请选择"
+                _selectedItem={{
+                  bg: 'teal.600',
+                  endIcon: <CheckIcon size="5" />,
+                }}
+                mt={1}
+                onValueChange={itemValue => {
+                  this.state.userInfo.role = itemValue;
+                  this.forceUpdate();
+                }}>
+                <Select.Item label="爸爸" value="father" />
+                <Select.Item label="妈妈" value="mother" />
+              </Select>
+            </View>
+          </View>
+        </View>
+        <View style={[commonStyles.bottomContainer]}>
+          <TouchableOpacity
+            onPress={() => {
+              this._confirmUserInfo();
             }}
-          />
+            style={[{flex: 1}, commonStyles.center]}>
+            <Text>确认</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -129,6 +137,12 @@ export default class UserInfoScreen extends BaseScreen {
 }
 
 const styles = StyleSheet.create({
+  rowTitleText: {
+    textAlign: 'right',
+    fontSize: 16,
+    color: Colors.black333,
+    width: 80,
+  },
   container: {},
   titleImg: {
     width: 20,

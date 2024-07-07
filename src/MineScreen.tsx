@@ -71,11 +71,11 @@ export default class MineScreen extends BaseScreen {
             />
             <Text
               style={{
+                fontWeight: 'bold',
                 marginTop: Margin.vertical,
                 fontSize: 18,
-                fontWeight: Style.bold,
               }}>
-              伊丽莎白
+              {mainData.userInfo.userName}
             </Text>
           </View>
         </ImageBackground>

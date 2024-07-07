@@ -113,8 +113,9 @@ export const mainData = {
   typeMapList: commonTypeList, // 类型列表，可以用来保存用户自己的类型数据
   commonActions: [commonTypeList[0], commonTypeList[1], commonTypeList[2]], // 常用类型
   userInfo: {
-    userName: '', // 登录用户名
-    userId: '', // 用户ID
+    userName: 'user name', // 登录用户名
+    userId: 'xxss0903', // 用户ID
+    phone: '1808011112223',
   }, // 用户信息
   babies: [], // 可以添加多个宝宝，比如双胞胎等
   babyInfo: {}, // 婴儿信息
