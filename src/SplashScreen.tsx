@@ -22,8 +22,7 @@ export default class SplashScreen extends BaseScreen {
       })
       .finally(() => {
         setTimeout(async () => {
-          // 进入主页
-          // this.props.navigation.replace('MainScreen');
+          this.props.navigation.replace('MainScreen');
         }, 2500);
       });
   }

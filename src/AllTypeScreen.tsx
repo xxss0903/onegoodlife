@@ -26,6 +26,7 @@ export default class AllTypeScreen extends BaseScreen {
   _renderItem(value, index) {
     return (
       <TouchableOpacity
+        key={`${value.name}_${index}`}
         onPress={() => {
           // 添加类型
           this._addNewLifeline(value);

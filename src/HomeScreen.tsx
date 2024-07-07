@@ -76,7 +76,6 @@ export default class HomeScreen extends BaseScreen {
   _initListeners() {
     this.props.navigation.addListener('focus', () => {
       if (mainData.babies && mainData.babies.length > 0) {
-        logi('render many babies', mainData.babies);
         mainData.babyInfo = mainData.babies[0];
         this.setState(
           {
@@ -91,7 +90,6 @@ export default class HomeScreen extends BaseScreen {
             });
             this.babyPageRefs = newPageRefs;
             this.pagerRef && this.pagerRef.setPage(0);
-            logi('baby page refs', this.babyPageRefs);
             this.babyPageRefs.forEach(value => {
               value && value.refreshData();
             });
@@ -108,15 +106,32 @@ export default class HomeScreen extends BaseScreen {
     });
   }
 
+  _editNewLifeline(item: any) {
+    let type = commonTypeList.filter(value => item.typeId === value.id)[0];
+    if (type) {
+      this.cloneType = JSON.parse(JSON.stringify(item));
+      this.currentAddType = type;
+      this.newlifeModalRef.editType(this.currentAddType, this.cloneType);
+    }
+  }
+
   _renderBabyPages() {
     let babyView = mainData.babies.map((value, index) => {
-      logi('rerender baby pager view ', value);
       return (
         <View key={index} style={[{flex: 1}]}>
           <BabyLifeListView
             ref={ref => (this.babyPageRefs[index] = ref)}
             navigation={this.props.navigation}
             baby={value}
+            onItemClick={item => {
+              logi('detail item', item);
+              // 直接显示弹窗的内容吧
+              this._editNewLifeline(item);
+
+              // this.props.navigation.navigate('NewLifeDetailScreen', {
+              //   data: item,
+              // });
+            }}
           />
         </View>
       );

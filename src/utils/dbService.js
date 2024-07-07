@@ -19,7 +19,7 @@ export const createLifeRecordTable = async db => {
   // 创建数据库的表
   // 插入name，就是类型名称，json是数据的json值，time是时间戳, typeId是类型id
   const query = `CREATE TABLE IF NOT EXISTS ${lifeRecordTableName}(
-         rowid integer PRIMARY KEY autoincrement, babyId integer, name TEXT NOT NULL, json TEXT, time bigint, typeId integer
+         rowid bigint PRIMARY KEY, babyId integer, name TEXT NOT NULL, json TEXT, time bigint, typeId integer
     );`;
 
   await db.executeSql(query);
@@ -72,8 +72,16 @@ export const getDataListOrderByTime = async (db, babyId) => {
 
 // 插入单条数据
 export const insertData = async (db, data, dataStr, babyId) => {
-  const insertQuery = `INSERT INTO ${lifeRecordTableName} (name, babyId, time, json) values ("${data.name}", ${babyId}, ${data.time}, "${dataStr}")`;
+  const insertQuery = `INSERT INTO ${lifeRecordTableName} (rowid, name, babyId, time, json) values (${data.time}, "${data.name}", ${babyId}, ${data.time}, "${dataStr}")`;
   return db.executeSql(insertQuery);
+};
+
+// 更新单表数据
+export const updateData = async (db, data, dataStr, babyId) => {
+  const insertQuery = `UPDATE ${lifeRecordTableName} SET name="${data.name}", babyId=${babyId}, time=${data.time}, json="${dataStr}" WHERE rowid = ${data.rowid}`;
+  let exeRes = db.executeSql(insertQuery);
+  logi('update res', exeRes);
+  return exeRes;
 };
 
 // 保存列表数据

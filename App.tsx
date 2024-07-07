@@ -42,7 +42,11 @@ function MainStack() {
         }}
       />
       <Stack.Screen name={'TypeMangeScreen'} component={TypeMangeScreen} />
-      <Stack.Screen name={'类型管理'} component={NewLifeDetailScreen} />
+      <Stack.Screen
+        name={'NewLifeDetailScreen'}
+        component={NewLifeDetailScreen}
+        options={{title: '类型'}}
+      />
       <Stack.Screen
         name={'AllTypeScreen'}
         component={AllTypeScreen}

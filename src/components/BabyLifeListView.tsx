@@ -34,6 +34,7 @@ import {
   deleteDataByRowId,
   getDataListOrderByTime,
   insertData,
+  updateData,
 } from '../utils/dbService';
 import {decodeFuc, encodeFuc} from '../utils/base64';
 import {renderTagList} from './commonViews';
@@ -88,7 +89,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
   // 获取数据库数据
   async _initDBData() {
     try {
-      logi('get baby life list  ', this.props.baby);
       let babyList = await getDataListOrderByTime(
         db.database,
         this.props.baby.babyId,
@@ -121,7 +121,19 @@ export default class BabyLifeListView extends React.Component<any, any> {
     await deleteDataByRowId(db.database, item.rowid);
   }
 
+  _editNewlifeLineImpl(data) {
+    logi('edit 1 new data', data);
+    this._editItemInDB(data, mainData.babyInfo.babyId);
+    // 插入到最新的数据，这里还是根据时间进行设置
+    let dataList = this._editItemByResortTime(this.state.dataList, data);
+    this._refreshStaticsCharts();
+    this.setState({
+      dataList: dataList,
+    });
+  }
+
   _insertNewlifeLineImpl(data) {
+    logi('insert 2 new data', data);
     this._insertItemToDB(data, mainData.babyInfo.babyId);
     // 插入到最新的数据，这里还是根据时间进行设置
     let dataList = this._insertItemByResortTime(this.state.dataList, data);
@@ -163,7 +175,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
           // 进入详情
           this._gotoItemDetail(item);
         }}
-        key={item.time}
+        key={item.time + '_' + item.typeId}
         style={[styles.timelineItemContainer, {marginTop: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
@@ -280,8 +292,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   // 进入详情
   _gotoItemDetail(item: any) {
-    logi('detail item', item);
-    this.props.navigation.navigate('NewLifeDetailScreen', {data: item});
+    this.props.onItemClick && this.props.onItemClick(item);
   }
 
   async _deleteRow(item: any, index: Number) {
@@ -295,6 +306,16 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this.setState({
       dataList: dataList,
     });
+  }
+
+  async _editItemInDB(data, babyId) {
+    logi('edit item to db data', data);
+    await updateData(
+      db.database,
+      data,
+      encodeFuc(JSON.stringify(data)),
+      babyId,
+    );
   }
 
   // 插入数据到数据库
@@ -331,9 +352,33 @@ export default class BabyLifeListView extends React.Component<any, any> {
     return dataList;
   }
 
+  _editItemByResortTime(dataList, newData) {
+    logi('_edit item by time');
+    if (!newData) {
+      return dataList;
+    }
+    if (dataList && dataList.length > 0) {
+      for (let i = 0; i < dataList.length; i++) {
+        if (dataList[i].rowid === newData.rowid) {
+          logi('edit datalist', dataList[i], newData);
+          dataList[i] = newData;
+        }
+      }
+    } else {
+      dataList = [newData];
+    }
+    return dataList;
+  }
+
   insertNewData(data) {
-    logi('insert new data', data);
-    this._insertNewlifeLineImpl(data);
+    if (data.rowid) {
+      // 编辑
+      this._editNewlifeLineImpl(data);
+    } else {
+      data.rowid = data.time;
+      // 新增
+      this._insertNewlifeLineImpl(data);
+    }
   }
 
   refreshData() {

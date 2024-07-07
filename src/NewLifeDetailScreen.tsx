@@ -10,6 +10,7 @@ import {AndroidPermissions} from './utils/permissionUtils';
 import {showToast} from './utils/toastUtil';
 import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
+import {VStack} from 'native-base';
 
 // 记录的记录详情
 export default class NewLifeDetailScreen extends BaseScreen {
@@ -57,75 +58,68 @@ export default class NewLifeDetailScreen extends BaseScreen {
   renderScreen() {
     const {time, remark, name, selectedTags, tags} = this.state.data;
     return (
-      <View style={[commonStyles.flexColumn, {flex: 1, padding: 12}]}>
+      <View style={[commonStyles.flexColumn, {flex: 1}]}>
         {/*记录内容*/}
-        <View>
-          <TouchableOpacity
-            onPress={() => {
-              this._toggleDatetimePicker(true);
-            }}>
-            <Text
-              style={[
-                commonStyles.commonContentText,
-                {marginTop: Margin.vertical},
-              ]}>
-              时间：{formatTime(time)}
-            </Text>
-          </TouchableOpacity>
+        <VStack style={{flex: 1, padding: Margin.horizontal}}>
           <View>
-            <Text
-              style={[
-                commonStyles.commonContentText,
-                {marginTop: Margin.vertical},
-              ]}>
-              标签
-            </Text>
-            {selectedTags ? (
-              <View style={{marginTop: Margin.vertical}}>
-                {renderTagList(
-                  tags,
-                  selectedTags,
-                  tag => {
-                    this.forceUpdate();
+            <TouchableOpacity
+              onPress={() => {
+                this._toggleDatetimePicker(true);
+              }}>
+              <Text
+                style={[
+                  commonStyles.commonContentText,
+                  {marginTop: Margin.vertical},
+                ]}>
+                时间：{formatTime(time)}
+              </Text>
+            </TouchableOpacity>
+            <View>
+              <Text
+                style={[
+                  commonStyles.commonContentText,
+                  {marginTop: Margin.vertical},
+                ]}>
+                标签
+              </Text>
+              {selectedTags ? (
+                <View style={{}}>
+                  {renderTagList(
+                    tags,
+                    selectedTags,
+                    tag => {
+                      this.forceUpdate();
+                    },
+                    false,
+                    name.indexOf('奶') < 0,
+                  )}
+                </View>
+              ) : null}
+            </View>
+            <View style={{minHeight: 80, marginTop: 12}}>
+              <TextInput
+                style={[
+                  {
+                    fontSize: 14,
+                    flex: 1,
+                    backgroundColor: '#eeeeee',
+                    color: '#333333',
                   },
-                  false,
-                  name.indexOf('奶') < 0,
-                )}
-              </View>
-            ) : null}
+                ]}
+                multiline={true}
+                value={remark}
+                onChangeText={text => {
+                  this.state.data.remark = text;
+                  this.forceUpdate();
+                }}
+                placeholderTextColor={'#bbbbbb'}
+                keyboardType={'default'}
+                placeholder={'请输入备注'}
+              />
+            </View>
           </View>
-          <View style={{minHeight: 80, marginTop: 12}}>
-            <TextInput
-              style={[
-                {
-                  fontSize: 14,
-                  flex: 1,
-                  backgroundColor: '#eeeeee',
-                  color: '#333333',
-                },
-              ]}
-              multiline={true}
-              value={remark}
-              onChangeText={text => {
-                this.state.data.remark = text;
-                this.forceUpdate();
-              }}
-              placeholderTextColor={'#bbbbbb'}
-              keyboardType={'default'}
-              placeholder={'请输入备注'}
-            />
-          </View>
-        </View>
-        {/*记录图片*/}
-        <View style={{flex: 1}}>
-          <TouchableOpacity
-            onPress={() => {
-              this._selectImage();
-            }}>
-            <Text>选择图片</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[commonStyles.flexRow, {height: 60}]}>
+        </VStack>
+        <View style={[commonStyles.bottomContainer]}>
           <TouchableOpacity
             onPress={() => {
               this.props.navigation.goBack();
