@@ -129,7 +129,7 @@ export default class MineScreen extends BaseScreen {
             />,
             '类型管理',
             () => {
-              this.props.navigation.navigate('TypeMangeScreen');
+              this.props.navigation.navigate('TypeManageScreen');
             },
           )}
           {ItemRow(

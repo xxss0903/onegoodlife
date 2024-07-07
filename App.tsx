@@ -10,7 +10,7 @@ import MainScreen from './src/MainScreen';
 import SplashScreen from './src/SplashScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {NativeBaseProvider} from 'native-base';
-import TypeMangeScreen from './src/TypeMangeScreen';
+import TypeManageScreen from './src/TypeManageScreen';
 import NewLifeDetailScreen from './src/NewLifeDetailScreen';
 import AllTypeScreen from './src/AllTypeScreen';
 import BabyInfoScreen from './src/BabyInfoScreen';
@@ -41,7 +41,7 @@ function MainStack() {
           headerShown: false,
         }}
       />
-      <Stack.Screen name={'TypeMangeScreen'} component={TypeMangeScreen} />
+      <Stack.Screen name={'类型管理'} component={TypeManageScreen} />
       <Stack.Screen
         name={'NewLifeDetailScreen'}
         component={NewLifeDetailScreen}

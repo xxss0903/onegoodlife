@@ -6,7 +6,7 @@ import {mainData} from './mainData';
 import BaseScreen from './BaseScreen.tsx';
 
 // 标签管理界面
-export default class TypeMangeScreen extends BaseScreen {
+export default class TypeManageScreen extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
