@@ -16,6 +16,8 @@ export default class EventBus {
   // 插入新的数据
   static INSERT_NEW_LIFETIME = 'INSERT_NEW_LIFETIME';
   static REFRESH_BABIES_SCREEN = 'REFRESH_BABIES_SCREEN';
+  // 刷新用户信息
+  static REFRESH_USER_INFO = 'REFRESH_USER_INFO';
 
   static sendEvent = (key, value) => {
     DeviceEventEmitter.emit(key, value);

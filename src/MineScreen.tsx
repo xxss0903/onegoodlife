@@ -14,6 +14,7 @@ import moment from 'moment';
 import {mainData} from './mainData';
 import {Avatar} from 'native-base';
 import BaseScreen from './BaseScreen.tsx';
+import EventBus from './utils/eventBus';
 
 const ItemRow = (img, title, callback, showLine = true) => {
   return (
@@ -49,7 +50,18 @@ export default class MineScreen extends BaseScreen {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.refreshUserInfoListener = EventBus.addEventListener(
+      EventBus.REFRESH_USER_INFO,
+      () => {
+        this.forceUpdate();
+      },
+    );
+  }
+
+  componentWillUnmount() {
+    this.refreshUserInfoListener && this.refreshUserInfoListener.remove();
+  }
 
   renderScreen() {
     return (
@@ -66,7 +78,7 @@ export default class MineScreen extends BaseScreen {
             <Avatar
               style={{width: 80, height: 80}}
               source={{
-                uri: 'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658',
+                uri: mainData.userInfo.avatarUrl,
               }}
             />
             <Text
@@ -133,11 +145,11 @@ export default class MineScreen extends BaseScreen {
           {ItemRow(
             <Image
               style={styles.titleImg}
-              source={require('./assets/ic_version.png')}
+              source={require('./assets/ic_privacy.png')}
             />,
-            '版本信息',
+            '用户协议和隐私',
             () => {
-              this.props.navigation.navigate('VersionScreen');
+              this.props.navigation.navigate('PrivacyScreen');
             },
           )}
         </View>

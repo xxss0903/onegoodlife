@@ -15,6 +15,7 @@ import {Colors} from './colors';
 import {DeviceStorage} from './utils/deviceStorage';
 import {isEmpty} from './utils/until';
 import {showToast} from './utils/toastUtil';
+import EventBus from './utils/eventBus';
 
 export default class UserInfoScreen extends BaseScreen {
   constructor(props) {
@@ -23,7 +24,7 @@ export default class UserInfoScreen extends BaseScreen {
       datepickerOpen: false,
       userInfo: {
         userName: '',
-        role: 'father',
+        role: 'mother',
       },
     };
   }
@@ -46,6 +47,7 @@ export default class UserInfoScreen extends BaseScreen {
     if (this._checkUserInfo()) {
       mainData.userInfo = this.state.userInfo;
       DeviceStorage.refreshMainData();
+      EventBus.sendEvent(EventBus.REFRESH_USER_INFO);
       this.props.navigation.goBack();
     }
   }
@@ -59,9 +61,11 @@ export default class UserInfoScreen extends BaseScreen {
             {flex: 1, padding: Margin.horizontal, alignItems: 'center'},
           ]}>
           <Avatar
-            size={'lg'}
+            style={{width: 80, height: 80}}
             bg={'transparent'}
-            source={require('./assets/ic_baby.png')}>
+            source={{
+              uri: mainData.userInfo.avatarUrl,
+            }}>
             <Avatar.Badge bg="green.500" />
           </Avatar>
           <View
@@ -77,7 +81,7 @@ export default class UserInfoScreen extends BaseScreen {
                   textAlign: 'left',
                   fontSize: 16,
                   flex: 1,
-                  backgroundColor: '#eeeeee',
+                  backgroundColor: Colors.grayEe,
                   color: '#333333',
                 },
               ]}
@@ -100,7 +104,7 @@ export default class UserInfoScreen extends BaseScreen {
             <View
               style={{
                 flex: 1,
-                backgroundColor: '#eeeeee',
+                backgroundColor: Colors.grayEe,
               }}>
               <Select
                 selectedValue={this.state.userInfo.role}
@@ -108,7 +112,7 @@ export default class UserInfoScreen extends BaseScreen {
                 accessibilityLabel="请选择"
                 placeholder="请选择"
                 _selectedItem={{
-                  bg: 'teal.600',
+                  bg: Colors.primary4,
                   endIcon: <CheckIcon size="5" />,
                 }}
                 mt={1}

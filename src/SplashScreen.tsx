@@ -9,12 +9,23 @@ import {db} from './dataBase.ts';
 
 export default class SplashScreen extends BaseScreen {
   componentDidMount() {
-    setTimeout(async () => {
+    let loadPromise = new Promise(async resolve => {
       await this._initDb();
       await DeviceStorage.getMainData();
-      // 进入主页
-      this.props.navigation.replace('MainScreen');
-    }, 2000);
+      resolve('');
+    });
+
+    loadPromise
+      .then(() => {})
+      .catch(err => {
+        logi('enter err', err);
+      })
+      .finally(() => {
+        setTimeout(async () => {
+          // 进入主页
+          this.props.navigation.replace('MainScreen');
+        }, 2500);
+      });
   }
 
   // 初始化数据库，首先连接本地数据库，然后如果没有表则创建表

@@ -17,6 +17,8 @@ import BabyInfoScreen from './src/BabyInfoScreen';
 import BabiesScreen from './src/BabiesScreen';
 import UserInfoScreen from './src/UserInfoScreen.tsx';
 import {RootSiblingParent} from 'react-native-root-siblings';
+import PrivacyScreen from './src/PrivacyScreen.tsx';
+import VersionScreen from './src/VersionScreen.tsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,10 +42,7 @@ function MainStack() {
         }}
       />
       <Stack.Screen name={'TypeMangeScreen'} component={TypeMangeScreen} />
-      <Stack.Screen
-        name={'NewLifeDetailScreen'}
-        component={NewLifeDetailScreen}
-      />
+      <Stack.Screen name={'类型管理'} component={NewLifeDetailScreen} />
       <Stack.Screen
         name={'AllTypeScreen'}
         component={AllTypeScreen}
@@ -59,6 +58,16 @@ function MainStack() {
         name={'UserInfoScreen'}
         component={UserInfoScreen}
         options={{title: '我的信息'}}
+      />
+      <Stack.Screen
+        name={'PrivacyScreen'}
+        component={PrivacyScreen}
+        options={{title: '隐私和协议'}}
+      />
+      <Stack.Screen
+        name={'VersionScreen'}
+        component={VersionScreen}
+        options={{title: '应用信息'}}
       />
     </Stack.Navigator>
   );
