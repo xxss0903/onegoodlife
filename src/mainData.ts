@@ -158,11 +158,8 @@ export const mainData = {
 };
 
 // 常用按钮
-export const commonActions = [
-  commonTypeList[0],
-  commonTypeList[1],
-  commonTypeList[2],
-  {
+export const commonActions = {
+  all: {
     id: 6,
     name: '全部',
     value: 'type_6',
@@ -170,7 +167,7 @@ export const commonActions = [
     position: 6,
     icon: require('./assets/ic_all.png'),
   },
-];
+};
 
 // 牛奶的模板数据
 // 喝牛奶的模板数据

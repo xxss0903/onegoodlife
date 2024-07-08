@@ -388,10 +388,10 @@ export default class HomeScreen extends BaseScreen {
               ref={ref => {
                 this.floatingActionRef = ref;
               }}
-              actions={commonActions}
+              actions={[...mainData.commonActions, commonActions.all]}
               onPressItem={typeName => {
                 this.isTypeEdit = false;
-                let items = commonActions.filter(
+                let items = mainData.commonActions.filter(
                   item => item.name === typeName,
                 );
                 items && items.length > 0 && this._addNewLifeline(items[0]);
