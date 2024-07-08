@@ -126,7 +126,7 @@ export const commonTypeList = [
     name: '打疫苗',
     value: 'type_10',
     text: '打疫苗',
-    position: 8,
+    position: 9,
     icon: require('./assets/ic_vaccine.png'),
     bgColor: Colors.primary2,
   },
