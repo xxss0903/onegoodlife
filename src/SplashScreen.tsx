@@ -6,9 +6,12 @@ import {logi} from './utils/logutil';
 import BaseScreen from './BaseScreen.tsx';
 import LottieView from 'lottie-react-native';
 import {db} from './dataBase.ts';
+import {mainData} from './mainData.ts';
 
 export default class SplashScreen extends BaseScreen {
   componentDidMount() {
+    console.log('other type', mainData.typeMapList);
+    // DeviceStorage.refreshMainData();
     let loadPromise = new Promise(async resolve => {
       await this._initDb();
       await DeviceStorage.getMainData();

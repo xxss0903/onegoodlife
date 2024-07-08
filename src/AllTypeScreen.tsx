@@ -15,7 +15,7 @@ export default class AllTypeScreen extends BaseScreen {
   private currentAddType = null; // 当前的添加类型
   private newlifeModalRef = null;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       datepickerOpen: false,
@@ -23,7 +23,7 @@ export default class AllTypeScreen extends BaseScreen {
     };
   }
 
-  _renderItem(value, index) {
+  _renderItem(value: any, index: any) {
     return (
       <TouchableOpacity
         key={`${value.name}_${index}`}
@@ -75,12 +75,12 @@ export default class AllTypeScreen extends BaseScreen {
     );
   }
 
-  _addNewLifeline(type) {
+  _addNewLifeline(type: any) {
     this.newlifeModalRef.addNewType(type);
   }
 
   _renderOtherItem() {
-    let otherType = [];
+    let otherType: any[] = [];
     mainData.typeMapList.forEach(value => {
       let isCommon = false;
       mainData.commonActions.forEach(value2 => {
@@ -92,6 +92,7 @@ export default class AllTypeScreen extends BaseScreen {
         otherType.push(value);
       }
     });
+    console.log('render other type', otherType);
     let view = otherType.map((value, index) => {
       return this._renderItem(value, index);
     });

@@ -18,6 +18,7 @@ import {
   peeTemplateData,
   poopTemplateData,
   spitMilkTemplateData,
+  vaccineTemplateData,
   weightTemplateData,
 } from '../mainData';
 import moment from 'moment';
@@ -25,7 +26,7 @@ import {logi} from '../utils/logutil';
 import DatePicker from 'react-native-date-picker';
 import {commonStyles} from '../commonStyle';
 import {renderTagList} from './commonViews';
-import {Checkbox} from 'native-base';
+import {Checkbox, CheckIcon, Select} from 'native-base';
 import {Margin} from '../space';
 import {Colors} from '../colors';
 
@@ -36,6 +37,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   private oldHeightData = null;
   private oldWeightData = null;
   private oldDiaperData = null;
+  private oldVaccine = null;
   private oldSpitMilkData = null;
   private oldPoopData = null;
   private oldPeeData = null;
@@ -244,6 +246,86 @@ export default class AddNewLifeModal extends Component<any, any> {
         </View>
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
+          <TextInput
+            style={[
+              {
+                fontSize: 14,
+                flex: 1,
+                backgroundColor: '#eeeeee',
+                color: '#333333',
+              },
+            ]}
+            multiline={true}
+            value={this.cloneType.remark}
+            onChangeText={text => {
+              this.cloneType.remark = text;
+              this.forceUpdate();
+            }}
+            placeholderTextColor={'#bbbbbb'}
+            keyboardType={'default'}
+            placeholder={'请输入备注'}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  // 打疫苗
+  _renderVaccine() {
+    // 拷贝一个新的数据
+    if (!this.cloneType) {
+      if (this.oldVaccine) {
+        this.cloneType = JSON.parse(JSON.stringify(this.oldVaccine));
+      } else {
+        this.cloneType = JSON.parse(JSON.stringify(vaccineTemplateData));
+        this.cloneType.name = this.currentAddType.name;
+      }
+      this.cloneType.time = moment().valueOf();
+      this.cloneType.key = moment().valueOf();
+    }
+    let tagView = renderTagList(
+      this.cloneType.tags,
+      this.cloneType.selectedTags,
+      tag => {
+        this.forceUpdate();
+      },
+      false,
+      true,
+    );
+    let formatTime = moment(this.cloneType.time).format('yyyy-MM-DD HH:mm');
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            this._toggleDatetimePicker(true);
+          }}>
+          <Text style={[styles.dateText]}>选择日期：{formatTime}</Text>
+        </TouchableOpacity>
+        <View style={{}}>
+          <Select
+            selectedValue={
+              this.cloneType.selectedTags.length > 0
+                ? this.cloneType.selectedTags[0]
+                : undefined
+            }
+            minWidth="200"
+            accessibilityLabel="请选择疫苗"
+            placeholder="请选择疫苗"
+            _selectedItem={{
+              bg: Colors.primary4,
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={itemValue => {
+              this.cloneType.selectedTags[0] = itemValue;
+              this.forceUpdate();
+            }}>
+            {this.cloneType.tags.map(value => {
+              return <Select.Item label={value} value={value} />;
+            })}
+          </Select>
+        </View>
+        <View style={{minHeight: 80, marginTop: Margin.vertical}}>
           <TextInput
             style={[
               {
@@ -749,6 +831,9 @@ export default class AddNewLifeModal extends Component<any, any> {
         break;
       case mainData.typeMapList[8].id:
         contentView = this._renderDiaper(this.currentAddType);
+        break;
+      case mainData.typeMapList[9].id:
+        contentView = this._renderVaccine(this.currentAddType);
         break;
       default:
         contentView = this._renderOtherContent(this.currentAddType);

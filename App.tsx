@@ -10,7 +10,7 @@ import MainScreen from './src/MainScreen';
 import SplashScreen from './src/SplashScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {NativeBaseProvider} from 'native-base';
-import TypeManageScreen from './src/TypeManageScreen';
+import TypeManageScreen from './src/TypeManageScreen.tsx';
 import NewLifeDetailScreen from './src/NewLifeDetailScreen';
 import AllTypeScreen from './src/AllTypeScreen';
 import BabyInfoScreen from './src/BabyInfoScreen';
