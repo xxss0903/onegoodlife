@@ -141,7 +141,7 @@ export const mainData = {
     userName: 'user name', // 登录用户名
     userId: 'xxss0903', // 用户ID
     phone: '1808011112223',
-    role: 'mother',
+    role: '妈妈',
     avatarUrl:
       'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658',
   }, // 用户信息

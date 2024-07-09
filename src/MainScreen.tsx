@@ -10,6 +10,7 @@ import {Colors} from './colors';
 import HomeScreen from './HomeScreen';
 import MemoryScreen from './MemoryScreen';
 import MineScreen from './MineScreen';
+import StaticsScreen from './StaticsScreen.tsx';
 
 const MainTab = createBottomTabNavigator();
 
@@ -81,7 +82,7 @@ function CustomTabBar({state, descriptors, navigation}) {
               fontSize: 12,
               color: momentFocused ? Colors.loginTouch : Colors.black333,
             }}>
-            瞬间
+            统计
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -154,22 +155,22 @@ export default class MainScreen extends React.Component<any, any> {
           }}
         />
         <MainTab.Screen
-          name={'瞬间'}
-          component={MemoryScreen}
+          name={'统计'}
+          component={StaticsScreen}
           options={{
-            tabBarLabel: '瞬间',
+            tabBarLabel: '统计',
             tabBarIcon: ({focused, color, size}) => {
               if (focused) {
                 return (
                   <Image
-                    source={require('./assets/ic_moment.png')}
+                    source={require('./assets/ic_statics.png')}
                     style={{width: 20, height: 20}}
                   />
                 );
               } else {
                 return (
                   <Image
-                    source={require('./assets/ic_moment_n.png')}
+                    source={require('./assets/ic_statics_n.png')}
                     style={{width: 20, height: 20}}
                   />
                 );
