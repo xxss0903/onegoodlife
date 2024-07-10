@@ -19,6 +19,7 @@ import UserInfoScreen from './src/UserInfoScreen.tsx';
 import {RootSiblingParent} from 'react-native-root-siblings';
 import PrivacyScreen from './src/PrivacyScreen.tsx';
 import VersionScreen from './src/VersionScreen.tsx';
+import {SheetProvider} from 'react-native-actions-sheet';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,7 +96,9 @@ export default class App extends Component<any, any> {
     return (
       <NativeBaseProvider>
         <RootSiblingParent>
-          <NavigationContainer>{MainStack()}</NavigationContainer>
+          <SheetProvider>
+            <NavigationContainer>{MainStack()}</NavigationContainer>
+          </SheetProvider>
         </RootSiblingParent>
       </NativeBaseProvider>
     );

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {mainData} from './mainData';
 import {commonStyles} from './commonStyle';
-import {launchCamera} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {AndroidPermissions} from './utils/permissionUtils';
 import {logi} from './utils/logutil';
 import {Avatar, Image, VStack} from 'native-base';
@@ -21,8 +21,12 @@ import {Margin} from './space';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
 import {showToast} from './utils/toastUtil';
+import ActionSheet from 'react-native-actions-sheet';
+import {makeRectIsTargetByCursor} from 'echarts/types/src/component/helper/brushHelper';
 
 export default class BabyInfoScreen extends BaseScreen {
+  private actionSheetRef: any;
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -51,34 +55,59 @@ export default class BabyInfoScreen extends BaseScreen {
     }
   }
 
+  _openCamera() {
+    launchCamera({
+      cameraType: 'back',
+      saveToPhotos: true,
+      mediaType: 'photo',
+    })
+      .then(res => {
+        logi('camera res', res);
+        // 拿到图片地址 {"assets": [{"fileName": "rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "fileSize": 199674, "height": 1280, "original
+        // Path": "file:///data/user/0/com.onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.
+        // onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "width": 960}]}
+        if (res.assets && res.assets.length > 0) {
+          let imgFile = res.assets[0];
+          let imgPath = imgFile.originalPath;
+          this.state.babyInfo.avatar = imgPath;
+          this.forceUpdate();
+        }
+      })
+      .catch(error => {
+        logi('camera error ', error);
+      });
+  }
+
+  _openGallery() {
+    launchImageLibrary({
+      selectionLimit: 1,
+      mediaType: 'photo',
+    })
+      .then(res => {
+        logi('camera res', res);
+        // 拿到图片地址 {"assets": [{"fileName": "rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "fileSize": 199674, "height": 1280, "original
+        // Path": "file:///data/user/0/com.onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.
+        // onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "width": 960}]}
+        if (res.assets && res.assets.length > 0) {
+          let imgFile = res.assets[0];
+          let imgPath = imgFile.uri;
+          this.state.babyInfo.avatar = imgPath;
+          this.forceUpdate();
+        }
+      })
+      .catch(error => {
+        logi('camera error ', error);
+      });
+  }
+
   // 选择照片/拍照
   _choosePicture() {
     AndroidPermissions.checkStoragePermissions(
       () => {
-        logi('storage permission');
         AndroidPermissions.checkCameraPermissions(
           () => {
-            logi('camera permission');
-            launchCamera({
-              cameraType: 'back',
-              saveToPhotos: true,
-              mediaType: 'photo',
-            })
-              .then(res => {
-                logi('camera res', res);
-                // 拿到图片地址 {"assets": [{"fileName": "rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "fileSize": 199674, "height": 1280, "original
-                // Path": "file:///data/user/0/com.onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.
-                // onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "width": 960}]}
-                if (res.assets && res.assets.length > 0) {
-                  let imgFile = res.assets[0];
-                  let imgPath = imgFile.originalPath;
-                  this.state.babyInfo.avatar = imgPath;
-                  this.forceUpdate();
-                }
-              })
-              .catch(error => {
-                logi('camera error ', error);
-              });
+            logi('camera permission', this.actionSheetRef);
+            this.actionSheetRef?.show();
           },
           () => {
             logi('camera no permission');
@@ -308,6 +337,31 @@ export default class BabyInfoScreen extends BaseScreen {
             <Text>确认</Text>
           </TouchableOpacity>
         </View>
+        <ActionSheet ref={ref => (this.actionSheetRef = ref)}>
+          <View
+            style={[
+              commonStyles.flexColumn,
+              {paddingVertical: Margin.vertical},
+            ]}>
+            <TouchableOpacity
+              style={styles.actionItemContainer}
+              onPress={() => {
+                this.actionSheetRef?.hide();
+                this._openCamera();
+              }}>
+              <Text>拍照</Text>
+            </TouchableOpacity>
+            <View style={commonStyles.line} />
+            <TouchableOpacity
+              style={styles.actionItemContainer}
+              onPress={() => {
+                this.actionSheetRef?.hide();
+                this._openGallery();
+              }}>
+              <Text>相册</Text>
+            </TouchableOpacity>
+          </View>
+        </ActionSheet>
       </View>
     );
   }
@@ -320,5 +374,11 @@ const styles = StyleSheet.create({
   titleImg: {
     width: 20,
     height: 20,
+  },
+  actionItemContainer: {
+    height: 60,
+    paddingHorizontal: Margin.horizontal,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
