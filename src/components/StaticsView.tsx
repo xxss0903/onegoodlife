@@ -140,36 +140,62 @@ export default class StaticsView extends Component<any, any> {
   }
 
   render() {
-    return (
-      <View
-        style={[
-          commonStyles.flexColumn,
-          {
-            flex: 1,
-            paddingTop: Margin.vertical,
-          },
-        ]}>
-        {/*统计的数字信息*/}
-        <View style={[commonStyles.flexRow, {flex: 1}]}>
-          {/*最近24小时统计*/}
-          <View style={[commonStyles.flexColumn, {flex: 1}]}>
-            <Text
-              style={[{marginBottom: Margin.smalHorizontal}, styles.titleText]}>
-              最近24小时
-            </Text>
-            {this._renderDataMap(this.state.last24Data)}
-          </View>
-          {/*当天的统计*/}
-          <View style={[commonStyles.flexColumn, {flex: 1}]}>
-            <Text
-              style={[{marginBottom: Margin.smalHorizontal}, styles.titleText]}>
-              当天数据
-            </Text>
-            {this._renderDataMap(this.state.todayDataMap)}
+    if (
+      (this.state.last24Data && this.state.last24Data.length) ||
+      (this.state.todayDataMap && this.state.todayDataMap.length)
+    ) {
+      return (
+        <View
+          style={[
+            commonStyles.flexColumn,
+            {
+              flex: 1,
+              paddingTop: Margin.vertical,
+            },
+          ]}>
+          {/*统计的数字信息*/}
+          <View style={[commonStyles.flexRow, {flex: 1}]}>
+            {/*最近24小时统计*/}
+            <View style={[commonStyles.flexColumn, {flex: 1}]}>
+              <Text
+                style={[
+                  {marginBottom: Margin.smalHorizontal},
+                  styles.titleText,
+                ]}>
+                最近24小时
+              </Text>
+              {this._renderDataMap(this.state.last24Data)}
+            </View>
+            {/*当天的统计*/}
+            <View style={[commonStyles.flexColumn, {flex: 1}]}>
+              <Text
+                style={[
+                  {marginBottom: Margin.smalHorizontal},
+                  styles.titleText,
+                ]}>
+                当天数据
+              </Text>
+              {this._renderDataMap(this.state.todayDataMap)}
+            </View>
           </View>
         </View>
-      </View>
-    );
+      );
+    } else {
+      return (
+        <View
+          style={[
+            commonStyles.flexColumn,
+            {
+              flex: 1,
+              paddingTop: Margin.vertical,
+            },
+          ]}>
+          <Text style={[{fontSize: 18, paddingVertical: Margin.vertical}]}>
+            {mainData.userInfo.role}，最近忘了给宝宝添加记录咯
+          </Text>
+        </View>
+      );
+    }
   }
 }
 

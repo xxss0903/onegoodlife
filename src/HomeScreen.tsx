@@ -166,14 +166,14 @@ export default class HomeScreen extends BaseScreen {
       return (
         <View
           style={[commonStyles.flexColumn, {marginVertical: Margin.vertical}]}>
-          <Text style={{fontSize: 18}}>妈妈你好呀</Text>
+          <Text style={{fontSize: 20}}>{mainData.userInfo.role}你好呀</Text>
           <Text
             style={{
               fontSize: 28,
               fontWeight: 'bold',
               marginTop: Margin.smalHorizontal,
             }}>
-            我是{this.state.currentBaby.name}，今天
+            我是{this.state.currentBaby.name}，已经
             {this._getBirthDay(this.state.currentBaby.birthDay)}天啦
           </Text>
         </View>
@@ -182,7 +182,7 @@ export default class HomeScreen extends BaseScreen {
       return (
         <View
           style={[commonStyles.flexColumn, {marginVertical: Margin.vertical}]}>
-          <Text style={{fontSize: 18}}>妈妈你好呀</Text>
+          <Text style={{fontSize: 18}}>{mainData.userInfo.role}你好呀</Text>
           <Text
             style={{
               fontSize: 28,

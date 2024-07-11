@@ -120,8 +120,8 @@ export default class UserInfoScreen extends BaseScreen {
                   this.state.userInfo.role = itemValue;
                   this.forceUpdate();
                 }}>
-                <Select.Item label="爸爸" value="father" />
-                <Select.Item label="妈妈" value="mother" />
+                <Select.Item label="爸爸" value="爸爸" />
+                <Select.Item label="妈妈" value="妈妈" />
               </Select>
             </View>
           </View>
