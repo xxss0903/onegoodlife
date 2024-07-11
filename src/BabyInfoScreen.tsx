@@ -22,7 +22,7 @@ import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
 import {showToast} from './utils/toastUtil';
 import ActionSheet from 'react-native-actions-sheet';
-import {makeRectIsTargetByCursor} from 'echarts/types/src/component/helper/brushHelper';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default class BabyInfoScreen extends BaseScreen {
   private actionSheetRef: any;
@@ -56,48 +56,29 @@ export default class BabyInfoScreen extends BaseScreen {
   }
 
   _openCamera() {
-    launchCamera({
-      cameraType: 'back',
-      saveToPhotos: true,
-      mediaType: 'photo',
-    })
-      .then(res => {
-        logi('camera res', res);
-        // 拿到图片地址 {"assets": [{"fileName": "rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "fileSize": 199674, "height": 1280, "original
-        // Path": "file:///data/user/0/com.onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.
-        // onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "width": 960}]}
-        if (res.assets && res.assets.length > 0) {
-          let imgFile = res.assets[0];
-          let imgPath = imgFile.originalPath;
-          this.state.babyInfo.avatar = imgPath;
-          this.forceUpdate();
-        }
-      })
-      .catch(error => {
-        logi('camera error ', error);
-      });
+    ImagePicker.openCamera({
+      width: 400,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      console.log(image);
+      let imgPath = image.path;
+      this.state.babyInfo.avatar = imgPath;
+      this.forceUpdate();
+    });
   }
 
   _openGallery() {
-    launchImageLibrary({
-      selectionLimit: 1,
-      mediaType: 'photo',
-    })
-      .then(res => {
-        logi('camera res', res);
-        // 拿到图片地址 {"assets": [{"fileName": "rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "fileSize": 199674, "height": 1280, "original
-        // Path": "file:///data/user/0/com.onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "type": "image/jpeg", "uri": "file:///data/user/0/com.
-        // onegoodlife/cache/rn_image_picker_lib_temp_823f9d97-9b06-46ff-94e3-b37cc0ef86c2.jpg", "width": 960}]}
-        if (res.assets && res.assets.length > 0) {
-          let imgFile = res.assets[0];
-          let imgPath = imgFile.uri;
-          this.state.babyInfo.avatar = imgPath;
-          this.forceUpdate();
-        }
-      })
-      .catch(error => {
-        logi('camera error ', error);
-      });
+    ImagePicker.openPicker({
+      width: 400,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      console.log(image);
+      let imgPath = image.path;
+      this.state.babyInfo.avatar = imgPath;
+      this.forceUpdate();
+    });
   }
 
   // 选择照片/拍照

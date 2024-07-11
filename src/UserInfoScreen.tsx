@@ -16,8 +16,12 @@ import {DeviceStorage} from './utils/deviceStorage';
 import {isEmpty} from './utils/until';
 import {showToast} from './utils/toastUtil';
 import EventBus from './utils/eventBus';
+import ImagePicker from 'react-native-image-crop-picker';
+import ActionSheet from 'react-native-actions-sheet';
 
 export default class UserInfoScreen extends BaseScreen {
+  private actionSheetRef: any;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -25,6 +29,7 @@ export default class UserInfoScreen extends BaseScreen {
       userInfo: {
         userName: '',
         role: 'mother',
+        avatarUrl: '',
       },
     };
   }
@@ -52,6 +57,36 @@ export default class UserInfoScreen extends BaseScreen {
     }
   }
 
+  _changeUserAvatar() {
+    this.actionSheetRef?.show();
+  }
+
+  _openCamera() {
+    ImagePicker.openCamera({
+      width: 400,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      console.log(image);
+      let imgPath = image.path;
+      this.state.userInfo.avatarUrl = imgPath;
+      this.forceUpdate();
+    });
+  }
+
+  _openGallery() {
+    ImagePicker.openPicker({
+      width: 400,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      console.log(image);
+      let imgPath = image.path;
+      this.state.userInfo.avatarUrl = imgPath;
+      this.forceUpdate();
+    });
+  }
+
   renderScreen() {
     return (
       <View style={[styles.container, {flex: 1}]}>
@@ -60,14 +95,20 @@ export default class UserInfoScreen extends BaseScreen {
             commonStyles.flexColumn,
             {flex: 1, padding: Margin.horizontal, alignItems: 'center'},
           ]}>
-          <Avatar
-            style={{width: 80, height: 80}}
-            bg={'transparent'}
-            source={{
-              uri: mainData.userInfo.avatarUrl,
+          <TouchableOpacity
+            onPress={() => {
+              this._changeUserAvatar();
             }}>
-            <Avatar.Badge bg="green.500" />
-          </Avatar>
+            <Avatar
+              style={{width: 80, height: 80}}
+              bg={'transparent'}
+              source={{
+                uri: this.state.userInfo.avatarUrl,
+              }}>
+              <Avatar.Badge bg="green.500" />
+            </Avatar>
+          </TouchableOpacity>
+
           <View
             style={[
               {height: 40, marginTop: 12},
@@ -127,6 +168,31 @@ export default class UserInfoScreen extends BaseScreen {
             <Text>确认</Text>
           </TouchableOpacity>
         </View>
+        <ActionSheet ref={ref => (this.actionSheetRef = ref)}>
+          <View
+            style={[
+              commonStyles.flexColumn,
+              {paddingVertical: Margin.vertical},
+            ]}>
+            <TouchableOpacity
+              style={styles.actionItemContainer}
+              onPress={() => {
+                this.actionSheetRef?.hide();
+                this._openCamera();
+              }}>
+              <Text>拍照</Text>
+            </TouchableOpacity>
+            <View style={commonStyles.line} />
+            <TouchableOpacity
+              style={styles.actionItemContainer}
+              onPress={() => {
+                this.actionSheetRef?.hide();
+                this._openGallery();
+              }}>
+              <Text>相册</Text>
+            </TouchableOpacity>
+          </View>
+        </ActionSheet>
       </View>
     );
   }
@@ -175,5 +241,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingLeft: 15,
+  },
+  actionItemContainer: {
+    height: 60,
+    paddingHorizontal: Margin.horizontal,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
