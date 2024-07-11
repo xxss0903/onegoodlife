@@ -5,7 +5,7 @@ import {Colors} from '../colors';
 import {screenW} from '../utils/until';
 import {Margin} from '../space';
 import {LineChart} from 'react-native-chart-kit';
-import moment from 'moment';
+import moment, {min} from 'moment';
 import {mainData, TYPE_ID} from '../mainData.ts';
 
 const ChartWidth = screenW - Margin.horizontal * 4;
@@ -19,12 +19,18 @@ export const StaticsType = {
 
 export default class LifeTypeStaticsCard extends Component<any, any> {
   private chartConfig = {
-    color: (opacity = 0.5) => `rgba(26, 255, 146, ${opacity})`,
+    backgroundColor: Colors.white,
+    backgroundGradientFrom: Colors.white,
+    backgroundGradientTo: Colors.white,
+    color: (opacity = 0.5) => Colors.primary1,
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
-    fillShadowGradientTo: 'transparent',
-    fillShadowGradientFrom: 'transparent',
+    fillShadowGradientTo: Colors.white,
+    fillShadowGradientFrom: Colors.white,
     useShadowColorFromDataset: false, // optional
+    propsForLabels: {
+      fontSize: 14,
+    },
   };
   private chartStyle = {
     marginVertical: Margin.vertical,
@@ -38,10 +44,10 @@ export default class LifeTypeStaticsCard extends Component<any, any> {
       minMilkDose: 0,
       dataType: StaticsType.DAY,
       staticsData: {
-        labels: ['星期1', 'February', 'March', 'April', 'May', 'June'],
+        labels: [0],
         datasets: [
           {
-            data: [60, 45, 90, 100, 60, 40],
+            data: [0],
           },
         ],
       },
@@ -50,7 +56,7 @@ export default class LifeTypeStaticsCard extends Component<any, any> {
 
   componentDidMount() {
     // this._getDayStaticsData();
-    this._getLast24HoursData();
+    this._getDayStaticsData();
   }
 
   // 获取过去24小时的数据
@@ -59,35 +65,15 @@ export default class LifeTypeStaticsCard extends Component<any, any> {
     let tempDataList: any[] = [];
     // 过去24小时的时间戳
     let last24HourMoment = moment().subtract(1, 'day').valueOf();
-    let maxValue = -1;
-    let minValue = -1;
+
     for (let i = 0; i < dataList.length; i++) {
       let data = dataList[i];
       if (data.time > last24HourMoment) {
-        // 常用的数据
-        mainData.commonActions.forEach(value => {
-          if (value.id === data.typeId) {
-            if (maxValue < 0) {
-              maxValue = data.dose;
-            }
-            if (minValue < 0) {
-              minValue = data.dose;
-            }
-            tempDataList.push(data);
-            if (data.dose > maxValue) {
-              maxValue = data.dose;
-            }
-            if (minValue < data.dose) {
-              minValue = data.dose;
-            }
-          }
-        });
+        if (data.typeId === TYPE_ID.MILK) {
+          tempDataList.push(data);
+        }
       }
     }
-    this.setState({
-      maxMilkDose: minValue - 10 < 0 ? 0 : minValue - 10,
-      minMilkDose: maxValue + 20,
-    });
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
@@ -115,14 +101,32 @@ export default class LifeTypeStaticsCard extends Component<any, any> {
     console.log(' statics today data', milkData);
     let labels: string[] = [];
     let data: number[] = [];
+    let maxValue = -1;
+    let minValue = -1;
     milkData.forEach((value: any) => {
       let timeLabel = moment(value.time).format('HH:mm');
-      labels.push(timeLabel);
-      data.push(value.dose);
+      labels.unshift(timeLabel);
+      data.unshift(value.dose);
+      if (maxValue < 0) {
+        maxValue = value.dose;
+      }
+      if (minValue < 0) {
+        minValue = value.dose;
+      }
+      if (value.dose > maxValue) {
+        maxValue = value.dose;
+      }
+      if (minValue > value.dose) {
+        minValue = value.dose;
+      }
     });
 
-    console.log('labels and data', labels, data);
+    minValue = minValue - 20 < 0 ? 0 : minValue - 20;
+    maxValue += 20;
+    console.log('labels and data', minValue, maxValue);
     this.setState({
+      minMilkDose: minValue,
+      maxMilkDose: maxValue,
       staticsData: {
         labels: labels,
         datasets: [
@@ -215,6 +219,9 @@ export default class LifeTypeStaticsCard extends Component<any, any> {
               fromZero={true}
               yAxisSuffix={''}
               yAxisLabel={''}
+              formatYLabel={yValue => {
+                return parseInt(yValue).toString();
+              }}
               chartConfig={this.chartConfig}
               verticalLabelRotation={30}
               segments={4}
