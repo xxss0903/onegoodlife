@@ -128,15 +128,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           ]}>
           <Text style={[styles.rowTitleText]}>喝奶量：</Text>
           <TextInput
-            style={[
-              {
-                textAlign: 'left',
-                fontSize: 16,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             value={this.cloneType.dose.toString()}
             onChangeText={text => {
               let dose;
@@ -164,14 +156,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -225,15 +210,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           ]}>
           <Text>体重：</Text>
           <TextInput
-            style={[
-              {
-                textAlign: 'left',
-                fontSize: 16,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             value={this.cloneType.weight.toString()}
             onChangeText={text => {
               this.cloneType.weight = text;
@@ -247,14 +224,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -327,14 +297,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         </View>
         <View style={{minHeight: 80, marginTop: Margin.vertical}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -384,14 +347,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: Margin.vertical}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -445,15 +401,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           ]}>
           <Text>身高：</Text>
           <TextInput
-            style={[
-              {
-                textAlign: 'left',
-                fontSize: 16,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             value={this.cloneType.height.toString()}
             onChangeText={text => {
               this.cloneType.height = text;
@@ -467,14 +415,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -533,14 +474,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: Margin.vertical}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -590,14 +524,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -652,15 +579,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           ]}>
           <Text style={{width: 60}}>头：</Text>
           <TextInput
-            style={[
-              {
-                textAlign: 'left',
-                fontSize: 16,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             value={this.cloneType.jaundiceValue.header.toString()}
             onChangeText={text => {
               let dose;
@@ -689,15 +608,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           ]}>
           <Text style={{width: 60}}>胸口：</Text>
           <TextInput
-            style={[
-              {
-                textAlign: 'left',
-                fontSize: 16,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             value={this.cloneType.jaundiceValue.chest.toString()}
             onChangeText={text => {
               let dose;
@@ -717,14 +628,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {
@@ -777,14 +681,7 @@ export default class AddNewLifeModal extends Component<any, any> {
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput
-            style={[
-              {
-                fontSize: 14,
-                flex: 1,
-                backgroundColor: '#eeeeee',
-                color: '#333333',
-              },
-            ]}
+            style={[commonStyles.commonTextInputStyle, {}]}
             multiline={true}
             value={this.cloneType.remark}
             onChangeText={text => {

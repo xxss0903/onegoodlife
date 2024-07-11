@@ -98,14 +98,7 @@ export default class NewLifeDetailScreen extends BaseScreen {
             </View>
             <View style={{minHeight: 80, marginTop: 12}}>
               <TextInput
-                style={[
-                  {
-                    fontSize: 14,
-                    flex: 1,
-                    backgroundColor: '#eeeeee',
-                    color: '#333333',
-                  },
-                ]}
+                style={[commonStyles.commonTextInputStyle, {}]}
                 multiline={true}
                 value={remark}
                 onChangeText={text => {

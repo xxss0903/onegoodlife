@@ -76,15 +76,7 @@ export default class UserInfoScreen extends BaseScreen {
             ]}>
             <Text style={[styles.rowTitleText]}>用户名：</Text>
             <TextInput
-              style={[
-                {
-                  textAlign: 'left',
-                  fontSize: 16,
-                  flex: 1,
-                  backgroundColor: Colors.grayEe,
-                  color: '#333333',
-                },
-              ]}
+              style={[commonStyles.commonTextInputStyle, {}]}
               value={this.state.userInfo.userName}
               onChangeText={text => {
                 this.state.userInfo.userName = text;

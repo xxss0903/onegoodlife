@@ -195,15 +195,7 @@ export default class BabyInfoScreen extends BaseScreen {
                 姓名：
               </Text>
               <TextInput
-                style={[
-                  {
-                    textAlign: 'left',
-                    fontSize: 16,
-                    flex: 1,
-                    backgroundColor: '#eeeeee',
-                    color: '#333333',
-                  },
-                ]}
+                style={[commonStyles.commonTextInputStyle, {}]}
                 value={this.state.babyInfo.name}
                 onChangeText={text => {
                   this.state.babyInfo.name = text;
@@ -226,15 +218,7 @@ export default class BabyInfoScreen extends BaseScreen {
                 昵称：
               </Text>
               <TextInput
-                style={[
-                  {
-                    textAlign: 'left',
-                    fontSize: 16,
-                    flex: 1,
-                    backgroundColor: '#eeeeee',
-                    color: '#333333',
-                  },
-                ]}
+                style={[commonStyles.commonTextInputStyle, {}]}
                 value={this.state.babyInfo.nickname}
                 onChangeText={text => {
                   this.state.babyInfo.nickname = text;

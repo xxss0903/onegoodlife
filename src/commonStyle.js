@@ -435,9 +435,10 @@ export const commonStyles = StyleSheet.create({
   },
   // 输入框默认样式
   commonTextInputStyle: {
-    fontSize: FONT_SIZE_ROW,
+    fontSize: 16,
     flex: 1,
-    textAlign: 'right',
+    textAlign: 'left',
+    paddingHorizontal: Margin.midHorizontal,
   },
   // 输入框的外框
   commonTextInputBorder: {
