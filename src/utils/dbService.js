@@ -47,6 +47,7 @@ export const getDataList = async db => {
 export const getDataListOrderByTime = async (db, babyId) => {
   try {
     if (!babyId) {
+      console.log('empty data');
       return [];
     }
     const results = await db.executeSql(
@@ -63,6 +64,7 @@ export const getDataListOrderByTime = async (db, babyId) => {
         babyList.push(dataObj);
       }
     });
+    console.log('data list ', babyList);
     return babyList;
   } catch (error) {
     logi('get baby timeline data err', error);

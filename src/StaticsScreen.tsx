@@ -2,85 +2,154 @@
 
 import React from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   StyleSheet,
+  ScrollView,
+  RefreshControl,
   TouchableOpacity,
 } from 'react-native';
 import {Colors} from './colors';
 import {commonStyles} from './commonStyle';
-import {SwipeListView} from 'react-native-swipe-list-view';
-import {logi} from './utils/logutil';
+import BaseScreen from './BaseScreen.tsx';
+import {Margin} from './space';
+import LifeTypeStaticsCard, {
+  StaticsType,
+} from './components/LifeTypeStaticsCard.tsx';
+import {getDataListOrderByTime} from './utils/dbService';
+import {db} from './dataBase.ts';
+import {mainData} from './mainData.ts';
 
-export default class StaticsScreen extends React.Component<any, any> {
-  private isTypeEdit: boolean = false; // 是否是编辑模式
-
-  _renderItem(item, index) {
-    return <View />;
+export default class StaticsScreen extends BaseScreen {
+  private milkCardRef = null; // 喝奶统计卡片
+  constructor(props) {
+    super(props);
+    this.state = {
+      refreshing: false,
+      staticsList: [], // 统计列表，统计比如喝奶次数，拉屎次数等，可以自行配置
+      dataList: [], // 所有的数据
+      dataType: StaticsType.DAY, // 统计类型，按天还是按周统计
+    };
   }
 
-  onRowDidOpen = (rowKey, rowMap) => {};
+  componentDidMount() {
+    this._getDataList();
+  }
 
-  closeRow = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-      logi('close row ', rowMap[rowKey].closeRow());
-      rowMap[rowKey].closeRow();
-    }
-  };
+  _refreshData() {
+    this.milkCardRef?.refreshData();
+  }
 
-  deleteRow = (rowMap, rowKey, data) => {
-    this.closeRow(rowMap, rowKey);
-  };
+  async _getDataList() {
+    console.log('get refresh data start 111');
+    this.setState({
+      refreshing: true,
+    });
+    getDataListOrderByTime(db.database, mainData.babyInfo.babyId)
+      .then(dataList => {
+        console.log('get data end');
+        this.setState(
+          {
+            refreshing: false,
+            dataList: dataList,
+          },
+          () => {
+            this._refreshData();
+          },
+        );
+      })
+      .catch(err => {
+        console.log('get refresh data err', err);
+      });
+  }
 
-  render() {
+  _changeStaticsDate(type: any) {
+    this.setState({
+      staticsType: type,
+    });
+  }
+
+  _renderDateRange() {
     return (
-      <SafeAreaView>
-        <View style={styles.container}>
-          <View>
-            <SwipeListView
-              data={[]}
-              renderItem={({item, index}) => {
-                return this._renderItem(item, index);
-              }}
-              renderHiddenItem={(data, rowMap) => {
-                return (
-                  <View style={styles.rowBack}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        // 拍照
-                      }}
-                      style={[styles.photoLeftBtn]}>
-                      <Text>拍照</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.backRightBtn, styles.backRightBtnRight]}
-                      onPress={() => {
-                        this.deleteRow(rowMap, data.item.key, data.item);
-                      }}>
-                      <Text style={styles.backTextWhite}>删除</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
-              }}
-              rightOpenValue={-150}
-              previewOpenValue={-40}
-              previewOpenDelay={1000}
-              onRowDidOpen={(rowKey, rowMap, toValue) =>
-                this.onRowDidOpen(rowKey, rowMap)
-              }
-            />
-          </View>
-          <TouchableOpacity style={[styles.btnFloating, commonStyles.center]}>
-            <Text>Add</Text>
-          </TouchableOpacity>
+      <View
+        style={[
+          commonStyles.flexRow,
+          {
+            backgroundColor: Colors.primary1,
+            padding: Margin.horizontal,
+            borderRadius: Margin.horizontal,
+            margin: Margin.horizontal,
+          },
+        ]}>
+        <TouchableOpacity
+          onPress={() => {
+            this._changeStaticsDate(StaticsType.DAY);
+          }}
+          style={styles.dateContainer}>
+          <Text>今天</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dateContainer}>
+          <Text>本周</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dateContainer}>
+          <Text>本月</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.dateContainer}>
+          <Text>选择日期</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  _renderHealthTip() {}
+
+  _renderStaticsList() {
+    return (
+      <View>
+        <LifeTypeStaticsCard
+          ref={ref => (this.milkCardRef = ref)}
+          dataList={this.state.dataList}
+          dataType={this.state.dataType}
+        />
+      </View>
+    );
+  }
+
+  renderScreen() {
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={() => {
+              console.log('on refresh control');
+              // 刷新数据
+              this._getDataList();
+            }}
+          />
+        }>
+        <View
+          style={[
+            commonStyles.flexColumn,
+            {flex: 1, backgroundColor: Colors.grayEe},
+          ]}>
+          <View>{this._renderDateRange()}</View>
+          <View>{this._renderHealthTip()}</View>
+          <View>{this._renderStaticsList()}</View>
         </View>
-      </SafeAreaView>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  dateContainer: {
+    flex: 1,
+    display: 'flex',
+    padding: Margin.midHorizontal,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',

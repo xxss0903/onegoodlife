@@ -1,7 +1,5 @@
 // 常用的按钮列表，比如牛奶、拉屎、撒尿等快捷添加
 import moment from 'moment';
-import {Image} from 'react-native';
-import {Component, createElement} from 'react';
 import {Colors} from './colors';
 
 export const milkTags = ['纯奶粉', '母乳', '混合喂养']; // 牛奶类型
@@ -37,6 +35,20 @@ export const vaccineTags = [
   '呼吸道',
   '轮状病毒',
 ]; // 疫苗类型
+
+// 生活类型id
+export const TYPE_ID = {
+  MILK: 1,
+  POOP: 2,
+  PEE: 3,
+  JAUNDICE: 4,
+  SPITMILK: 5,
+  OTHER: 6,
+  HEIGHT: 7,
+  WEIGHT: 8,
+  DIAPER: 9,
+  VACCINE: 10,
+};
 
 // 内置的常用类型，不可更改和删除
 export const commonTypeList = [
@@ -173,7 +185,7 @@ export const commonActions = {
 // 喝牛奶的模板数据
 export const milkTemplateData = {
   name: mainData.typeMapList[0].name,
-  typeId: mainData.typeMapList[0].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.MILK, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   key: moment().valueOf(),
   remark: '', // 备注
@@ -191,7 +203,7 @@ export const milkTemplateData = {
 // 拉屎的模板数据
 export const poopTemplateData = {
   name: mainData.typeMapList[1].name,
-  typeId: mainData.typeMapList[1].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.POOP, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: poopTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -208,7 +220,7 @@ export const poopTemplateData = {
 // 撒尿的模板
 export const peeTemplateData = {
   name: mainData.typeMapList[2].name,
-  typeId: mainData.typeMapList[2].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.PEE, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: peeTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -225,7 +237,7 @@ export const peeTemplateData = {
 // 黄疸模板
 export const jaundiceTemplateData = {
   name: mainData.typeMapList[3].name,
-  typeId: mainData.typeMapList[3].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.JAUNDICE, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: jaundiceTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -246,7 +258,7 @@ export const jaundiceTemplateData = {
 // 吐奶模板
 export const spitMilkTemplateData = {
   name: mainData.typeMapList[4].name,
-  typeId: mainData.typeMapList[4].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.SPITMILK, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: spitMilkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -263,7 +275,7 @@ export const spitMilkTemplateData = {
 // 其他记录模板，比如其他的一些记录
 export const otherTemplateData = {
   name: mainData.typeMapList[5].name,
-  typeId: mainData.typeMapList[5].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.OTHER, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: [], // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -280,7 +292,7 @@ export const otherTemplateData = {
 // 身高模板
 export const heightTemplateData = {
   name: mainData.typeMapList[6].name,
-  typeId: mainData.typeMapList[6].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.HEIGHT, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: heightTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -298,7 +310,7 @@ export const heightTemplateData = {
 // 体重模板
 export const weightTemplateData = {
   name: mainData.typeMapList[7].name,
-  typeId: mainData.typeMapList[7].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.WEIGHT, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: weightTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -316,7 +328,7 @@ export const weightTemplateData = {
 
 export const diaperTemplateData = {
   name: mainData.typeMapList[7].name,
-  typeId: mainData.typeMapList[7].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.DIAPER, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: diaperTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
@@ -334,7 +346,7 @@ export const diaperTemplateData = {
 
 export const vaccineTemplateData = {
   name: mainData.typeMapList[9].name,
-  typeId: mainData.typeMapList[9].id, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
+  typeId: TYPE_ID.VACCINE, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
   remark: '', // 备注
   tags: vaccineTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等

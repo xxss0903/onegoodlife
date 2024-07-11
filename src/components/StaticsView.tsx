@@ -63,6 +63,8 @@ export default class StaticsView extends Component<any, any> {
   refreshData() {
     let todayData = this._getTodayData();
     this._getStaticsDataView(todayData, data => {
+      console.log('refresh today data', data, data.size);
+
       this.setState(
         {
           todayDataMap: data,
@@ -141,8 +143,8 @@ export default class StaticsView extends Component<any, any> {
 
   render() {
     if (
-      (this.state.last24Data && this.state.last24Data.length) ||
-      (this.state.todayDataMap && this.state.todayDataMap.length)
+      (this.state.last24Data && this.state.last24Data.size) ||
+      (this.state.todayDataMap && this.state.todayDataMap.size)
     ) {
       return (
         <View
