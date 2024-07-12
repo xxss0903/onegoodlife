@@ -26,7 +26,7 @@ import {logi} from '../utils/logutil';
 import DatePicker from 'react-native-date-picker';
 import {commonStyles} from '../commonStyle';
 import {renderTagList} from './commonViews';
-import {Checkbox, CheckIcon, Select} from 'native-base';
+import {Checkbox, CheckIcon, Select, Spinner} from 'native-base';
 import {Margin} from '../space';
 import {Colors} from '../colors';
 
@@ -153,6 +153,36 @@ export default class AddNewLifeModal extends Component<any, any> {
           <Text style={styles.rowTitleText}>最近奶量：</Text>
           {commonDoseTagView}
         </View>
+          <View
+              style={[
+                  commonStyles.flexRow,
+                  {alignItems: 'center', marginTop: Margin.vertical},
+              ]}>
+              <Text style={styles.rowTitleText}>打开提醒：</Text>
+              <View>
+                  <Select
+                      selectedValue={this.state.userInfo.role}
+                      minWidth="200"
+                      accessibilityLabel="请选择"
+                      placeholder="请选择"
+                      _selectedItem={{
+                          bg: Colors.primary4,
+                          endIcon: <CheckIcon size="5" />,
+                      }}
+                      mt={1}
+                      onValueChange={itemValue => {
+                          this.state.userInfo.role = itemValue;
+                          this.forceUpdate();
+                      }}>
+                      <Select.Item label="1小时后" value="1" />
+                      <Select.Item label="2小时后" value="2" />
+                      <Select.Item label="3小时后" value="3" />
+                      <Select.Item label="4小时后" value="4" />
+                      <Select.Item label="5小时后" value="5" />
+                  </Select>
+                  <Text>小时</Text>
+              </View>
+          </View>
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
         <View style={{minHeight: 80, marginTop: 12}}>
           <TextInput

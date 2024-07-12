@@ -28,9 +28,9 @@ const ItemRow = (img, title, callback, showLine = true) => {
           alignItems: 'center',
         }}
         onPress={callback}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           {img}
-          <Text style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>
+          <Text style={{ marginLeft: 8, color: Colors.black333, fontSize: 15 }}>
             {title}
           </Text>
         </View>
@@ -42,7 +42,9 @@ const ItemRow = (img, title, callback, showLine = true) => {
 };
 
 export default class MineScreen extends BaseScreen {
-  constructor(props) {
+  private refreshUserInfoListener: any;
+
+  constructor(props: any) {
     super(props);
     this.state = {
       datepickerOpen: false,
@@ -69,14 +71,14 @@ export default class MineScreen extends BaseScreen {
         style={[
           styles.container,
           commonStyles.flexColumn,
-          {backgroundColor: Colors.white, flex: 1},
+          { backgroundColor: Colors.white, flex: 1 },
         ]}>
         <ImageBackground
-          style={{height: 240}}
+          style={{ height: 240 }}
           source={require('./assets/ic_user_background.webp')}>
           <View style={[styles.userInfoContainer, commonStyles.center]}>
             <Avatar
-              style={{width: 80, height: 80}}
+              style={{ width: 80, height: 80 }}
               source={{
                 uri: mainData.userInfo.avatarUrl,
               }}
