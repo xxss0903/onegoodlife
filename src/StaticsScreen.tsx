@@ -20,6 +20,7 @@ import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
 import {mainData} from './mainData.ts';
 import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
+import {screenW} from './utils/until';
 
 export default class StaticsScreen extends BaseScreen {
   private milkCardRef = null; // 喝奶统计卡片
@@ -82,7 +83,6 @@ export default class StaticsScreen extends BaseScreen {
             backgroundColor: Colors.primary1,
             padding: Margin.horizontal,
             borderRadius: Margin.horizontal,
-            margin: Margin.horizontal,
           },
         ]}>
         <TouchableOpacity
@@ -133,20 +133,20 @@ export default class StaticsScreen extends BaseScreen {
 
   _renderStaticsList() {
     return (
-      <View style={[commonStyles.flexColumn, {flex: 1, height: 1500}]}>
-        <View style={{height: 400}}>
+      <View style={[commonStyles.flexColumn]}>
+        <View>
           <GrowthStaticsCard
             ref={ref => (this.growthCardRef = ref)}
             dataList={this.state.dataList}
             dataType={this.state.dataType}
           />
         </View>
-        <View style={{height: 400}}>
-          {/*<DrinkMilkStaticsCard*/}
-          {/*  ref={ref => (this.milkCardRef = ref)}*/}
-          {/*  dataList={this.state.dataList}*/}
-          {/*  dataType={this.state.dataType}*/}
-          {/*/>*/}
+        <View style={[{marginTop: Margin.vertical}]}>
+          <DrinkMilkStaticsCard
+            ref={ref => (this.milkCardRef = ref)}
+            dataList={this.state.dataList}
+            dataType={this.state.dataType}
+          />
         </View>
       </View>
     );
@@ -154,30 +154,43 @@ export default class StaticsScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <ScrollView
-        style={{flex: 1, height: 1800}}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={() => {
-              console.log('on refresh control');
-              // 刷新数据
-              this._getDataList();
-            }}
-          />
-        }>
+      <View style={[commonStyles.flexColumn, {flex: 1}]}>
         <View
-          style={[
-            commonStyles.flexColumn,
-            {flex: 1, backgroundColor: Colors.grayEe},
-          ]}>
-          <View>{this._renderDateRange()}</View>
-          <View>{this._renderHealthTip()}</View>
-          <View style={{flex: 1, backgroundColor: Colors.primary}}>
-            {this._renderStaticsList()}
-          </View>
+          style={{
+            position: 'absolute',
+            top: Margin.vertical,
+            left: Margin.horizontal,
+            zIndex: 999,
+            width: screenW - Margin.horizontal * 2,
+          }}>
+          {this._renderDateRange()}
         </View>
-      </ScrollView>
+        <ScrollView
+          style={{flex: 1, height: 1800, marginTop: Margin.horizontal * 4 + 20}}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                console.log('on refresh control');
+                // 刷新数据
+                this._getDataList();
+              }}
+            />
+          }>
+          <View
+            style={[
+              commonStyles.flexColumn,
+              {
+                flex: 1,
+                backgroundColor: Colors.grayEe,
+                paddingBottom: Margin.vertical,
+              },
+            ]}>
+            <View>{this._renderHealthTip()}</View>
+            <View>{this._renderStaticsList()}</View>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }

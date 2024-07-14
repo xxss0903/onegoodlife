@@ -8,6 +8,9 @@ import {mainData, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
 import {ChartWidth} from '../utils/until';
+import {GrowthData} from '../utils/babyGrowthData';
+import boysHeight from '../data/boys-weight.json';
+import girlsHeight from '../data/girls-height.json';
 
 // 统计类型
 export const StaticsType = {
@@ -16,6 +19,8 @@ export const StaticsType = {
   MONTH: 'month',
   RANGE: 'range',
 };
+
+const dashData = [2, 1];
 
 /**
  * 生长曲线统计卡片
@@ -70,18 +75,78 @@ export default class GrowthStaticsCard extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      maxValue: 120,
-      minValue: 0,
       staticsType: 'line', // 表格类型: 'line', 'bar', 'pie'
       dataType: StaticsType.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
+      girlsHeight: {
+        height1List: [],
+        height2List: [],
+        height3List: [],
+        height4List: [],
+        height5List: [],
+        height6List: [],
+        height7List: [],
+      },
     };
   }
 
   componentDidMount() {
     // this._getDayStaticsData();
-    this._getDayStaticsData();
+    this._initBaseData();
+    // this._getDayStaticsData();
+  }
+
+  // 初始化初始统计数据
+  _initBaseData() {
+    // this._initBoyHeightData();
+    this._initGirlHeightData();
+  }
+
+  _initGirlHeightData() {
+    let height1List: any[] = []; //下
+    let height2List: any[] = []; //中下
+    let height3List: any[] = []; // 中下
+    let height4List: any[] = []; // 中身高
+    let height5List: any[] = []; // 中上
+    let height6List: any[] = []; // 重伤
+    let height7List: any[] = []; //上
+
+    console.log('girls origin data', girlsHeight);
+    girlsHeight.forEach(value => {
+      let month = value['age']; // 月份
+      let heights = value['percentiles'];
+      height1List.push({value: heights[0]['v'], label: month + ''});
+      height2List.push({value: heights[1]['v'], label: month + ''});
+      height3List.push({value: heights[2]['v'], label: month + ''});
+      height4List.push({value: heights[3]['v'], label: month + ''});
+      height5List.push({value: heights[4]['v'], label: month + ''});
+      height6List.push({value: heights[5]['v'], label: month + ''});
+      height7List.push({value: heights[6]['v'], label: month + ''});
+    });
+    this.setState({
+      girlsHeight: {
+        height1List,
+        height2List,
+        height3List,
+        height4List,
+        height5List,
+        height6List,
+        height7List,
+      },
+    });
+  }
+
+  _initBoyHeightData() {
+    let height1List = []; //下
+    let height2List = []; //中下
+    let height3List = []; // 中下
+    let height4List = []; // 中身高
+    let height5List = []; // 中上
+    let height6List = []; // 重伤
+    let height7List = []; //上
+
+    boysHeight.forEach(value => {});
   }
 
   // 获取过去24小时的数据
@@ -170,51 +235,77 @@ export default class GrowthStaticsCard extends Component<any, any> {
   _editCard() {}
 
   _renderLineChart() {
-    return (
-      <LineChart
-        height={240}
-        width={ChartWidth}
-        data={this.state.staticsData}
-      />
-    );
-  }
-
-  _renderPieChart() {
-    return <PieChart data={this.state.staticsData} />;
-  }
-
-  _renderBarChart() {
-    return (
-      <BarChart
-        width={ChartWidth}
-        barWidth={22}
-        noOfSections={3}
-        barBorderRadius={4}
-        frontColor="lightgray"
-        data={this.state.staticsData}
-        yAxisThickness={0}
-        xAxisThickness={0}
-      />
-    );
-  }
-
-  _renderChart(type: string) {
-    switch (type) {
-      case 'pie':
-        return this._renderPieChart();
-      case 'line':
-        return this._renderLineChart();
-      case 'bar':
-        return this._renderBarChart();
+    let originHeight = GrowthData.height;
+    let boyHeightData = originHeight['0'];
+    let heightDataList = [];
+    const height1List = this.state.girlsHeight['height1List'];
+    const height2List = this.state.girlsHeight['height2List'];
+    const height3List = this.state.girlsHeight['height3List'];
+    const height4List = this.state.girlsHeight['height4List'];
+    const height5List = this.state.girlsHeight['height5List'];
+    const height6List = this.state.girlsHeight['height6List'];
+    const height7List = this.state.girlsHeight['height7List'];
+    console.log('girls height list', height1List);
+    if (height1List && height1List.length > 0) {
+      return (
+        <LineChart
+          height={240}
+          maxValue={40}
+          hideDataPoints={true}
+          yAxisOffset={40}
+          showXAxisIndices={false}
+          thickness={1}
+          width={ChartWidth}
+          dataSet={[
+            {
+              data: height1List,
+              color: Colors.primary1,
+              strokeDashArray: dashData,
+            },
+            {
+              data: height2List,
+              color: Colors.primary2,
+              strokeDashArray: dashData,
+            },
+            {
+              data: height3List,
+              color: Colors.primary3,
+              strokeDashArray: dashData,
+            },
+            {
+              data: height4List,
+              color: Colors.primary4,
+              strokeDashArray: dashData,
+            },
+            {
+              data: height5List,
+              color: Colors.primary3,
+              strokeDashArray: dashData,
+            },
+            {
+              data: height6List,
+              color: Colors.primary2,
+              strokeDashArray: dashData,
+            },
+            {
+              data: height7List,
+              color: Colors.primary1,
+              strokeDashArray: dashData,
+            },
+            {
+              data: [
+                {value: 48, label: '0'},
+                {value: 55, label: '1'},
+                {value: 60, label: '2'},
+                {value: 62, label: '3'},
+              ],
+            },
+          ]}
+        />
+      );
+    } else {
+      return null;
     }
-    return null;
-  }
-
-  // 更改统计类型
-  _changeStaticsType(type: string) {
-    this.setState({
-      staticsType: type,
-    });
   }
 
   render() {
@@ -257,30 +348,11 @@ export default class GrowthStaticsCard extends Component<any, any> {
                 </Pressable>
               );
             }}>
-            <Menu.Item
-              onPress={() => {
-                this._changeStaticsType('bar');
-              }}>
-              柱状图
-            </Menu.Item>
-            <Menu.Item
-              onPress={() => {
-                this._changeStaticsType('line');
-              }}>
-              线状图
-            </Menu.Item>
-            <Menu.Item
-              onPress={() => {
-                this._changeStaticsType('pie');
-              }}>
-              饼状图
-            </Menu.Item>
+            <Menu.Item onPress={() => {}}>柱状图</Menu.Item>
           </Menu>
         </View>
         <View style={styles.dataContainer}>
-          {this.state.staticsData?.length > 0
-            ? this._renderChart(this.state.staticsType)
-            : null}
+          {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
         </View>
       </View>
     );
