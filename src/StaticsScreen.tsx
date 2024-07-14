@@ -13,9 +13,9 @@ import {Colors} from './colors';
 import {commonStyles} from './commonStyle';
 import BaseScreen from './BaseScreen.tsx';
 import {Margin} from './space';
-import LifeTypeStaticsCard, {
+import DrinkMilkStaticsCard, {
   StaticsType,
-} from './components/LifeTypeStaticsCard.tsx';
+} from './components/DrinkMilkStaticsCard.tsx';
 import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
 import {mainData} from './mainData.ts';
@@ -25,6 +25,7 @@ export default class StaticsScreen extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
+      staticsType: StaticsType.DAY,
       refreshing: false,
       staticsList: [], // 统计列表，统计比如喝奶次数，拉屎次数等，可以自行配置
       dataList: [], // 所有的数据
@@ -85,17 +86,41 @@ export default class StaticsScreen extends BaseScreen {
           onPress={() => {
             this._changeStaticsDate(StaticsType.DAY);
           }}
-          style={styles.dateContainer}>
-          <Text>今天</Text>
+          style={[styles.dateContainer, commonStyles.flexColumn]}>
+          <Text style={[commonStyles.flexRow, {flex: 1}]}>天</Text>
+          {this.state.staticsType === StaticsType.DAY ? (
+            <View style={styles.activeTab} />
+          ) : null}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.dateContainer}>
-          <Text>本周</Text>
+        <TouchableOpacity
+          onPress={() => {
+            this._changeStaticsDate(StaticsType.WEEK);
+          }}
+          style={[styles.dateContainer, commonStyles.flexColumn]}>
+          <Text style={[commonStyles.flexRow, {flex: 1}]}>周</Text>
+          {this.state.staticsType === StaticsType.WEEK ? (
+            <View style={styles.activeTab} />
+          ) : null}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.dateContainer}>
-          <Text>本月</Text>
+        <TouchableOpacity
+          onPress={() => {
+            this._changeStaticsDate(StaticsType.MONTH);
+          }}
+          style={[styles.dateContainer, commonStyles.flexColumn]}>
+          <Text style={[commonStyles.flexRow, {flex: 1}]}>月</Text>
+          {this.state.staticsType === StaticsType.MONTH ? (
+            <View style={styles.activeTab} />
+          ) : null}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.dateContainer}>
-          <Text>选择日期</Text>
+        <TouchableOpacity
+          onPress={() => {
+            this._changeStaticsDate(StaticsType.RANGE);
+          }}
+          style={[styles.dateContainer, commonStyles.flexColumn]}>
+          <Text style={[commonStyles.flexRow, {flex: 1}]}>年</Text>
+          {this.state.staticsType === StaticsType.RANGE ? (
+            <View style={styles.activeTab} />
+          ) : null}
         </TouchableOpacity>
       </View>
     );
@@ -106,7 +131,7 @@ export default class StaticsScreen extends BaseScreen {
   _renderStaticsList() {
     return (
       <View>
-        <LifeTypeStaticsCard
+        <DrinkMilkStaticsCard
           ref={ref => (this.milkCardRef = ref)}
           dataList={this.state.dataList}
           dataType={this.state.dataType}
@@ -143,12 +168,15 @@ export default class StaticsScreen extends BaseScreen {
 }
 
 const styles = StyleSheet.create({
+  activeTab: {
+    height: 2,
+    backgroundColor: Colors.black333,
+    width: 20,
+  },
   dateContainer: {
     flex: 1,
-    display: 'flex',
-    padding: Margin.midHorizontal,
-    justifyContent: 'center',
     alignItems: 'center',
+    height: 30,
   },
   container: {
     display: 'flex',

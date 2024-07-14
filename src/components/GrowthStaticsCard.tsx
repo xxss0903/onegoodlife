@@ -17,7 +17,10 @@ export const StaticsType = {
   RANGE: 'range',
 };
 
-export default class LifeTypeStaticsCard extends Component<any, any> {
+/**
+ * 生长曲线统计卡片
+ */
+export default class GrowthStaticsCard extends Component<any, any> {
   private chartConfig = {
     backgroundColor: Colors.white,
     backgroundGradientFrom: Colors.white,
