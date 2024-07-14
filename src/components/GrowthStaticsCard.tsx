@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {commonStyles} from '../commonStyle';
 import {Colors} from '../colors';
-import {screenW} from '../utils/until';
 import {Margin} from '../space';
-import {LineChart} from 'react-native-chart-kit';
-import moment, {min} from 'moment';
+import moment from 'moment';
 import {mainData, TYPE_ID} from '../mainData.ts';
+import {Menu, Pressable} from 'native-base';
+import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
+import {ChartWidth} from '../utils/until';
 
-const ChartWidth = screenW - Margin.horizontal * 4;
 // 统计类型
 export const StaticsType = {
   DAY: 'day', // 按天统计
@@ -21,7 +21,33 @@ export const StaticsType = {
  * 生长曲线统计卡片
  */
 export default class GrowthStaticsCard extends Component<any, any> {
-  private chartConfig = {
+  private lineChartConfig = {
+    backgroundColor: Colors.white,
+    backgroundGradientFrom: Colors.white,
+    backgroundGradientTo: Colors.white,
+    color: (opacity = 0.5) => Colors.primary1,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    fillShadowGradientTo: Colors.white,
+    fillShadowGradientFrom: Colors.white,
+    useShadowColorFromDataset: false,
+    propsForLabels: {
+      fontSize: 14,
+    },
+  };
+  private barChartConfig = {
+    strokeWidth: 2, // optional, default 3
+    fillShadowGradientTo: Colors.primary1,
+    fillShadowGradientToOpacity: 1,
+    fillShadowGradientFrom: Colors.primary1,
+    useShadowColorFromDataset: false,
+    backgroundColor: Colors.white,
+    backgroundGradientFrom: Colors.white,
+    backgroundGradientTo: Colors.white,
+    decimalPlaces: 0,
+    color: (opacity = 1) => Colors.primary1,
+  };
+  private pieChartConfig = {
     backgroundColor: Colors.white,
     backgroundGradientFrom: Colors.white,
     backgroundGradientTo: Colors.white,
@@ -35,25 +61,21 @@ export default class GrowthStaticsCard extends Component<any, any> {
       fontSize: 14,
     },
   };
+
   private chartStyle = {
     marginVertical: Margin.vertical,
     borderRadius: 16,
   };
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
+      staticsType: 'line', // 表格类型: 'line', 'bar', 'pie'
       dataType: StaticsType.DAY,
-      staticsData: {
-        labels: [0],
-        datasets: [
-          {
-            data: [0],
-          },
-        ],
-      },
+      // {value: 250, label: 'M'}
+      staticsData: [{value: 250, label: 'M'}],
     };
   }
 
@@ -100,16 +122,17 @@ export default class GrowthStaticsCard extends Component<any, any> {
 
   _getDayStaticsData() {
     let today = this._getLast24HoursData();
-    let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
-    console.log(' statics today data', milkData);
-    let labels: string[] = [];
-    let data: number[] = [];
+    let milkData = today.filter(
+      (value: any) => value.typeId === TYPE_ID.HEIGHT,
+    );
+    console.log(' statics height data', milkData);
+    let data: any[] = [];
     let maxValue = -1;
     let minValue = -1;
     milkData.forEach((value: any) => {
       let timeLabel = moment(value.time).format('HH:mm');
-      labels.unshift(timeLabel);
-      data.unshift(value.dose);
+      let obj = {value: value.dose, label: timeLabel};
+      data.unshift(obj);
       if (maxValue < 0) {
         maxValue = value.dose;
       }
@@ -130,26 +153,7 @@ export default class GrowthStaticsCard extends Component<any, any> {
     this.setState({
       minMilkDose: minValue,
       maxMilkDose: maxValue,
-      staticsData: {
-        labels: labels,
-        datasets: [
-          {
-            data: data,
-          },
-          {
-            data: new Array(milkData.length).fill(this.state.minMilkDose),
-            color: () => 'transparent',
-            strokeWidth: 0,
-            withDots: false,
-          },
-          {
-            data: new Array(milkData.length).fill(this.state.maxMilkDose),
-            color: () => 'transparent',
-            strokeWidth: 0,
-            withDots: false,
-          },
-        ],
-      },
+      staticsData: data,
     });
   }
 
@@ -176,6 +180,48 @@ export default class GrowthStaticsCard extends Component<any, any> {
 
   _editCard() {}
 
+  _renderLineChart() {
+    return <LineChart width={ChartWidth} data={this.state.staticsData} />;
+  }
+
+  _renderPieChart() {
+    return <PieChart data={this.state.staticsData} />;
+  }
+
+  _renderBarChart() {
+    return (
+      <BarChart
+        width={ChartWidth}
+        barWidth={22}
+        noOfSections={3}
+        barBorderRadius={4}
+        frontColor="lightgray"
+        data={this.state.staticsData}
+        yAxisThickness={0}
+        xAxisThickness={0}
+      />
+    );
+  }
+
+  _renderChart(type: string) {
+    switch (type) {
+      case 'pie':
+        return this._renderPieChart();
+      case 'line':
+        return this._renderLineChart();
+      case 'bar':
+        return this._renderBarChart();
+    }
+    return null;
+  }
+
+  // 更改统计类型
+  _changeStaticsType(type: string) {
+    this.setState({
+      staticsType: type,
+    });
+  }
+
   render() {
     return (
       <View style={[commonStyles.flexColumn, styles.cardContainer]}>
@@ -193,43 +239,53 @@ export default class GrowthStaticsCard extends Component<any, any> {
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              喝奶量
+              生长曲线
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => {
-              this._editCard();
-            }}
-            style={{
-              padding: Margin.midHorizontal,
-              backgroundColor: Colors.loginTouch,
-              borderRadius: Margin.midHorizontal,
+          <Menu
+            w={120}
+            style={{}}
+            trigger={triggerProps => {
+              return (
+                <Pressable
+                  style={{
+                    padding: Margin.midHorizontal,
+                    backgroundColor: Colors.loginTouch,
+                    borderRadius: Margin.midHorizontal,
+                  }}
+                  accessibilityLabel="More options menu"
+                  {...triggerProps}>
+                  <Image
+                    style={styles.titleIcon}
+                    source={require('../assets/ic_edit_white.png')}
+                  />
+                </Pressable>
+              );
             }}>
-            <Image
-              style={styles.titleIcon}
-              source={require('../assets/ic_edit_white.png')}
-            />
-          </TouchableOpacity>
+            <Menu.Item
+              onPress={() => {
+                this._changeStaticsType('bar');
+              }}>
+              柱状图
+            </Menu.Item>
+            <Menu.Item
+              onPress={() => {
+                this._changeStaticsType('line');
+              }}>
+              线状图
+            </Menu.Item>
+            <Menu.Item
+              onPress={() => {
+                this._changeStaticsType('pie');
+              }}>
+              饼状图
+            </Menu.Item>
+          </Menu>
         </View>
         <View style={styles.dataContainer}>
-          {this.state.staticsData?.labels.length > 0 ? (
-            <LineChart
-              style={this.chartStyle}
-              data={this.state.staticsData}
-              width={ChartWidth}
-              height={240}
-              fromNumber={this.state.maxMilkDose}
-              fromZero={true}
-              yAxisSuffix={''}
-              yAxisLabel={''}
-              formatYLabel={yValue => {
-                return parseInt(yValue).toString();
-              }}
-              chartConfig={this.chartConfig}
-              verticalLabelRotation={30}
-              segments={4}
-            />
-          ) : null}
+          {this.state.staticsData?.length > 0
+            ? this._renderChart(this.state.staticsType)
+            : null}
         </View>
       </View>
     );

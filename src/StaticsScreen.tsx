@@ -19,9 +19,11 @@ import DrinkMilkStaticsCard, {
 import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
 import {mainData} from './mainData.ts';
+import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
 
 export default class StaticsScreen extends BaseScreen {
   private milkCardRef = null; // 喝奶统计卡片
+  private growthCardRef = null; // 成长统计
   constructor(props) {
     super(props);
     this.state = {
@@ -130,12 +132,21 @@ export default class StaticsScreen extends BaseScreen {
 
   _renderStaticsList() {
     return (
-      <View>
-        <DrinkMilkStaticsCard
-          ref={ref => (this.milkCardRef = ref)}
-          dataList={this.state.dataList}
-          dataType={this.state.dataType}
-        />
+      <View style={[commonStyles.flexColumn, {flex: 1, height: 1500}]}>
+        <View style={{height: 400}}>
+          <GrowthStaticsCard
+            ref={ref => (this.milkCardRef = ref)}
+            dataList={this.state.dataList}
+            dataType={this.state.dataType}
+          />
+        </View>
+        <View style={{height: 400}}>
+          <DrinkMilkStaticsCard
+            ref={ref => (this.milkCardRef = ref)}
+            dataList={this.state.dataList}
+            dataType={this.state.dataType}
+          />
+        </View>
       </View>
     );
   }
@@ -143,6 +154,7 @@ export default class StaticsScreen extends BaseScreen {
   renderScreen() {
     return (
       <ScrollView
+        style={{flex: 1, height: 1800}}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
@@ -160,7 +172,9 @@ export default class StaticsScreen extends BaseScreen {
           ]}>
           <View>{this._renderDateRange()}</View>
           <View>{this._renderHealthTip()}</View>
-          <View>{this._renderStaticsList()}</View>
+          <View style={{flex: 1, backgroundColor: Colors.primary}}>
+            {this._renderStaticsList()}
+          </View>
         </View>
       </ScrollView>
     );

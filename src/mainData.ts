@@ -184,6 +184,7 @@ export const commonActions = {
 // 牛奶的模板数据
 // 喝牛奶的模板数据
 export const milkTemplateData = {
+  alarm: 2, // 2小时之后进行提醒
   name: mainData.typeMapList[0].name,
   typeId: TYPE_ID.MILK, // 1:吃奶；2：拉屎；3：撒尿；根据typeMap来进行获取
   time: moment().valueOf(), // 时间戳
