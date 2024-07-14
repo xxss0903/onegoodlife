@@ -70,8 +70,8 @@ export default class GrowthStaticsCard extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      maxMilkDose: 120,
-      minMilkDose: 0,
+      maxValue: 120,
+      minValue: 0,
       staticsType: 'line', // 表格类型: 'line', 'bar', 'pie'
       dataType: StaticsType.DAY,
       // {value: 250, label: 'M'}
@@ -94,7 +94,7 @@ export default class GrowthStaticsCard extends Component<any, any> {
     for (let i = 0; i < dataList.length; i++) {
       let data = dataList[i];
       if (data.time > last24HourMoment) {
-        if (data.typeId === TYPE_ID.MILK) {
+        if (data.typeId === TYPE_ID.HEIGHT) {
           tempDataList.push(data);
         }
       }
@@ -122,37 +122,25 @@ export default class GrowthStaticsCard extends Component<any, any> {
 
   _getDayStaticsData() {
     let today = this._getLast24HoursData();
-    let milkData = today.filter(
+    let dataList = today.filter(
       (value: any) => value.typeId === TYPE_ID.HEIGHT,
     );
-    console.log(' statics height data', milkData);
+    console.log('statics height data', dataList);
     let data: any[] = [];
-    let maxValue = -1;
-    let minValue = -1;
-    milkData.forEach((value: any) => {
+    let birthTime = moment(mainData.babyInfo.birthDay);
+
+    dataList.forEach((value: any) => {
       let timeLabel = moment(value.time).format('HH:mm');
-      let obj = {value: value.dose, label: timeLabel};
+      // 将测量时间换算成出生的天数
+      let dataTime = moment(value.time);
+      let birthDay = dataTime.diff(birthTime, 'day');
+
+      let obj = {value: birthDay, label: birthDay + '天'};
       data.unshift(obj);
-      if (maxValue < 0) {
-        maxValue = value.dose;
-      }
-      if (minValue < 0) {
-        minValue = value.dose;
-      }
-      if (value.dose > maxValue) {
-        maxValue = value.dose;
-      }
-      if (minValue > value.dose) {
-        minValue = value.dose;
-      }
     });
 
-    minValue = minValue - 20 < 0 ? 0 : minValue - 20;
-    maxValue += 20;
-    console.log('labels and data', minValue, maxValue);
+    console.log('labels and data', data);
     this.setState({
-      minMilkDose: minValue,
-      maxMilkDose: maxValue,
       staticsData: data,
     });
   }
@@ -162,6 +150,7 @@ export default class GrowthStaticsCard extends Component<any, any> {
   _getMonthStaticsData() {}
 
   refreshData() {
+    console.log('refresh growth data');
     switch (this.state.dataType) {
       case StaticsType.DAY:
         this._getDayStaticsData();
@@ -181,7 +170,13 @@ export default class GrowthStaticsCard extends Component<any, any> {
   _editCard() {}
 
   _renderLineChart() {
-    return <LineChart width={ChartWidth} data={this.state.staticsData} />;
+    return (
+      <LineChart
+        height={240}
+        width={ChartWidth}
+        data={this.state.staticsData}
+      />
+    );
   }
 
   _renderPieChart() {
@@ -229,7 +224,7 @@ export default class GrowthStaticsCard extends Component<any, any> {
           <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
             <Image
               style={styles.titleIcon}
-              source={require('../assets/ic_milk.png')}
+              source={require('../assets/ic_height.png')}
             />
             <Text
               style={[

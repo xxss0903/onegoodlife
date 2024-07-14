@@ -40,6 +40,7 @@ export default class StaticsScreen extends BaseScreen {
   }
 
   _refreshData() {
+    this.growthCardRef?.refreshData();
     this.milkCardRef?.refreshData();
   }
 
@@ -50,7 +51,7 @@ export default class StaticsScreen extends BaseScreen {
     });
     getDataListOrderByTime(db.database, mainData.babyInfo.babyId)
       .then(dataList => {
-        console.log('get data end');
+        console.log('get data end', dataList);
         this.setState(
           {
             refreshing: false,
@@ -135,17 +136,17 @@ export default class StaticsScreen extends BaseScreen {
       <View style={[commonStyles.flexColumn, {flex: 1, height: 1500}]}>
         <View style={{height: 400}}>
           <GrowthStaticsCard
-            ref={ref => (this.milkCardRef = ref)}
+            ref={ref => (this.growthCardRef = ref)}
             dataList={this.state.dataList}
             dataType={this.state.dataType}
           />
         </View>
         <View style={{height: 400}}>
-          <DrinkMilkStaticsCard
-            ref={ref => (this.milkCardRef = ref)}
-            dataList={this.state.dataList}
-            dataType={this.state.dataType}
-          />
+          {/*<DrinkMilkStaticsCard*/}
+          {/*  ref={ref => (this.milkCardRef = ref)}*/}
+          {/*  dataList={this.state.dataList}*/}
+          {/*  dataType={this.state.dataType}*/}
+          {/*/>*/}
         </View>
       </View>
     );

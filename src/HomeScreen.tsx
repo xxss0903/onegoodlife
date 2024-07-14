@@ -141,6 +141,7 @@ export default class HomeScreen extends BaseScreen {
 
   // 添加新的时间线
   _addNewLifeline(item: any) {
+    console.log('click new life item', item);
     if (item.name === '全部') {
       // 进入全部
       this.props.navigation.navigate('AllTypeScreen');
@@ -390,11 +391,16 @@ export default class HomeScreen extends BaseScreen {
               }}
               actions={[...mainData.commonActions, commonActions.all]}
               onPressItem={typeName => {
-                this.isTypeEdit = false;
-                let items = mainData.commonActions.filter(
-                  item => item.name === typeName,
-                );
-                items && items.length > 0 && this._addNewLifeline(items[0]);
+                console.log('click item', typeName);
+                if (typeName === '全部') {
+                  this.props.navigation.navigate('AllTypeScreen');
+                } else {
+                  this.isTypeEdit = false;
+                  let items = mainData.commonActions.filter(
+                    item => item.name === typeName,
+                  );
+                  items && items.length > 0 && this._addNewLifeline(items[0]);
+                }
               }}
             />
           ) : null}
