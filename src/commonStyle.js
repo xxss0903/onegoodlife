@@ -177,6 +177,10 @@ export const commonStyles = StyleSheet.create({
     height: 60,
     display: 'flex',
     flexDirection: 'row',
+    position: 'absolute',
+    bottom: Margin.vertical,
+    left: Margin.horizontal,
+    width: screenW - Margin.horizontal * 2,
     backgroundColor: Colors.white,
   },
   fullScreen: {

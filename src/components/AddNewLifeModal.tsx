@@ -727,7 +727,6 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderContentView() {
-    logi('render type item', this.currentAddType);
     let contentView = null;
     // 根据类型id渲染不同的内容界面
     switch (this.currentAddType?.id) {

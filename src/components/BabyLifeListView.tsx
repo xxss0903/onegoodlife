@@ -163,7 +163,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
     let type = mainData.typeMapList.filter(
       value => value.id === item.typeId,
     )[0];
-    logi('render type', type);
     return (
       <TouchableHighlight
         onLongPress={() => {

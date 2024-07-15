@@ -161,6 +161,7 @@ export const mainData = {
   babyInfo: {
     birthDay: '',
     babyId: -1,
+    sex: 'boy', // 宝宝的性别
   }, // 婴儿信息
   appConfigs: {
     showStatics: true, // 默认首页显示统计信息

@@ -93,7 +93,11 @@ export default class UserInfoScreen extends BaseScreen {
         <View
           style={[
             commonStyles.flexColumn,
-            {flex: 1, padding: Margin.horizontal, alignItems: 'center'},
+            {
+              flex: 1,
+              padding: Margin.horizontal,
+              alignItems: 'center',
+            },
           ]}>
           <TouchableOpacity
             onPress={() => {

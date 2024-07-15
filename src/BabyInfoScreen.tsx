@@ -11,7 +11,7 @@ import {commonStyles} from './commonStyle';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {AndroidPermissions} from './utils/permissionUtils';
 import {logi} from './utils/logutil';
-import {Avatar, Image, VStack} from 'native-base';
+import {Avatar, CheckIcon, Image, Select, VStack} from 'native-base';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
 import {formatTimeToDate, isEmpty} from './utils/until';
@@ -208,6 +208,41 @@ export default class BabyInfoScreen extends BaseScreen {
                 placeholderTextColor={'#bbbbbb'}
                 placeholder={'请输入宝宝昵称'}
               />
+            </View>
+            <View
+              style={[
+                commonStyles.flexRow,
+                {alignItems: 'center', marginTop: Margin.vertical},
+              ]}>
+              <Text
+                style={[
+                  {width: 80, textAlign: 'right'},
+                  commonStyles.commonContentText,
+                ]}>
+                性别：
+              </Text>
+              <View
+                style={{
+                  flex: 1,
+                }}>
+                <Select
+                  selectedValue={this.state.babyInfo.sex}
+                  minWidth="200"
+                  accessibilityLabel="请选择"
+                  placeholder="请选择"
+                  _selectedItem={{
+                    bg: Colors.primary4,
+                    endIcon: <CheckIcon size="5" />,
+                  }}
+                  mt={1}
+                  onValueChange={itemValue => {
+                    this.state.babyInfo.sex = itemValue;
+                    this.forceUpdate();
+                  }}>
+                  <Select.Item label="男宝" value="boy" />
+                  <Select.Item label="女宝" value="girl" />
+                </Select>
+              </View>
             </View>
             <TouchableOpacity
               onPress={() => {

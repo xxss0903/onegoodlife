@@ -30,6 +30,7 @@ export default class BabiesScreen extends BaseScreen {
   }
 
   componentDidMount() {
+    console.log('refresh babies', mainData.babies);
     this.refreshEvent = EventBus.addEventListener(
       EventBus.REFRESH_BABIES_SCREEN,
       () => {
@@ -55,7 +56,6 @@ export default class BabiesScreen extends BaseScreen {
     // 更新本地存储
     DeviceStorage.refreshMainData();
     this.forceUpdate();
-    logi('send refresh babis home list');
     mainData.refreshBabies = true;
   }
 
