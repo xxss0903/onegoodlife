@@ -30,6 +30,8 @@ export default class GrowthStaticsCard extends Component<any, any> {
       dataType: StaticsType.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
+      weightTitle: '',
+      heightTitle: '',
       girlsHeight: {
         height1List: [],
         height2List: [],
@@ -51,8 +53,16 @@ export default class GrowthStaticsCard extends Component<any, any> {
   // 初始化初始统计数据
   _initBaseData() {
     if (mainData.babyInfo.sex === 'boy') {
+      this.setState({
+        heightTitle: `（身高-男）`,
+        weightTitle: `（体重-男）`,
+      });
       this._initBoyGrowthData();
     } else {
+      this.setState({
+        heightTitle: `（身高-女）`,
+        weightTitle: `（体重-女）`,
+      });
       this._initGirlHeightData();
     }
   }
@@ -170,8 +180,13 @@ export default class GrowthStaticsCard extends Component<any, any> {
         <LineChart
           height={240}
           maxValue={40}
+          showVerticalLines={true}
+          verticalLinesColor={Colors.grayEe}
           hideDataPoints={true}
           yAxisOffset={40}
+          initialSpacing={10}
+          spacing={24}
+          verticalLinesStrokeDashArray={[4, 8]}
           showXAxisIndices={false}
           thickness={1}
           width={ChartWidth}
@@ -226,9 +241,12 @@ export default class GrowthStaticsCard extends Component<any, any> {
     }
   }
 
-  render() {
+  // 到处生长曲线
+  _exportGrowthImage() {}
+
+  _renderWeight() {
     return (
-      <View style={[commonStyles.flexColumn, styles.cardContainer]}>
+      <View style={{marginTop: Margin.horizontal}}>
         <View style={[styles.titleContainer, commonStyles.flexRow]}>
           <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
             <Image
@@ -243,7 +261,35 @@ export default class GrowthStaticsCard extends Component<any, any> {
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              生长曲线
+              生长曲线{this.state.weightTitle}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.dataContainer}>
+          {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
+        </View>
+      </View>
+    );
+  }
+
+  _renderHeight() {
+    return (
+      <View style={{}}>
+        <View style={[styles.titleContainer, commonStyles.flexRow]}>
+          <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
+            <Image
+              style={styles.titleIcon}
+              source={require('../assets/ic_height.png')}
+            />
+            <Text
+              style={[
+                {
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  marginLeft: Margin.midHorizontal,
+                },
+              ]}>
+              生长曲线{this.state.heightTitle}
             </Text>
           </View>
           <Menu
@@ -266,12 +312,27 @@ export default class GrowthStaticsCard extends Component<any, any> {
                 </Pressable>
               );
             }}>
+            <Menu.Item
+              onPress={() => {
+                this._exportGrowthImage();
+              }}>
+              导出
+            </Menu.Item>
             <Menu.Item onPress={() => {}}>柱状图</Menu.Item>
           </Menu>
         </View>
         <View style={styles.dataContainer}>
           {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
         </View>
+      </View>
+    );
+  }
+
+  render() {
+    return (
+      <View style={[commonStyles.flexColumn, styles.cardContainer]}>
+        {this._renderHeight()}
+        {this._renderWeight()}
       </View>
     );
   }

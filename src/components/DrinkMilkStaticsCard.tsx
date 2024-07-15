@@ -264,19 +264,19 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
               onPress={() => {
                 this._changeStaticsType('bar');
               }}>
-              柱状图
+              本周
             </Menu.Item>
             <Menu.Item
               onPress={() => {
                 this._changeStaticsType('line');
               }}>
-              线状图
+              本月
             </Menu.Item>
             <Menu.Item
               onPress={() => {
                 this._changeStaticsType('pie');
               }}>
-              饼状图
+              本年
             </Menu.Item>
           </Menu>
         </View>
