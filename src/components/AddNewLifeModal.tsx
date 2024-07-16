@@ -784,7 +784,7 @@ export default class AddNewLifeModal extends Component<any, any> {
     return (
       <>
         <Modal
-          animationType="slide"
+          animationType="fade"
           transparent={true}
           onRequestClose={() => {
             this.showModal(!this.state.showAddModal);
