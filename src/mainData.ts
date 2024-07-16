@@ -144,8 +144,16 @@ export const commonTypeList = [
   },
 ];
 
+export const GradientColors = {
+  boyColor1: ['#a8edea', '#fed6e3'],
+  boyColor2: ['#fccb90', '#d57eeb'],
+  girlColor1: ['#fad0c4', '#ffd1ff'],
+  girlColor2: ['#ffc3a0', '#ffafbd'],
+};
+
 // 全局数据，包括用户信息等需要全局使用的
 export const mainData = {
+  gradientColor: GradientColors.boyColor1,
   refreshBabies: false, // 是否刷新宝宝列表
   typeMapList: commonTypeList, // 类型列表，可以用来保存用户自己的类型数据
   commonActions: [commonTypeList[0], commonTypeList[1], commonTypeList[2]], // 常用类型

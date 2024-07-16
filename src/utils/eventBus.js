@@ -11,6 +11,8 @@ export default class EventBus {
   // 登录状态
   static REFRESH_DATA = 'REFRESH_DATA';
   static REFRESH_BABY_INFO = 'REFRESH_BABY_INFO';
+  // 刷新背景颜色
+  static REFRESH_GRADIENT_COLOR = 'REFRESH_GRADIENT_COLOR';
   // 刷新宝宝列表，首页要进行更新
   static REFRESH_BABY_LIST = 'REFRESH_BABY_LIST';
   // 插入新的数据

@@ -25,6 +25,31 @@ export const createLifeRecordTable = async db => {
   await db.executeSql(query);
 };
 
+/**
+ * 获取数据，根据范围
+ * @param db
+ * @param from 起始数据
+ * @param to 结束位置
+ * @returns {Promise<void>}
+ */
+export const getDataInRange = async (db, from, to) => {
+  try {
+    const dataList = [];
+    const results = await db.executeSql(
+      `SELECT rowid, name, json, time FROM ${lifeRecordTableName}`,
+    );
+    results.forEach(result => {
+      for (let index = 0; index < result.rows.length; index++) {
+        dataList.push(result.rows.item(index));
+      }
+    });
+    return dataList;
+  } catch (error) {
+    logi(error);
+    throw Error('Failed to get todoItems !!!');
+  }
+};
+
 // 获取数据列表
 export const getDataList = async db => {
   try {

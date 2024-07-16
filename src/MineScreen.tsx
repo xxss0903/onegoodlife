@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ImageBackground,
-} from 'react-native';
+import {TouchableOpacity, View, Text, StyleSheet, Image} from 'react-native';
 import {commonStyles} from './commonStyle';
 import {Margin, Style} from './space';
 import {Colors} from './colors';
@@ -15,6 +8,7 @@ import {mainData} from './mainData';
 import {Avatar} from 'native-base';
 import BaseScreen from './BaseScreen.tsx';
 import EventBus from './utils/eventBus';
+import LinearGradient from 'react-native-linear-gradient';
 
 const ItemRow = (img, title, callback, showLine = true) => {
   return (
@@ -28,9 +22,9 @@ const ItemRow = (img, title, callback, showLine = true) => {
           alignItems: 'center',
         }}
         onPress={callback}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{flexDirection: 'row'}}>
           {img}
-          <Text style={{ marginLeft: 8, color: Colors.black333, fontSize: 15 }}>
+          <Text style={{marginLeft: 8, color: Colors.black333, fontSize: 15}}>
             {title}
           </Text>
         </View>
@@ -59,6 +53,13 @@ export default class MineScreen extends BaseScreen {
         this.forceUpdate();
       },
     );
+    this._initListeners();
+  }
+
+  _initListeners() {
+    EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
+      this.forceUpdate();
+    });
   }
 
   componentWillUnmount() {
@@ -71,14 +72,15 @@ export default class MineScreen extends BaseScreen {
         style={[
           styles.container,
           commonStyles.flexColumn,
-          { backgroundColor: Colors.white, flex: 1 },
+          {backgroundColor: Colors.white, flex: 1},
         ]}>
-        <ImageBackground
-          style={{ height: 240 }}
-          source={require('./assets/ic_user_background.webp')}>
+        <LinearGradient
+          colors={mainData.gradientColor}
+          start={{x: 0, y: 1}}
+          end={{x: 1, y: 0}}>
           <View style={[styles.userInfoContainer, commonStyles.center]}>
             <Avatar
-              style={{ width: 80, height: 80 }}
+              style={{width: 80, height: 80}}
               source={{
                 uri: mainData.userInfo.avatarUrl,
               }}
@@ -92,7 +94,7 @@ export default class MineScreen extends BaseScreen {
               {mainData.userInfo.userName}
             </Text>
           </View>
-        </ImageBackground>
+        </LinearGradient>
 
         <View
           style={[
@@ -139,7 +141,7 @@ export default class MineScreen extends BaseScreen {
               style={styles.titleImg}
               source={require('./assets/ic_setting.png')}
             />,
-            '应用设置',
+            '应用信息',
             () => {
               this.props.navigation.navigate('VersionScreen');
             },

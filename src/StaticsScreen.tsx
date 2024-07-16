@@ -20,7 +20,9 @@ import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
 import {mainData} from './mainData.ts';
 import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
-import {screenW} from './utils/until';
+import LinearGradient from 'react-native-linear-gradient';
+import {screenH} from './utils/until';
+import EventBus from './utils/eventBus';
 
 export default class StaticsScreen extends BaseScreen {
   private milkCardRef = null; // 喝奶统计卡片
@@ -38,6 +40,13 @@ export default class StaticsScreen extends BaseScreen {
 
   componentDidMount() {
     this._getDataList();
+    this._initListeners();
+  }
+
+  _initListeners() {
+    EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
+      this.forceUpdate();
+    });
   }
 
   _refreshData() {
@@ -135,15 +144,15 @@ export default class StaticsScreen extends BaseScreen {
     return (
       <View style={[commonStyles.flexColumn]}>
         <View>
-          <GrowthStaticsCard
-            ref={ref => (this.growthCardRef = ref)}
+          <DrinkMilkStaticsCard
+            ref={ref => (this.milkCardRef = ref)}
             dataList={this.state.dataList}
             dataType={this.state.dataType}
           />
         </View>
         <View style={[{marginTop: Margin.vertical}]}>
-          <DrinkMilkStaticsCard
-            ref={ref => (this.milkCardRef = ref)}
+          <GrowthStaticsCard
+            ref={ref => (this.growthCardRef = ref)}
             dataList={this.state.dataList}
             dataType={this.state.dataType}
           />
@@ -154,46 +163,54 @@ export default class StaticsScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <View style={[commonStyles.flexColumn, {flex: 1}]}>
-        {/*<View*/}
-        {/*  style={{*/}
-        {/*    position: 'absolute',*/}
-        {/*    top: Margin.vertical,*/}
-        {/*    left: Margin.horizontal,*/}
-        {/*    zIndex: 999,*/}
-        {/*    width: screenW - Margin.horizontal * 2,*/}
-        {/*  }}>*/}
-        {/*  {this._renderDateRange()}*/}
-        {/*</View>*/}
-        <ScrollView
-          style={{
-            flex: 1,
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={() => {
-                console.log('on refresh control');
-                // 刷新数据
-                this._getDataList();
-              }}
-            />
-          }>
-          <View
-            style={[
-              commonStyles.flexColumn,
-              {
-                flex: 1,
-                paddingTop: Margin.horizontal,
-                paddingBottom: Margin.horizontal,
-                backgroundColor: Colors.grayEe,
-              },
-            ]}>
-            <View>{this._renderHealthTip()}</View>
-            <View>{this._renderStaticsList()}</View>
-          </View>
-        </ScrollView>
-      </View>
+      <LinearGradient
+        colors={mainData.gradientColor}
+        start={{x: 0, y: 1}}
+        end={{x: 1, y: 0}}
+        style={{flex: 1}}>
+        <View style={[commonStyles.flexColumn, {flex: 1}]}>
+          {/*<View*/}
+          {/*  style={{*/}
+          {/*    position: 'absolute',*/}
+          {/*    top: Margin.vertical,*/}
+          {/*    left: Margin.horizontal,*/}
+          {/*    zIndex: 999,*/}
+          {/*    width: screenW - Margin.horizontal * 2,*/}
+          {/*  }}>*/}
+          {/*  {this._renderDateRange()}*/}
+          {/*</View>*/}
+          <ScrollView
+            style={{
+              flex: 1,
+              height: screenH,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={() => {
+                  console.log('on refresh control');
+                  // 刷新数据
+                  this._getDataList();
+                }}
+              />
+            }>
+            <View
+              style={[
+                commonStyles.flexColumn,
+                {
+                  flex: 1,
+                  paddingTop: Margin.horizontal,
+                  paddingBottom: Margin.horizontal,
+                },
+              ]}>
+              <View>{this._renderHealthTip()}</View>
+              <View>{this._renderStaticsList()}</View>
+            </View>
+          </ScrollView>
+        </View>
+      </LinearGradient>
     );
   }
 }

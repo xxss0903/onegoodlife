@@ -12,7 +12,12 @@ import {
   View,
 } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import {commonActions, commonTypeList, mainData} from './mainData';
+import {
+  commonActions,
+  commonTypeList,
+  GradientColors,
+  mainData,
+} from './mainData';
 import EventBus from './utils/eventBus';
 import BabyLifeListView from './components/BabyLifeListView';
 import {FloatingAction} from 'react-native-floating-action';
@@ -25,6 +30,7 @@ import BaseScreen from './BaseScreen.tsx';
 import {Colors} from './colors';
 import {logi} from './utils/logutil';
 import {screenH, screenW} from './utils/until';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -75,29 +81,32 @@ export default class HomeScreen extends BaseScreen {
 
   _initListeners() {
     this.props.navigation.addListener('focus', () => {
-      if (mainData.babies && mainData.babies.length > 0) {
-        mainData.babyInfo = mainData.babies[0];
-        this.setState(
-          {
-            currentBaby: mainData.babies[0],
-            currentBabyIndex: 0,
-          },
-          () => {
-            let newPageRefs = this.babyPageRefs.filter(value => {
-              if (value) {
-                return value;
-              }
-            });
-            this.babyPageRefs = newPageRefs;
-            this.pagerRef && this.pagerRef.setPage(0);
-            this.babyPageRefs.forEach(value => {
-              value && value.refreshData();
-            });
-          },
-        );
-      } else {
-        logi('render empty babies');
-        this.forceUpdate();
+      if (mainData.refreshBabies) {
+        mainData.refreshBabies = false;
+        if (mainData.babies && mainData.babies.length > 0) {
+          mainData.babyInfo = mainData.babies[0];
+          this.setState(
+            {
+              currentBaby: mainData.babies[0],
+              currentBabyIndex: 0,
+            },
+            () => {
+              let newPageRefs = this.babyPageRefs.filter(value => {
+                if (value) {
+                  return value;
+                }
+              });
+              this.babyPageRefs = newPageRefs;
+              this.pagerRef && this.pagerRef.setPage(0);
+              this.babyPageRefs.forEach(value => {
+                value && value.refreshData();
+              });
+            },
+          );
+        } else {
+          logi('render empty babies');
+          this.forceUpdate();
+        }
       }
     });
     // 在全部页面插入之后，在这里使用本地插入和刷新当前宝宝的页面
@@ -158,7 +167,7 @@ export default class HomeScreen extends BaseScreen {
    * @param birthDay
    */
   _getBirthDay(birthDay) {
-    let diffDay = moment().diff(moment(birthDay), 'day');
+    let diffDay = moment().diff(moment(birthDay), 'days');
     return diffDay + 1;
   }
 
@@ -246,12 +255,19 @@ export default class HomeScreen extends BaseScreen {
   }
 
   _changeBaby(index: Number) {
+    console.log('change baby index ' + index);
+    EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
     this.currentBabyPageRef = this.babyPageRefs[index];
+    if (index === 0) {
+      mainData.gradientColor = GradientColors.boyColor1;
+    } else {
+      mainData.gradientColor = GradientColors.boyColor2;
+    }
+    mainData.babyInfo = mainData.babies[index];
     this.setState({
       currentBaby: mainData.babies[index],
       currentBabyIndex: index,
     });
-    mainData.babyInfo = mainData.babies[index];
     // 更改寶寶信息，切換pagerview的列表
     this.pagerRef && this.pagerRef.setPage(index);
   }
@@ -377,43 +393,49 @@ export default class HomeScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <View>
-        <View style={styles.container}>
-          {mainData.babies && mainData.babies.length > 0
-            ? this._renderHomeView()
-            : this._renderEmptyAddView()}
-          {mainData.babies.length > 0 ? (
-            <FloatingAction
-              distanceToEdge={{vertical: 50, horizontal: 40}}
-              buttonSize={60}
-              ref={ref => {
-                this.floatingActionRef = ref;
-              }}
-              actions={[...mainData.commonActions, commonActions.all]}
-              onPressItem={typeName => {
-                console.log('click item', typeName);
-                if (typeName === '全部') {
-                  this.props.navigation.navigate('AllTypeScreen');
-                } else {
-                  this.isTypeEdit = false;
-                  let items = mainData.commonActions.filter(
-                    item => item.name === typeName,
-                  );
-                  items && items.length > 0 && this._addNewLifeline(items[0]);
-                }
-              }}
-            />
-          ) : null}
+      <LinearGradient
+        colors={mainData.gradientColor}
+        start={{x: 0, y: 1}}
+        end={{x: 1, y: 0}}
+        style={{flex: 1}}>
+        <View>
+          <View style={styles.container}>
+            {mainData.babies && mainData.babies.length > 0
+              ? this._renderHomeView()
+              : this._renderEmptyAddView()}
+            {mainData.babies.length > 0 ? (
+              <FloatingAction
+                distanceToEdge={{vertical: 50, horizontal: 40}}
+                buttonSize={60}
+                ref={ref => {
+                  this.floatingActionRef = ref;
+                }}
+                actions={[...mainData.commonActions, commonActions.all]}
+                onPressItem={typeName => {
+                  console.log('click item', typeName);
+                  if (typeName === '全部') {
+                    this.props.navigation.navigate('AllTypeScreen');
+                  } else {
+                    this.isTypeEdit = false;
+                    let items = mainData.commonActions.filter(
+                      item => item.name === typeName,
+                    );
+                    items && items.length > 0 && this._addNewLifeline(items[0]);
+                  }
+                }}
+              />
+            ) : null}
+          </View>
+          <AddNewLifeModal
+            addNewLifeline={(item: any) => {
+              this._insertNewlifeLineImpl(item);
+            }}
+            baby={mainData.babyInfo} // current babyinfo
+            currentAddType={this.currentAddType}
+            ref={ref => (this.newlifeModalRef = ref)}
+          />
         </View>
-        <AddNewLifeModal
-          addNewLifeline={(item: any) => {
-            this._insertNewlifeLineImpl(item);
-          }}
-          baby={mainData.babyInfo} // current babyinfo
-          currentAddType={this.currentAddType}
-          ref={ref => (this.newlifeModalRef = ref)}
-        />
-      </View>
+      </LinearGradient>
     );
   }
 }

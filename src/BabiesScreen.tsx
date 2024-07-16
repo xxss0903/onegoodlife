@@ -20,6 +20,7 @@ import {DeviceStorage} from './utils/deviceStorage';
 import {logi} from './utils/logutil';
 import {deleteDataByBabyId} from './utils/dbService';
 import {db} from './dataBase.ts';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default class BabiesScreen extends BaseScreen {
   constructor(props: any) {
@@ -166,29 +167,37 @@ export default class BabiesScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <View style={[styles.container, {flex: 1}]}>
-        <View
-          style={[
-            commonStyles.flexColumn,
-            {flex: 1, padding: Margin.horizontal},
-          ]}>
-          <FlatList
-            data={mainData.babies}
-            renderItem={({item, index}) => {
-              return this._renderBabyItem(item, index);
-            }}
-          />
+      <LinearGradient
+        colors={mainData.gradientColor}
+        start={{x: 0, y: 1}}
+        end={{x: 1, y: 0}}
+        style={{flex: 1}}>
+        <View style={[{flex: 1}]}>
+          <View style={[styles.container, {flex: 1}]}>
+            <View
+              style={[
+                commonStyles.flexColumn,
+                {flex: 1, padding: Margin.horizontal},
+              ]}>
+              <FlatList
+                data={mainData.babies}
+                renderItem={({item, index}) => {
+                  return this._renderBabyItem(item, index);
+                }}
+              />
+            </View>
+            <View style={[commonStyles.bottomContainer]}>
+              <TouchableOpacity
+                onPress={() => {
+                  this._addNewBaby();
+                }}
+                style={[{flex: 1}, commonStyles.center]}>
+                <Text>添加宝宝</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-        <View style={[commonStyles.bottomContainer]}>
-          <TouchableOpacity
-            onPress={() => {
-              this._addNewBaby();
-            }}
-            style={[{flex: 1}, commonStyles.center]}>
-            <Text>添加宝宝</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </LinearGradient>
     );
   }
 }

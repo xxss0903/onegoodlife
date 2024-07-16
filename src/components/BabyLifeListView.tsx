@@ -382,6 +382,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   refreshData() {
+    console.log('homescreen refresh data 111');
     this._initDBData();
   }
 

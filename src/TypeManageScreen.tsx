@@ -10,6 +10,7 @@ import {Margin} from './space';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
 import {DeviceStorage} from './utils/deviceStorage';
+import LinearGradient from 'react-native-linear-gradient';
 
 // 所有类型界面，选择类型然后添加
 export default class TypeManageScreen extends BaseScreen {
@@ -150,27 +151,33 @@ export default class TypeManageScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <View style={styles.container}>
-        <View>
-          <Text style={[commonStyles.commonContentText]}>常用类型</Text>
-          <View style={{marginTop: Margin.vertical}}>
-            {this._renderCommonItem()}
+      <LinearGradient
+        colors={mainData.gradientColor}
+        start={{x: 0, y: 1}}
+        end={{x: 1, y: 0}}
+        style={{flex: 1}}>
+        <View style={styles.container}>
+          <View>
+            <Text style={[commonStyles.commonContentText]}>常用类型</Text>
+            <View style={{marginTop: Margin.vertical}}>
+              {this._renderCommonItem()}
+            </View>
           </View>
-        </View>
-        <View>
-          <Text style={[commonStyles.commonContentText]}>全部类型</Text>
-          <View style={{marginTop: Margin.vertical}}>
-            {this._renderOtherItem()}
+          <View>
+            <Text style={[commonStyles.commonContentText]}>全部类型</Text>
+            <View style={{marginTop: Margin.vertical}}>
+              {this._renderOtherItem()}
+            </View>
           </View>
+          <AddNewLifeModal
+            addNewLifeline={item => {
+              this._insertNewlifeLineImpl(item);
+            }}
+            currentAddType={this.currentAddType}
+            ref={ref => (this.newlifeModalRef = ref)}
+          />
         </View>
-        <AddNewLifeModal
-          addNewLifeline={item => {
-            this._insertNewlifeLineImpl(item);
-          }}
-          currentAddType={this.currentAddType}
-          ref={ref => (this.newlifeModalRef = ref)}
-        />
-      </View>
+      </LinearGradient>
     );
   }
 }
