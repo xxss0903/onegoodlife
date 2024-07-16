@@ -157,14 +157,14 @@ export default class StaticsView extends Component<any, any> {
           ]}>
           {/*统计的数字信息*/}
           <View style={[commonStyles.flexRow, {flex: 1}]}>
-            {/*最近24小时统计*/}
+            {/*最近数据，比如上次拉屎，上次喝奶，上次打疫苗等这种重要的最近一次统计的数据*/}
             <View style={[commonStyles.flexColumn, {flex: 1}]}>
               <Text
                 style={[
                   {marginBottom: Margin.smalHorizontal},
                   styles.titleText,
                 ]}>
-                最近24小时
+                最近数据
               </Text>
               {this._renderDataMap(this.state.last24Data)}
             </View>
@@ -175,7 +175,7 @@ export default class StaticsView extends Component<any, any> {
                   {marginBottom: Margin.smalHorizontal},
                   styles.titleText,
                 ]}>
-                当天数据
+                当天统计
               </Text>
               {this._renderDataMap(this.state.todayDataMap)}
             </View>
