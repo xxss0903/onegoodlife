@@ -7,6 +7,7 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {mainData} from './mainData';
 import {formatTimeToDate} from './utils/until';
@@ -21,6 +22,7 @@ import {logi} from './utils/logutil';
 import {deleteDataByBabyId} from './utils/dbService';
 import {db} from './dataBase.ts';
 import LinearGradient from 'react-native-linear-gradient';
+import {SwipeListView} from 'react-native-swipe-list-view';
 
 export default class BabiesScreen extends BaseScreen {
   constructor(props: any) {
@@ -103,24 +105,26 @@ export default class BabiesScreen extends BaseScreen {
     }
 
     return (
-      <TouchableOpacity
+      <TouchableWithoutFeedback
         onLongPress={() => {
           // 移除
           this._showRemoveBabyDialog(item, index);
         }}
         onPress={() => {
           this._editBaby(item);
-        }}
-        style={[
-          commonStyles.flexColumn,
-          {
-            backgroundColor: item.bgColor,
-            padding: Margin.horizontal,
-            borderRadius: Margin.bigCorners,
-            marginTop: index === 0 ? 0 : Margin.vertical,
-          },
-        ]}>
-        <View style={[commonStyles.flexColumn]}>
+        }}>
+        <View
+          style={[
+            commonStyles.flexColumn,
+            {
+              backgroundColor: item.bgColor,
+              padding: Margin.horizontal,
+              borderRadius: Margin.bigCorners,
+              marginTop: Margin.vertical,
+              height: 140,
+              marginHorizontal: Margin.horizontal,
+            },
+          ]}>
           <View style={[commonStyles.flexRow]}>
             {!(item && item.avatar) ? (
               this._renderDefaultAvatar(item)
@@ -150,14 +154,29 @@ export default class BabiesScreen extends BaseScreen {
               </Text>
             </View>
           </View>
-          <View></View>
         </View>
-      </TouchableOpacity>
+      </TouchableWithoutFeedback>
     );
   }
 
   _addNewBaby() {
     this.props.navigation.navigate('BabyInfoScreen', {});
+  }
+
+  _pinBabyImpl(baby, index) {
+    let tempBabies = [baby];
+    for (let i = 0; i < mainData.babies.length; i++) {
+      if (i !== index) {
+        tempBabies.push(mainData.babies[i]);
+      }
+    }
+    mainData.babies = tempBabies;
+    DeviceStorage.refreshMainData();
+    this.forceUpdate();
+  }
+
+  _closeRow(rowMap, rowKey) {
+    rowMap[rowKey]?.closeRow();
   }
 
   renderScreen() {
@@ -167,12 +186,77 @@ export default class BabiesScreen extends BaseScreen {
           <View
             style={[
               commonStyles.flexColumn,
-              {flex: 1, padding: Margin.horizontal},
+              {
+                flex: 1,
+                paddingBottom: Margin.vertical,
+              },
             ]}>
-            <FlatList
+            <SwipeListView
+              useFlatList={true}
               data={mainData.babies}
               renderItem={({item, index}) => {
                 return this._renderBabyItem(item, index);
+              }}
+              keyExtractor={(rowData, index) => {
+                console.log('rowdata', rowData);
+                return rowData?.babyId + '';
+              }}
+              renderHiddenItem={(data, rowMap) => {
+                return (
+                  <View style={styles.rowBack}>
+                    <TouchableOpacity
+                      style={[
+                        styles.backLeftBtn,
+                        {
+                          backgroundColor: Colors.primary,
+                          height: 140,
+                          borderTopLeftRadius: Margin.bigCorners,
+                          borderBottomLeftRadius: Margin.bigCorners,
+                          top: Margin.vertical,
+                        },
+                      ]}
+                      onPress={() => {
+                        // this.deleteRow(rowMap, data.item.key, data.item);
+                        this._closeRow(rowMap, data.item.babyId + '');
+                        setTimeout(() => {
+                          this._showRemoveBabyDialog(data.item, data.index);
+                        }, 300);
+                      }}>
+                      <Text style={styles.backTextWhite}>删除</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.backRightBtn,
+                        {
+                          backgroundColor: data.item.bgColor,
+                          height: 140,
+                          borderTopRightRadius: Margin.bigCorners,
+                          borderBottomRightRadius: Margin.bigCorners,
+                          top: Margin.vertical,
+                        },
+                      ]}
+                      onPress={() => {
+                        // this.deleteRow(rowMap, data.item.key, data.item);
+                        console.log('data item', data, rowMap);
+                        this._closeRow(rowMap, data.item.babyId + '');
+                        setTimeout(() => {
+                          this._pinBabyImpl(data.item, data.index);
+                        }, 300);
+                      }}>
+                      <Text style={styles.backTextWhite}>置顶</Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+              leftOpenValue={75}
+              rightOpenValue={-75}
+              previewOpenValue={-40}
+              previewOpenDelay={1000}
+              onRowDidOpen={(rowKey, rowMap, toValue) => {
+                console.log('open row ' + rowKey, rowMap);
+                setTimeout(() => {
+                  this._closeRow(rowMap, rowKey);
+                }, 3000);
               }}
             />
           </View>
@@ -204,12 +288,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: 75,
+    right: Margin.horizontal,
   },
   backRightBtnLeft: {
     right: 75,
   },
   backRightBtnRight: {
     right: 0,
+  },
+  backLeftBtn: {
+    left: Margin.horizontal,
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    width: 75,
   },
   backTextWhite: {
     color: '#ffffff',
