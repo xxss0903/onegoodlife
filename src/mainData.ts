@@ -145,15 +145,15 @@ export const commonTypeList = [
 ];
 
 export const GradientColors = {
-  boyColor1: ['#a8edea', '#fed6e3'],
-  boyColor2: ['#fccb90', '#d57eeb'],
-  girlColor1: ['#fad0c4', '#ffd1ff'],
-  girlColor2: ['#ffc3a0', '#ffafbd'],
+  gradientColor0: ['#a8edea', '#fed6e3'],
+  gradientColor1: ['#fccb90', '#d57eeb'],
+  gradientColor2: ['#fad0c4', '#ffd1ff'],
+  gradientColor3: ['#ffc3a0', '#ffafbd'],
 };
 
 // 全局数据，包括用户信息等需要全局使用的
 export const mainData = {
-  gradientColor: GradientColors.boyColor1,
+  gradientColor: GradientColors.gradientColor0,
   refreshBabies: false, // 是否刷新宝宝列表
   typeMapList: commonTypeList, // 类型列表，可以用来保存用户自己的类型数据
   commonActions: [commonTypeList[0], commonTypeList[1], commonTypeList[2]], // 常用类型
@@ -162,8 +162,7 @@ export const mainData = {
     userId: 'xxss0903', // 用户ID
     phone: '1808011112223',
     role: '妈妈',
-    avatarUrl:
-      'https://hbimg.huabanimg.com/5bc47fcdeb5023b5473735b3489e146d362512a422ed2-3smjNx_fw658',
+    avatarUrl: '',
   }, // 用户信息
   babies: [], // 可以添加多个宝宝，比如双胞胎等
   babyInfo: {

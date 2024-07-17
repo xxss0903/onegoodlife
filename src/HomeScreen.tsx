@@ -63,6 +63,7 @@ export default class HomeScreen extends BaseScreen {
 
   componentDidMount() {
     mainData.refreshBabies = false;
+    mainData.gradientColor = GradientColors.gradientColor0
     this._initListeners();
     this.setState({
       currentBaby: mainData.babies[0],
@@ -254,15 +255,14 @@ export default class HomeScreen extends BaseScreen {
     );
   }
 
-  _changeBaby(index: Number) {
+  _changeBaby(index: number) {
     console.log('change baby index ' + index);
     EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
     this.currentBabyPageRef = this.babyPageRefs[index];
-    if (index === 0) {
-      mainData.gradientColor = GradientColors.boyColor1;
-    } else {
-      mainData.gradientColor = GradientColors.boyColor2;
-    }
+
+      let colorIndex = index % 4;
+      mainData.gradientColor = GradientColors[`gradientColor${colorIndex}`];
+
     mainData.babyInfo = mainData.babies[index];
     this.setState({
       currentBaby: mainData.babies[index],
@@ -304,6 +304,23 @@ export default class HomeScreen extends BaseScreen {
     );
   }
 
+
+    _renderDefaultAvatar(baby, index){
+        if (baby.sex === 'boy') {
+            return <Avatar size={'lg'} source={require("./assets/ic_baby_boy.png")}>
+                {this.state.currentBabyIndex === index ? (
+                    <Avatar.Badge bg="green.500" />
+                ) : null}
+            </Avatar>
+        } else {
+            return <Avatar size={'lg'} source={require("./assets/ic_baby_girl.png")}>
+                {this.state.currentBabyIndex === index ? (
+                    <Avatar.Badge bg="green.500" />
+                ) : null}
+            </Avatar>
+        }
+    }
+
   private _renderBabyItem(item: any, index: Number) {
     return (
       <TouchableOpacity
@@ -319,16 +336,7 @@ export default class HomeScreen extends BaseScreen {
               marginVertical: Margin.smalHorizontal,
             },
           ]}>
-          {!(item && item.avatar) ? (
-            <Avatar
-              size={'lg'}
-              bg={'transparent'}
-              source={require('./assets/ic_baby.png')}>
-              {this.state.currentBabyIndex === index ? (
-                <Avatar.Badge bg="green.500" />
-              ) : null}
-            </Avatar>
-          ) : (
+          {!(item && item.avatar) ? this._renderDefaultAvatar(item, index) : (
             <Avatar
               size={'lg'}
               bg={'transparent'}

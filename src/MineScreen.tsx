@@ -76,12 +76,15 @@ export default class MineScreen extends BaseScreen {
         ]}>
 
           <View style={[styles.userInfoContainer, commonStyles.center]}>
-            <Avatar
-              style={{width: 80, height: 80}}
-              source={{
-                uri: mainData.userInfo.avatarUrl,
-              }}
-            />
+              {mainData.userInfo.avatarUrl ? <Avatar
+                  style={{width: 80, height: 80}}
+                  source={{
+                      uri: mainData.userInfo.avatarUrl,
+                  }}
+              /> : <Avatar
+                  style={{width: 80, height: 80}}
+                  source={require("./assets/ic_default_user.webp")}
+              />}
             <Text
               style={{
                 fontWeight: 'bold',
