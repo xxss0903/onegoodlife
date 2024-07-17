@@ -181,7 +181,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
           this._gotoItemDetail(item);
         }}
         key={item.time + '_' + item.typeId}
-        style={[styles.timelineItemContainer, {marginTop: Margin.vertical}]}>
+        style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
             <Image
@@ -418,7 +418,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
       <View style={[styles.container, {}]}>
         <FlatList
             nestedScrollEnabled={true}
-            style={{flex: 1}}
+            style={{flex: 1, paddingHorizontal: Margin.horizontal}}
             data={this.state.dataList}
             renderItem={({item, index}) => {
               if (item.itemType === 1) {
@@ -437,7 +437,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   private _renderLifeLineStatics() {
     return (
-      <View style={[styles.staticsContainer, {}]}>
+      <View style={[styles.staticsContainer, {marginBottom: Margin.vertical}]}>
         <StaticsView
           ref={ref => (this.staticsViewRef = ref)}
           dataList={this.state.dataList}

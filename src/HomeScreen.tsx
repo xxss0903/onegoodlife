@@ -125,7 +125,7 @@ export default class HomeScreen extends BaseScreen {
   }
 
   _renderBabyPages() {
-    let babyView = mainData.babies.map((value, index) => {
+    let babyView = mainData.babies.map((value:any, index:any) => {
       return (
         <View key={index} style={[{flex: 1}]}>
           <BabyLifeListView
@@ -215,14 +215,14 @@ export default class HomeScreen extends BaseScreen {
       <View
         style={[
           commonStyles.flexColumn,
-          {flex: 1, padding: Margin.horizontal},
+          {flex: 1},
         ]}>
-        <View>{this._renderBabyInfo()}</View>
+        <View style={{padding: Margin.horizontal}}>{this._renderBabyInfo()}</View>
         <View
           style={[
             commonStyles.flexRow,
             {
-              height: 100,
+              height: 100, paddingHorizontal: Margin.horizontal
             },
           ]}>
           <View style={{}}>
@@ -243,9 +243,9 @@ export default class HomeScreen extends BaseScreen {
           {this._renderAddBabyItem()}
         </View>
         <PagerView
-          scrollEnabled={false}
+            scrollEnabled={false}
           ref={ref => (this.pagerRef = ref)}
-          useNext={true}
+          orientation={'horizontal'}
           style={{flex: 1}}
           initialPage={0}>
           {this._renderBabyPages()}
