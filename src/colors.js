@@ -17,6 +17,7 @@ export default {
 };
 
 export const Colors = {
+  primary0: '#FFCB00',
   primary1: '#CDB4DB',
   primary2: '#FFC8DD',
   primary3: '#FFAFCC',

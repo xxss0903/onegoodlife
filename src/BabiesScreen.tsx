@@ -84,35 +84,23 @@ export default class BabiesScreen extends BaseScreen {
     );
   }
 
-  _renderDefaultAvatar(baby){
+  _renderDefaultAvatar(baby) {
     if (baby.sex === 'boy') {
-      return <Avatar size={'xl'} source={require("./assets/ic_baby_boy.png")}/>
+      return (
+        <Avatar size={'xl'} source={require('./assets/ic_baby_boy.png')} />
+      );
     } else {
-      return <Avatar size={'xl'} source={require("./assets/ic_baby_girl.png")}/>
+      return (
+        <Avatar size={'xl'} source={require('./assets/ic_baby_girl.png')} />
+      );
     }
   }
 
-
   _renderBabyItem(item: any, index: any) {
-    let colorIndex = mainData.babies.length - index;
     if (!item.bgColor) {
-      if (colorIndex === 0) {
-        item.bgColor = Colors.primary5;
-      } else if (colorIndex === 1) {
-        item.bgColor = Colors.primary1;
-      } else if (colorIndex % 2 === 0) {
-        item.bgColor = Colors.primary4;
-      } else if (colorIndex % 3 === 0) {
-        item.bgColor = Colors.primary2;
-      } else if (colorIndex % 4 === 0) {
-        item.bgColor = Colors.primary5;
-      } else if (colorIndex % 5 === 0) {
-        item.bgColor = Colors.primary1;
-      } else {
-        item.bgColor = Colors.fab;
-      }
+      let bgIndex = index % 4;
+      item.bgColor = Colors[`primary${bgIndex}`];
     }
-
 
     return (
       <TouchableOpacity
@@ -134,8 +122,9 @@ export default class BabiesScreen extends BaseScreen {
         ]}>
         <View style={[commonStyles.flexColumn]}>
           <View style={[commonStyles.flexRow]}>
-            {!(item && item.avatar) ?
-              this._renderDefaultAvatar(item) : (
+            {!(item && item.avatar) ? (
+              this._renderDefaultAvatar(item)
+            ) : (
               <Avatar
                 size={'xl'}
                 source={{
@@ -173,31 +162,31 @@ export default class BabiesScreen extends BaseScreen {
 
   renderScreen() {
     return (
-        <View style={[{flex: 1}]}>
-          <View style={[styles.container, {flex: 1}]}>
-            <View
-              style={[
-                commonStyles.flexColumn,
-                {flex: 1, padding: Margin.horizontal},
-              ]}>
-              <FlatList
-                data={mainData.babies}
-                renderItem={({item, index}) => {
-                  return this._renderBabyItem(item, index);
-                }}
-              />
-            </View>
-            <View style={[commonStyles.bottomContainer]}>
-              <TouchableOpacity
-                onPress={() => {
-                  this._addNewBaby();
-                }}
-                style={[{flex: 1}, commonStyles.center]}>
-                <Text>添加宝宝</Text>
-              </TouchableOpacity>
-            </View>
+      <View style={[{flex: 1}]}>
+        <View style={[styles.container, {flex: 1}]}>
+          <View
+            style={[
+              commonStyles.flexColumn,
+              {flex: 1, padding: Margin.horizontal},
+            ]}>
+            <FlatList
+              data={mainData.babies}
+              renderItem={({item, index}) => {
+                return this._renderBabyItem(item, index);
+              }}
+            />
+          </View>
+          <View style={[commonStyles.bottomContainer]}>
+            <TouchableOpacity
+              onPress={() => {
+                this._addNewBaby();
+              }}
+              style={[{flex: 1}, commonStyles.center]}>
+              <Text>添加宝宝</Text>
+            </TouchableOpacity>
           </View>
         </View>
+      </View>
     );
   }
 }
