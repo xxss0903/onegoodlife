@@ -104,14 +104,7 @@ export default class App extends Component<any, any> {
             <NativeBaseProvider>
                 <RootSiblingParent>
                     <SheetProvider>
-                        <SafeAreaInsetsContext.Consumer>
-                            {(insets) =>
-                                    <View
-                                        style={{flex: 1, paddingBottom: insets?.bottom, backgroundColor: Colors.grayEe}}>
-                                    <NavigationContainer>{MainStack()}</NavigationContainer>
-                                </View>
-                                }
-                        </SafeAreaInsetsContext.Consumer>
+                        <NavigationContainer>{MainStack()}</NavigationContainer>
                     </SheetProvider>
                 </RootSiblingParent>
             </NativeBaseProvider>

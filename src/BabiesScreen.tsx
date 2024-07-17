@@ -27,6 +27,7 @@ export default class BabiesScreen extends BaseScreen {
     super(props);
     this.state = {
       datepickerOpen: false,
+      hideInsets: true,
     };
   }
 

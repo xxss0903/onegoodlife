@@ -72,12 +72,9 @@ export default class MineScreen extends BaseScreen {
         style={[
           styles.container,
           commonStyles.flexColumn,
-          {backgroundColor: Colors.white, flex: 1},
+          {flex: 1},
         ]}>
-        <LinearGradient
-          colors={mainData.gradientColor}
-          start={{x: 0, y: 1}}
-          end={{x: 1, y: 0}}>
+
           <View style={[styles.userInfoContainer, commonStyles.center]}>
             <Avatar
               style={{width: 80, height: 80}}
@@ -94,15 +91,14 @@ export default class MineScreen extends BaseScreen {
               {mainData.userInfo.userName}
             </Text>
           </View>
-        </LinearGradient>
 
         <View
           style={[
             commonStyles.flexColumn,
             {
-              borderTopLeftRadius: Margin.horizontal,
+                marginHorizontal: Margin.horizontal,
+                borderRadius: Margin.horizontal,
               backgroundColor: Colors.white,
-              borderTopRightRadius: Margin.horizontal,
               marginTop: -2 * Margin.vertical,
             },
           ]}>

@@ -10,7 +10,6 @@ import {Margin} from './space';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
 import {DeviceStorage} from './utils/deviceStorage';
-import LinearGradient from 'react-native-linear-gradient';
 
 // 所有类型界面，选择类型然后添加
 export default class TypeManageScreen extends BaseScreen {
@@ -20,6 +19,7 @@ export default class TypeManageScreen extends BaseScreen {
   constructor(props: any) {
     super(props);
     this.state = {
+      hideInsets: true,
       datepickerOpen: false,
       birthDay: moment(mainData.babyInfo.birthDay).valueOf(),
       otherActions: [],

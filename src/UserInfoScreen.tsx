@@ -25,6 +25,7 @@ export default class UserInfoScreen extends BaseScreen {
   constructor(props) {
     super(props);
     this.state = {
+      hideInsets: true,
       datepickerOpen: false,
       userInfo: {
         userName: '',

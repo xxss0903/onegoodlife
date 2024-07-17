@@ -7,7 +7,9 @@ import BaseScreen from './BaseScreen.tsx';
 export default class PrivacyScreen extends BaseScreen {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+        hideInsets: true
+    };
   }
 
   renderScreen() {
@@ -16,7 +18,7 @@ export default class PrivacyScreen extends BaseScreen {
         style={[
           styles.container,
           commonStyles.flexColumn,
-          {backgroundColor: Colors.white, flex: 1},
+          {flex: 1},
         ]}></View>
     );
   }

@@ -8,11 +8,6 @@ import {mainData} from "./mainData.ts";
 
 export default class BaseScreen extends React.Component<any, any> {
 
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
-
     render() {
         return (
             <SafeAreaInsetsContext.Consumer>
@@ -21,7 +16,11 @@ export default class BaseScreen extends React.Component<any, any> {
                         colors={mainData.gradientColor}
                         start={{x: 0, y: 1}}
                         end={{x: 1, y: 0}}
-                        style={[commonStyles.flexColumn, {flex: 1, paddingTop: insets?.top}]}>
+                        style={[commonStyles.flexColumn, {
+                            flex: 1,
+                            paddingTop: this.state.hideInsets ? 0 : insets?.top,
+                            paddingBottom: this.state.hideInsets ? insets?.bottom : 0
+                        }]}>
                         {this.renderScreen()}
                     </LinearGradient>
                 }
