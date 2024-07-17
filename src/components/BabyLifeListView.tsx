@@ -415,21 +415,19 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.scrollContainer}>
-          <View style={styles.timelineContainer}>
-            <FlatList
-              data={this.state.dataList}
-              renderItem={({item, index}) => {
-                if (item.itemType === 1) {
-                  return this._renderLifeLineStatics();
-                } else {
-                  return this._renderTypeItem(item, index);
-                }
-              }}
-            />
-          </View>
-        </View>
+      <View style={[styles.container, {}]}>
+        <FlatList
+            nestedScrollEnabled={true}
+            style={{flex: 1}}
+            data={this.state.dataList}
+            renderItem={({item, index}) => {
+              if (item.itemType === 1) {
+                return this._renderLifeLineStatics();
+              } else {
+                return this._renderTypeItem(item, index);
+              }
+            }}
+        />
 
         {this._renderDatetimePicker()}
         {/*{this._renderExportAction()}*/}
