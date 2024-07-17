@@ -114,7 +114,6 @@ export default class GrowthStaticsCard extends Component<any, any> {
     const height4List = this.state.girlsHeight['height4List'];
     const height5List = this.state.girlsHeight['height5List'];
     const height7List = this.state.girlsHeight['height7List'];
-    console.log('girls height list', height1List);
     if (height1List && height1List.length > 0) {
       return (
         <LineChart
@@ -174,7 +173,6 @@ export default class GrowthStaticsCard extends Component<any, any> {
     const height4List = this.state.girlsHeight['height4List'];
     const height5List = this.state.girlsHeight['height5List'];
     const height7List = this.state.girlsHeight['height7List'];
-    console.log('girls height list', height1List);
     if (height1List && height1List.length > 0) {
       return (
         <LineChart

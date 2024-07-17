@@ -197,7 +197,6 @@ export default class BabiesScreen extends BaseScreen {
                 return this._renderBabyItem(item, index);
               }}
               keyExtractor={(rowData, index) => {
-                console.log('rowdata', rowData);
                 return rowData?.babyId + '';
               }}
               renderHiddenItem={(data, rowMap) => {

@@ -47,16 +47,16 @@ export default class MineScreen extends BaseScreen {
   }
 
   componentDidMount() {
+    this._initListeners();
+  }
+
+  _initListeners() {
     this.refreshUserInfoListener = EventBus.addEventListener(
       EventBus.REFRESH_USER_INFO,
       () => {
         this.forceUpdate();
       },
     );
-    this._initListeners();
-  }
-
-  _initListeners() {
     EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
       this.forceUpdate();
     });
@@ -68,39 +68,37 @@ export default class MineScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <View
-        style={[
-          styles.container,
-          commonStyles.flexColumn,
-          {flex: 1},
-        ]}>
-
-          <View style={[styles.userInfoContainer, commonStyles.center]}>
-              {mainData.userInfo.avatarUrl ? <Avatar
-                  style={{width: 80, height: 80}}
-                  source={{
-                      uri: mainData.userInfo.avatarUrl,
-                  }}
-              /> : <Avatar
-                  style={{width: 80, height: 80}}
-                  source={require("./assets/ic_default_user.webp")}
-              />}
-            <Text
-              style={{
-                fontWeight: 'bold',
-                marginTop: Margin.vertical,
-                fontSize: 18,
-              }}>
-              {mainData.userInfo.userName}
-            </Text>
-          </View>
+      <View style={[styles.container, commonStyles.flexColumn, {flex: 1}]}>
+        <View style={[styles.userInfoContainer, commonStyles.center]}>
+          {mainData.userInfo.avatarUrl ? (
+            <Avatar
+              style={{width: 80, height: 80}}
+              source={{
+                uri: mainData.userInfo.avatarUrl,
+              }}
+            />
+          ) : (
+            <Avatar
+              style={{width: 80, height: 80}}
+              source={require('./assets/ic_default_user.webp')}
+            />
+          )}
+          <Text
+            style={{
+              fontWeight: 'bold',
+              marginTop: Margin.vertical,
+              fontSize: 18,
+            }}>
+            {mainData.userInfo.userName}
+          </Text>
+        </View>
 
         <View
           style={[
             commonStyles.flexColumn,
             {
-                marginHorizontal: Margin.horizontal,
-                borderRadius: Margin.bigCorners,
+              marginHorizontal: Margin.horizontal,
+              borderRadius: Margin.bigCorners,
               backgroundColor: Colors.white,
               marginTop: -2 * Margin.vertical,
             },

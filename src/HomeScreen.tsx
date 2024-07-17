@@ -4,13 +4,13 @@
 
 import React from 'react';
 import {
-    Alert,
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import {
@@ -32,8 +32,8 @@ import {Colors} from './colors';
 import {logi} from './utils/logutil';
 import {screenH, screenW} from './utils/until';
 import LinearGradient from 'react-native-linear-gradient';
-import {showToast} from "./utils/toastUtil.js";
-import {DeviceStorage} from "./utils/deviceStorage.js";
+import {showToast} from './utils/toastUtil.js';
+import {DeviceStorage} from './utils/deviceStorage.js';
 
 export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -66,21 +66,21 @@ export default class HomeScreen extends BaseScreen {
 
   componentDidMount() {
     this._initListeners();
-   this._initBabies()
+    this._initBabies();
   }
 
-  _initBabies(){
-      mainData.refreshBabies = false;
-      mainData.gradientColor = GradientColors.gradientColor0
-      this.setState({
-          currentBaby: mainData.babies[0],
-          currentBabyIndex: 0,
-      });
-      // 刷新viewpager的数据
-      this.pagerRef && this.pagerRef.setPage(0);
-      this.babyPageRefs.forEach(value => {
-          value && value.refreshData();
-      });
+  _initBabies() {
+    mainData.refreshBabies = false;
+    mainData.gradientColor = GradientColors.gradientColor0;
+    this.setState({
+      currentBaby: mainData.babies[0],
+      currentBabyIndex: 0,
+    });
+    // 刷新viewpager的数据
+    this.pagerRef && this.pagerRef.setPage(0);
+    this.babyPageRefs.forEach(value => {
+      value && value.refreshData();
+    });
   }
 
   _initListeners() {
@@ -89,24 +89,20 @@ export default class HomeScreen extends BaseScreen {
         mainData.refreshBabies = false;
         if (mainData.babies && mainData.babies.length > 0) {
           mainData.babyInfo = mainData.babies[0];
-          this.setState(
-            {
-              currentBaby: mainData.babies[0],
-              currentBabyIndex: 0,
-            },
-            () => {
-              let newPageRefs = this.babyPageRefs.filter(value => {
-                if (value) {
-                  return value;
-                }
-              });
-              this.babyPageRefs = newPageRefs;
-              this.pagerRef && this.pagerRef.setPage(0);
-              this.babyPageRefs.forEach(value => {
-                value && value.refreshData();
-              });
-            },
-          );
+          this.setState({
+            currentBaby: mainData.babies[0],
+            currentBabyIndex: 0,
+          });
+          let newPageRefs = this.babyPageRefs.filter(value => {
+            if (value) {
+              return value;
+            }
+          });
+          this.babyPageRefs = newPageRefs;
+          this.pagerRef && this.pagerRef.setPage(0);
+          this.babyPageRefs.forEach(value => {
+            value && value.refreshData();
+          });
         } else {
           logi('render empty babies');
           this.forceUpdate();
@@ -129,7 +125,7 @@ export default class HomeScreen extends BaseScreen {
   }
 
   _renderBabyPages() {
-    let babyView = mainData.babies.map((value:any, index:any) => {
+    let babyView = mainData.babies.map((value: any, index: any) => {
       return (
         <View key={index} style={[{flex: 1}]}>
           <BabyLifeListView
@@ -216,17 +212,16 @@ export default class HomeScreen extends BaseScreen {
       babiesWidth = screenW - 120;
     }
     return (
-      <View
-        style={[
-          commonStyles.flexColumn,
-          {flex: 1},
-        ]}>
-        <View style={{padding: Margin.horizontal}}>{this._renderBabyInfo()}</View>
+      <View style={[commonStyles.flexColumn, {flex: 1}]}>
+        <View style={{padding: Margin.horizontal}}>
+          {this._renderBabyInfo()}
+        </View>
         <View
           style={[
             commonStyles.flexRow,
             {
-              height: 100, paddingHorizontal: Margin.horizontal
+              height: 100,
+              paddingHorizontal: Margin.horizontal,
             },
           ]}>
           <View style={{}}>
@@ -247,7 +242,7 @@ export default class HomeScreen extends BaseScreen {
           {this._renderAddBabyItem()}
         </View>
         <PagerView
-            scrollEnabled={false}
+          scrollEnabled={false}
           ref={ref => (this.pagerRef = ref)}
           orientation={'horizontal'}
           style={{flex: 1}}
@@ -263,8 +258,8 @@ export default class HomeScreen extends BaseScreen {
     EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
     this.currentBabyPageRef = this.babyPageRefs[index];
 
-      let colorIndex = index % 4;
-      mainData.gradientColor = GradientColors[`gradientColor${colorIndex}`];
+    let colorIndex = index % 4;
+    mainData.gradientColor = GradientColors[`gradientColor${colorIndex}`];
 
     mainData.babyInfo = mainData.babies[index];
     this.setState({
@@ -307,70 +302,73 @@ export default class HomeScreen extends BaseScreen {
     );
   }
 
-
-    _renderDefaultAvatar(baby, index){
-        if (baby.sex === 'boy') {
-            return <Avatar size={'lg'} source={require("./assets/ic_baby_boy.png")}>
-                {this.state.currentBabyIndex === index ? (
-                    <Avatar.Badge bg="green.500" />
-                ) : null}
-            </Avatar>
-        } else {
-            return <Avatar size={'lg'} source={require("./assets/ic_baby_girl.png")}>
-                {this.state.currentBabyIndex === index ? (
-                    <Avatar.Badge bg="green.500" />
-                ) : null}
-            </Avatar>
-        }
+  _renderDefaultAvatar(baby, index) {
+    if (baby.sex === 'boy') {
+      return (
+        <Avatar size={'lg'} source={require('./assets/ic_baby_boy.png')}>
+          {this.state.currentBabyIndex === index ? (
+            <Avatar.Badge bg="green.500" />
+          ) : null}
+        </Avatar>
+      );
+    } else {
+      return (
+        <Avatar size={'lg'} source={require('./assets/ic_baby_girl.png')}>
+          {this.state.currentBabyIndex === index ? (
+            <Avatar.Badge bg="green.500" />
+          ) : null}
+        </Avatar>
+      );
     }
+  }
 
-    _pinBabyImpl(baby: any, index: number){
-        let tempBabies = [baby]
-        for (let i = 0; i < mainData.babies.length; i++) {
-            if (i !== index) {
-                tempBabies.push(mainData.babies[i])
-            }
-        }
-        mainData.babies = tempBabies
-        DeviceStorage.refreshMainData()
-        this._initBabies()
+  _pinBabyImpl(baby: any, index: number) {
+    let tempBabies = [baby];
+    for (let i = 0; i < mainData.babies.length; i++) {
+      if (i !== index) {
+        tempBabies.push(mainData.babies[i]);
+      }
     }
+    mainData.babies = tempBabies;
+    DeviceStorage.refreshMainData();
+    this._initBabies();
+  }
 
-    // 将宝宝置顶
-    _showPinBabyDialog(baby: any, index: number){
-        Alert.alert(
-            '提示',
-            '确认将' + baby.name + '置顶？',
-            [
-                {
-                    text: '取消',
-                    onPress: () => {},
-                },
-                {
-                    text: '确认',
-                    onPress: () => {
-                        this._pinBabyImpl(baby, index)
-                    },
-                },
-            ],
-            {
-                cancelable: true,
-                onDismiss: () => {},
-            },
-        );
-    }
+  // 将宝宝置顶
+  _showPinBabyDialog(baby: any, index: number) {
+    Alert.alert(
+      '提示',
+      '确认将' + baby.name + '置顶？',
+      [
+        {
+          text: '取消',
+          onPress: () => {},
+        },
+        {
+          text: '确认',
+          onPress: () => {
+            this._pinBabyImpl(baby, index);
+          },
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => {},
+      },
+    );
+  }
 
   private _renderBabyItem(item: any, index: number) {
     return (
       <TouchableOpacity
-          onLongPress={() => {
-              // 将宝宝置顶
-              if (index > 0) {
-                  this._showPinBabyDialog(item, index)
-              } else {
-                  showToast(`${item.name}已经置顶咯`)
-              }
-          }}
+        onLongPress={() => {
+          // 将宝宝置顶
+          if (index > 0) {
+            this._showPinBabyDialog(item, index);
+          } else {
+            showToast(`${item.name}已经置顶咯`);
+          }
+        }}
         onPress={() => {
           this._changeBaby(index);
         }}>
@@ -383,7 +381,9 @@ export default class HomeScreen extends BaseScreen {
               marginVertical: Margin.smalHorizontal,
             },
           ]}>
-          {!(item && item.avatar) ? this._renderDefaultAvatar(item, index) : (
+          {!(item && item.avatar) ? (
+            this._renderDefaultAvatar(item, index)
+          ) : (
             <Avatar
               size={'lg'}
               bg={'transparent'}
@@ -448,43 +448,43 @@ export default class HomeScreen extends BaseScreen {
 
   renderScreen() {
     return (
-        <View>
-          <View style={styles.container}>
-            {mainData.babies && mainData.babies.length > 0
-              ? this._renderHomeView()
-              : this._renderEmptyAddView()}
-            {mainData.babies.length > 0 ? (
-              <FloatingAction
-                distanceToEdge={{vertical: 50, horizontal: 40}}
-                buttonSize={60}
-                ref={ref => {
-                  this.floatingActionRef = ref;
-                }}
-                actions={[...mainData.commonActions, commonActions.all]}
-                onPressItem={typeName => {
-                  console.log('click item', typeName);
-                  if (typeName === '全部') {
-                    this.props.navigation.navigate('AllTypeScreen');
-                  } else {
-                    this.isTypeEdit = false;
-                    let items = mainData.commonActions.filter(
-                      item => item.name === typeName,
-                    );
-                    items && items.length > 0 && this._addNewLifeline(items[0]);
-                  }
-                }}
-              />
-            ) : null}
-          </View>
-          <AddNewLifeModal
-            addNewLifeline={(item: any) => {
-              this._insertNewlifeLineImpl(item);
-            }}
-            baby={mainData.babyInfo} // current babyinfo
-            currentAddType={this.currentAddType}
-            ref={ref => (this.newlifeModalRef = ref)}
-          />
+      <View>
+        <View style={styles.container}>
+          {mainData.babies && mainData.babies.length > 0
+            ? this._renderHomeView()
+            : this._renderEmptyAddView()}
+          {mainData.babies.length > 0 ? (
+            <FloatingAction
+              distanceToEdge={{vertical: 50, horizontal: 40}}
+              buttonSize={60}
+              ref={ref => {
+                this.floatingActionRef = ref;
+              }}
+              actions={[...mainData.commonActions, commonActions.all]}
+              onPressItem={typeName => {
+                console.log('click item', typeName);
+                if (typeName === '全部') {
+                  this.props.navigation.navigate('AllTypeScreen');
+                } else {
+                  this.isTypeEdit = false;
+                  let items = mainData.commonActions.filter(
+                    item => item.name === typeName,
+                  );
+                  items && items.length > 0 && this._addNewLifeline(items[0]);
+                }
+              }}
+            />
+          ) : null}
         </View>
+        <AddNewLifeModal
+          addNewLifeline={(item: any) => {
+            this._insertNewlifeLineImpl(item);
+          }}
+          baby={mainData.babyInfo} // current babyinfo
+          currentAddType={this.currentAddType}
+          ref={ref => (this.newlifeModalRef = ref)}
+        />
+      </View>
     );
   }
 }

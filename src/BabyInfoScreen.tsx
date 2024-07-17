@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import {mainData} from './mainData';
+import {GradientColors, mainData} from './mainData';
 import {commonStyles} from './commonStyle';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {AndroidPermissions} from './utils/permissionUtils';
@@ -140,12 +140,19 @@ export default class BabyInfoScreen extends BaseScreen {
         maxBabyId = value.babyId;
       }
     });
-    this.state.babyInfo.babyId = maxBabyId + 1;
+    let currentBabyId = maxBabyId + 1;
+    this.state.babyInfo.babyId = currentBabyId;
+    // 根据babyId给每个baby设置一个背景色
+    let bgColorIndex = currentBabyId % 4;
+    this.state.babyInfo.bgColor =
+      GradientColors[`gradientColor${bgColorIndex}`];
+
     logi('insert new baby', this.state.babyInfo);
     mainData.refreshBabies = true;
     mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
     DeviceStorage.refreshMainData();
     EventBus.sendEvent(EventBus.REFRESH_BABIES_SCREEN);
+    EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
     this.props.navigation.goBack();
   }
 
