@@ -815,7 +815,7 @@ export default class AddNewLifeModal extends Component<any, any> {
                   }}>
                   <Text>取消</Text>
                 </TouchableOpacity>
-                <View style={{width: 1, backgroundColor: '#bbbbbb'}} />
+                <View style={commonStyles.verticalLine} />
                 <TouchableOpacity
                   style={styles.btnModalFooter}
                   onPress={() => {

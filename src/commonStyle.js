@@ -323,6 +323,11 @@ export const commonStyles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLOR_MAIN_THEME,
   },
+  verticalLine: {
+    width: HEIGHT_LINE,
+    marginVertical: Margin.vertical,
+    backgroundColor: COLOR_LINE,
+  },
   line: {
     height: HEIGHT_LINE,
     backgroundColor: COLOR_LINE,

@@ -38,25 +38,24 @@ export default class NewLifeDetailScreen extends BaseScreen {
   _confirmEditData() {}
 
   _selectImage() {
-      if (isIOS()) {
-
-      } else {
-          AndroidPermissions.checkStoragePermissions(
-              () => {
-                  AndroidPermissions.checkCameraPermissions(
-                      () => {
-                          // 权限成功
-                      },
-                      () => {
-                          showToast('请打开相机权限');
-                      },
-                  );
-              },
-              () => {
-                  showToast('请打开存储权限');
-              },
+    if (isIOS()) {
+    } else {
+      AndroidPermissions.checkStoragePermissions(
+        () => {
+          AndroidPermissions.checkCameraPermissions(
+            () => {
+              // 权限成功
+            },
+            () => {
+              showToast('请打开相机权限');
+            },
           );
-      }
+        },
+        () => {
+          showToast('请打开存储权限');
+        },
+      );
+    }
   }
 
   renderScreen() {
@@ -124,6 +123,7 @@ export default class NewLifeDetailScreen extends BaseScreen {
             style={[{flex: 1}, commonStyles.center]}>
             <Text>取消</Text>
           </TouchableOpacity>
+          <View style={commonStyles.verticalLine} />
           <TouchableOpacity
             style={[{flex: 1}, commonStyles.center]}
             onPress={() => {
