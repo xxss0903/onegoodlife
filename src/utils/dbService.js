@@ -50,6 +50,30 @@ export const getDataInRange = async (db, from, to) => {
   }
 };
 
+/**
+ * 最新的选择类型的数据
+ * @param db
+ * @param type
+ * @returns {Promise<*[]>}
+ */
+export const getLastData = async (db, type) => {
+  try {
+    const dataList = [];
+    const results = await db.executeSql(
+        `SELECT rowid, name, json, time FROM ${lifeRecordTableName}`,
+    );
+    results.forEach(result => {
+      for (let index = 0; index < result.rows.length; index++) {
+        dataList.push(result.rows.item(index));
+      }
+    });
+    return dataList;
+  } catch (error) {
+    logi(error);
+    throw Error('Failed to get todoItems !!!');
+  }
+}
+
 // 获取数据列表
 export const getDataList = async db => {
   try {
