@@ -109,7 +109,7 @@ export default class BabiesScreen extends BaseScreen {
         }}>
         <View>
           <LinearGradient
-            colors={bgColor}
+            colors={item.bgColor ? item.bgColor : bgColor}
             start={{x: 0, y: 1}}
             style={[
               commonStyles.flexColumn,
