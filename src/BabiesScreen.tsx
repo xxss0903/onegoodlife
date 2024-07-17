@@ -9,7 +9,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {mainData} from './mainData';
+import {GradientColors, mainData} from './mainData';
 import {formatTimeToDate} from './utils/until';
 import {commonStyles} from './commonStyle';
 import EventBus from './utils/eventBus';
@@ -99,61 +99,59 @@ export default class BabiesScreen extends BaseScreen {
   }
 
   _renderBabyItem(item: any, index: any) {
-    if (!item.bgColor) {
-      let bgIndex = index % 4;
-      item.bgColor = Colors[`primary${bgIndex}`];
-    }
+    let bgIndex = index % 4;
+    let bgColor = GradientColors[`gradientColor${bgIndex}`];
 
     return (
       <TouchableWithoutFeedback
-        onLongPress={() => {
-          // 移除
-          this._showRemoveBabyDialog(item, index);
-        }}
         onPress={() => {
           this._editBaby(item);
         }}>
-        <View
-          style={[
-            commonStyles.flexColumn,
-            {
-              backgroundColor: item.bgColor,
-              padding: Margin.horizontal,
-              borderRadius: Margin.bigCorners,
-              marginTop: Margin.vertical,
-              height: 140,
-              marginHorizontal: Margin.horizontal,
-            },
-          ]}>
-          <View style={[commonStyles.flexRow]}>
-            {!(item && item.avatar) ? (
-              this._renderDefaultAvatar(item)
-            ) : (
-              <Avatar
-                size={'xl'}
-                source={{
-                  uri: item.avatar,
-                }}
-              />
-            )}
-            <View
-              style={[
-                commonStyles.flexColumn,
-                {marginLeft: Margin.horizontal, justifyContent: 'center'},
-              ]}>
-              <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                姓名：{item.name}
-              </Text>
-              {item.nickname ? (
+        <View>
+          <LinearGradient
+            colors={bgColor}
+            start={{x: 0, y: 1}}
+            style={[
+              commonStyles.flexColumn,
+              {
+                padding: Margin.horizontal,
+                borderRadius: Margin.bigCorners,
+                marginTop: Margin.vertical,
+                height: 140,
+                marginHorizontal: Margin.horizontal,
+              },
+            ]}
+            end={{x: 1, y: 0}}>
+            <View style={[commonStyles.flexRow]}>
+              {!(item && item.avatar) ? (
+                this._renderDefaultAvatar(item)
+              ) : (
+                <Avatar
+                  size={'xl'}
+                  source={{
+                    uri: item.avatar,
+                  }}
+                />
+              )}
+              <View
+                style={[
+                  commonStyles.flexColumn,
+                  {marginLeft: Margin.horizontal, justifyContent: 'center'},
+                ]}>
                 <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                  小名：{item.nickname}
+                  姓名：{item.name}
                 </Text>
-              ) : null}
-              <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
-                生日：{formatTimeToDate(item.birthDay)}
-              </Text>
+                {item.nickname ? (
+                  <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
+                    小名：{item.nickname}
+                  </Text>
+                ) : null}
+                <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
+                  生日：{formatTimeToDate(item.birthDay)}
+                </Text>
+              </View>
             </View>
-          </View>
+          </LinearGradient>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -170,6 +168,7 @@ export default class BabiesScreen extends BaseScreen {
         tempBabies.push(mainData.babies[i]);
       }
     }
+    mainData.refreshBabies = true;
     mainData.babies = tempBabies;
     DeviceStorage.refreshMainData();
     this.forceUpdate();
