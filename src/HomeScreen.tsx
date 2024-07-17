@@ -4,12 +4,13 @@
 
 import React from 'react';
 import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import {
@@ -31,6 +32,8 @@ import {Colors} from './colors';
 import {logi} from './utils/logutil';
 import {screenH, screenW} from './utils/until';
 import LinearGradient from 'react-native-linear-gradient';
+import {showToast} from "./utils/toastUtil.js";
+import {DeviceStorage} from "./utils/deviceStorage.js";
 
 export default class HomeScreen extends BaseScreen {
   private floatingActionRef: any; // 悬浮按钮引用
@@ -62,22 +65,22 @@ export default class HomeScreen extends BaseScreen {
   }
 
   componentDidMount() {
-    mainData.refreshBabies = false;
-    mainData.gradientColor = GradientColors.gradientColor0
     this._initListeners();
-    this.setState({
-      currentBaby: mainData.babies[0],
-      currentBabyIndex: 0,
-    });
+   this._initBabies()
   }
 
-  _refreshData() {
-    try {
-      logi('force update refresh home data');
-      this.forceUpdate(() => {});
-    } catch (e) {
-      logi('refresh data err', e);
-    }
+  _initBabies(){
+      mainData.refreshBabies = false;
+      mainData.gradientColor = GradientColors.gradientColor0
+      this.setState({
+          currentBaby: mainData.babies[0],
+          currentBabyIndex: 0,
+      });
+      // 刷新viewpager的数据
+      this.pagerRef && this.pagerRef.setPage(0);
+      this.babyPageRefs.forEach(value => {
+          value && value.refreshData();
+      });
   }
 
   _initListeners() {
@@ -321,9 +324,53 @@ export default class HomeScreen extends BaseScreen {
         }
     }
 
-  private _renderBabyItem(item: any, index: Number) {
+    _pinBabyImpl(baby: any, index: number){
+        let tempBabies = [baby]
+        for (let i = 0; i < mainData.babies.length; i++) {
+            if (i !== index) {
+                tempBabies.push(mainData.babies[i])
+            }
+        }
+        mainData.babies = tempBabies
+        DeviceStorage.refreshMainData()
+        this._initBabies()
+    }
+
+    // 将宝宝置顶
+    _showPinBabyDialog(baby: any, index: number){
+        Alert.alert(
+            '提示',
+            '确认将' + baby.name + '置顶？',
+            [
+                {
+                    text: '取消',
+                    onPress: () => {},
+                },
+                {
+                    text: '确认',
+                    onPress: () => {
+                        this._pinBabyImpl(baby, index)
+                    },
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () => {},
+            },
+        );
+    }
+
+  private _renderBabyItem(item: any, index: number) {
     return (
       <TouchableOpacity
+          onLongPress={() => {
+              // 将宝宝置顶
+              if (index > 0) {
+                  this._showPinBabyDialog(item, index)
+              } else {
+                  showToast(`${item.name}已经置顶咯`)
+              }
+          }}
         onPress={() => {
           this._changeBaby(index);
         }}>
