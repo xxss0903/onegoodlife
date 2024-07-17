@@ -83,6 +83,17 @@ export default class StaticsView extends Component<any, any> {
     });
   }
 
+  // 获取固定类型的最近的数据
+  _getLastData(){
+    // 上次喝奶
+    let lastDrinkMilk = ''
+    // 上次拉屎
+    let lastPoop = ''
+    // 上次打疫苗
+    let lastJuance = ''
+
+  }
+
   // 获取今天的数据
   _getTodayData() {
     let dataList = this.props.dataList;

@@ -84,6 +84,15 @@ export default class BabiesScreen extends BaseScreen {
     );
   }
 
+  _renderDefaultAvatar(baby){
+    if (baby.sex === 'boy') {
+      return <Avatar size={'xl'} source={require("./assets/ic_baby_boy.png")}/>
+    } else {
+      return <Avatar size={'xl'} source={require("./assets/ic_baby_girl.png")}/>
+    }
+  }
+
+
   _renderBabyItem(item: any, index: any) {
     let colorIndex = mainData.babies.length - index;
     if (!item.bgColor) {
@@ -103,6 +112,7 @@ export default class BabiesScreen extends BaseScreen {
         item.bgColor = Colors.fab;
       }
     }
+
 
     return (
       <TouchableOpacity
@@ -124,13 +134,8 @@ export default class BabiesScreen extends BaseScreen {
         ]}>
         <View style={[commonStyles.flexColumn]}>
           <View style={[commonStyles.flexRow]}>
-            {!(item && item.avatar) ? (
-              <Avatar
-                bg={'transparent'}
-                size={'xl'}
-                source={require('./assets/ic_baby.png')}
-              />
-            ) : (
+            {!(item && item.avatar) ?
+              this._renderDefaultAvatar(item) : (
               <Avatar
                 size={'xl'}
                 source={{
@@ -148,7 +153,7 @@ export default class BabiesScreen extends BaseScreen {
               </Text>
               {item.nickname ? (
                 <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                  小名：{item.name}
+                  小名：{item.nickname}
                 </Text>
               ) : null}
               <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
