@@ -442,6 +442,7 @@ export const commonStyles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     textAlign: 'left',
+    paddingVertical: Margin.vertical,
     paddingHorizontal: Margin.midHorizontal,
   },
   // 输入框的外框

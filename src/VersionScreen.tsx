@@ -61,7 +61,7 @@ export default class VersionScreen extends BaseScreen {
                     style={[
                         commonStyles.flexColumn,
                         {
-                            borderRadius: Margin.horizontal,
+                            borderRadius: Margin.bigCorners,
                             backgroundColor: Colors.white,
                             marginTop: Margin.vertical,
                             marginHorizontal: Margin.horizontal

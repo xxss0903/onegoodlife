@@ -97,7 +97,7 @@ export default class MineScreen extends BaseScreen {
             commonStyles.flexColumn,
             {
                 marginHorizontal: Margin.horizontal,
-                borderRadius: Margin.horizontal,
+                borderRadius: Margin.bigCorners,
               backgroundColor: Colors.white,
               marginTop: -2 * Margin.vertical,
             },

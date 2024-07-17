@@ -249,7 +249,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
                   style={{
                     padding: Margin.midHorizontal,
                     backgroundColor: Colors.loginTouch,
-                    borderRadius: Margin.midHorizontal,
+                    borderRadius: Margin.bigCorners,
                   }}
                   accessibilityLabel="More options menu"
                   {...triggerProps}>
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Margin.horizontal,
     backgroundColor: Colors.white,
     padding: Margin.horizontal,
-    borderRadius: Margin.borderPadding,
+    borderRadius: Margin.bigCorners,
   },
   titleContainer: {
     justifyContent: 'space-between',

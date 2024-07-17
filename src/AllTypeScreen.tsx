@@ -19,6 +19,7 @@ export default class AllTypeScreen extends BaseScreen {
     super(props);
     this.state = {
       datepickerOpen: false,
+      hideInsets: true,
       birthDay: moment(mainData.babyInfo.birthDay).valueOf(),
     };
   }
@@ -36,7 +37,7 @@ export default class AllTypeScreen extends BaseScreen {
             width: (screenW - 60) / 3,
             height: 60,
             marginBottom: 12,
-            borderRadius: Margin.corners,
+            borderRadius: Margin.bigCorners,
             marginHorizontal: 6,
             backgroundColor: value.bgColor,
           },

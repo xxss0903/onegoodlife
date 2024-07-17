@@ -382,7 +382,7 @@ export default class HomeScreen extends BaseScreen {
               backgroundColor: Colors.primary,
               paddingHorizontal: Margin.horizontal,
               paddingVertical: Margin.vertical,
-              borderRadius: Margin.corners,
+              borderRadius: Margin.bigCorners,
             },
           ]}>
           <Text style={[{fontSize: 16, color: Colors.white}]}>添加宝宝</Text>

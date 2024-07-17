@@ -83,7 +83,7 @@ export default class TypeManageScreen extends BaseScreen {
             width: (screenW - 60) / 3,
             height: 60,
             marginBottom: 12,
-            borderRadius: Margin.corners,
+            borderRadius: Margin.bigCorners,
             marginHorizontal: 6,
             backgroundColor: value.bgColor,
           },

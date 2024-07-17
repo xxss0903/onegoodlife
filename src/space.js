@@ -9,6 +9,7 @@ export const Margin = {
   cellContentTop3: 20,
   cellSmallTop: 6,
   corners: 4,
+  bigCorners: 10,
   smalHorizontal: 4,
   midHorizontal: 8,
   btnPaddingHorizontal: 11,

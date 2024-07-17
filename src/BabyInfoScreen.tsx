@@ -23,7 +23,7 @@ import BaseScreen from './BaseScreen.tsx';
 import {showToast} from './utils/toastUtil';
 import ActionSheet from 'react-native-actions-sheet';
 import ImagePicker from 'react-native-image-crop-picker';
-import LinearGradient from 'react-native-linear-gradient';
+
 export default class BabyInfoScreen extends BaseScreen {
   private actionSheetRef: any;
 
@@ -31,6 +31,7 @@ export default class BabyInfoScreen extends BaseScreen {
     super(props);
     this.state = {
       datepickerOpen: false,
+      hideInsets: true,
       babyInfo: {
         name: '', // 姓名
         nickname: '', // 小名
@@ -169,7 +170,7 @@ export default class BabyInfoScreen extends BaseScreen {
                 {
                   padding: Margin.horizontal,
                   backgroundColor: Colors.white,
-                  borderRadius: Margin.corners,
+                  borderRadius: Margin.bigCorners,
                 },
               ]}>
               <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
@@ -264,7 +265,7 @@ export default class BabyInfoScreen extends BaseScreen {
                 </Text>
                 <Text
                   style={[
-                    {marginRight: Margin.horizontal},
+                    {marginRight: Margin.horizontal, paddingVertical: Margin.vertical},
                     commonStyles.commonContentText,
                   ]}>
                   {formatTimeToDate(this.state.babyInfo.birthDay)}
@@ -275,7 +276,7 @@ export default class BabyInfoScreen extends BaseScreen {
                   date={new Date(this.state.babyInfo.birthDay)}
                   modal={true}
                   mode={'date'}
-                  style={[commonStyles.commonTextStyle]}
+                  style={[commonStyles.commonTextStyle, {}]}
                   onConfirm={date => {
                     // 确认选择，将日期转为时间戳
                     this.state.babyInfo.birthDay = moment(date).valueOf();

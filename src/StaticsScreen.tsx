@@ -91,7 +91,7 @@ export default class StaticsScreen extends BaseScreen {
           {
             backgroundColor: Colors.primary1,
             padding: Margin.horizontal,
-            borderRadius: Margin.horizontal,
+            borderRadius: Margin.bigCorners,
           },
         ]}>
         <TouchableOpacity

@@ -95,7 +95,10 @@ export default class UserInfoScreen extends BaseScreen {
           style={[
             commonStyles.flexColumn,
             {
-              flex: 1,
+              marginHorizontal: Margin.horizontal,
+              marginTop: Margin.horizontal,
+              borderRadius: Margin.bigCorners,
+              backgroundColor: Colors.white,
               padding: Margin.horizontal,
               alignItems: 'center',
             },
@@ -142,7 +145,6 @@ export default class UserInfoScreen extends BaseScreen {
             <View
               style={{
                 flex: 1,
-                backgroundColor: Colors.grayEe,
               }}>
               <Select
                 selectedValue={this.state.userInfo.role}

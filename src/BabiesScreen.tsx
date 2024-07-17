@@ -118,7 +118,7 @@ export default class BabiesScreen extends BaseScreen {
           {
             backgroundColor: item.bgColor,
             padding: Margin.horizontal,
-            borderRadius: Margin.corners,
+            borderRadius: Margin.bigCorners,
             marginTop: index === 0 ? 0 : Margin.vertical,
           },
         ]}>
