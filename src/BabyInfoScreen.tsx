@@ -14,7 +14,7 @@ import {logi} from './utils/logutil';
 import {Avatar, CheckIcon, Image, Select, VStack} from 'native-base';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
-import {formatTimeToDate, isEmpty} from './utils/until';
+import {formatTimeToDate, isEmpty, isIOS} from './utils/until';
 import {DeviceStorage} from './utils/deviceStorage';
 import EventBus from './utils/eventBus';
 import {Margin} from './space';
@@ -83,22 +83,26 @@ export default class BabyInfoScreen extends BaseScreen {
 
   // 选择照片/拍照
   _choosePicture() {
-    AndroidPermissions.checkStoragePermissions(
-      () => {
-        AndroidPermissions.checkCameraPermissions(
+    if (isIOS()) {
+      this.actionSheetRef?.show();
+    } else {
+      AndroidPermissions.checkStoragePermissions(
           () => {
-            logi('camera permission', this.actionSheetRef);
-            this.actionSheetRef?.show();
+            AndroidPermissions.checkCameraPermissions(
+                () => {
+                  logi('camera permission', this.actionSheetRef);
+                  this.actionSheetRef?.show();
+                },
+                () => {
+                  logi('camera no permission');
+                },
+            );
           },
           () => {
-            logi('camera no permission');
+            logi('storage no permission');
           },
-        );
-      },
-      () => {
-        logi('storage no permission');
-      },
-    );
+      );
+    }
   }
 
   _checkBabyInfo() {
@@ -156,11 +160,7 @@ export default class BabyInfoScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <LinearGradient
-        colors={mainData.gradientColor}
-        start={{x: 0, y: 1}}
-        end={{x: 1, y: 0}}
-        style={{flex: 1}}>
+
         <View style={[{flex: 1}]}>
           <VStack style={{flex: 1, padding: Margin.horizontal}}>
             <View
@@ -368,7 +368,6 @@ export default class BabyInfoScreen extends BaseScreen {
             </View>
           </ActionSheet>
         </View>
-      </LinearGradient>
     );
   }
 }

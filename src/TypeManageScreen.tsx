@@ -151,11 +151,6 @@ export default class TypeManageScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <LinearGradient
-        colors={mainData.gradientColor}
-        start={{x: 0, y: 1}}
-        end={{x: 1, y: 0}}
-        style={{flex: 1}}>
         <View style={styles.container}>
           <View>
             <Text style={[commonStyles.commonContentText]}>常用类型</Text>
@@ -177,7 +172,6 @@ export default class TypeManageScreen extends BaseScreen {
             ref={ref => (this.newlifeModalRef = ref)}
           />
         </View>
-      </LinearGradient>
     );
   }
 }

@@ -393,11 +393,6 @@ export default class HomeScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <LinearGradient
-        colors={mainData.gradientColor}
-        start={{x: 0, y: 1}}
-        end={{x: 1, y: 0}}
-        style={{flex: 1}}>
         <View>
           <View style={styles.container}>
             {mainData.babies && mainData.babies.length > 0
@@ -435,7 +430,6 @@ export default class HomeScreen extends BaseScreen {
             ref={ref => (this.newlifeModalRef = ref)}
           />
         </View>
-      </LinearGradient>
     );
   }
 }

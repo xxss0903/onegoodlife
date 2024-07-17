@@ -20,6 +20,12 @@ import {RootSiblingParent} from 'react-native-root-siblings';
 import PrivacyScreen from './src/PrivacyScreen.tsx';
 import VersionScreen from './src/VersionScreen.tsx';
 import {SheetProvider} from 'react-native-actions-sheet';
+import {SafeAreaProvider, SafeAreaView, SafeAreaInsetsContext} from "react-native-safe-area-context";
+import LinearGradient from "react-native-linear-gradient";
+import {mainData} from "./src/mainData.ts";
+import {View} from "react-native";
+import { Colors } from './src/colors.js';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +33,7 @@ function MainStack() {
   return (
     <Stack.Navigator
       initialRouteName={'SplashScreen'}
-      screenOptions={{headerTitleAlign: 'center'}}>
+      screenOptions={{headerTitleAlign: 'center', headerBackTitleVisible: false}}>
       <Stack.Screen
         name={'SplashScreen'}
         component={SplashScreen}
@@ -94,13 +100,23 @@ export default class App extends Component<any, any> {
 
   render() {
     return (
-      <NativeBaseProvider>
-        <RootSiblingParent>
-          <SheetProvider>
-            <NavigationContainer>{MainStack()}</NavigationContainer>
-          </SheetProvider>
-        </RootSiblingParent>
-      </NativeBaseProvider>
+        <SafeAreaProvider>
+            <NativeBaseProvider>
+                <RootSiblingParent>
+                    <SheetProvider>
+                        <SafeAreaInsetsContext.Consumer>
+                            {(insets) =>
+                                    <View
+                                        style={{flex: 1, paddingBottom: insets?.bottom, backgroundColor: Colors.grayEe}}>
+                                    <NavigationContainer>{MainStack()}</NavigationContainer>
+                                </View>
+                                }
+                        </SafeAreaInsetsContext.Consumer>
+                    </SheetProvider>
+                </RootSiblingParent>
+            </NativeBaseProvider>
+        </SafeAreaProvider>
+
     );
   }
 }

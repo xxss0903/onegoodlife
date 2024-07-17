@@ -26,7 +26,7 @@ import {
   TitleComponent,
   TooltipComponent,
 } from 'echarts/components';
-import {screenW} from '../utils/until';
+import {isIOS, screenW} from '../utils/until';
 import {mainData, commonTypeList} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
@@ -75,15 +75,20 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   componentDidMount() {
     this._initEcharts();
-    AndroidPermissions.checkStoragePermissions(
-      () => {
-        // this._initLocalData()
-        this._initDBData();
-      },
-      () => {
-        // 没有存储权限
-      },
-    );
+    if (isIOS()) {
+      this._initDBData();
+    } else {
+      AndroidPermissions.checkStoragePermissions(
+          () => {
+            // this._initLocalData()
+            this._initDBData();
+          },
+          () => {
+            // 没有存储权限
+          },
+      );
+    }
+
   }
 
   // 获取数据库数据

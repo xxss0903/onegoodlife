@@ -7,7 +7,7 @@ import BaseScreen from './BaseScreen.tsx';
 import LottieView from 'lottie-react-native';
 import {db} from './dataBase.ts';
 
-export default class SplashScreen extends BaseScreen {
+export default class SplashScreen extends React.Component<any, any> {
   componentDidMount() {
     // DeviceStorage.refreshMainData();
 
@@ -40,7 +40,7 @@ export default class SplashScreen extends BaseScreen {
     }
   }
 
-  renderScreen() {
+  render() {
     return (
       <View style={{flex: 1}}>
         <LottieView

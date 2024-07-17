@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, Image, TouchableOpacity, TextInput} from 'react-native';
 import moment from 'moment';
-import {formatTime, formatTimeToDate} from './utils/until';
+import {formatTime, formatTimeToDate, isIOS} from './utils/until';
 import {logi} from './utils/logutil';
 import DatePicker from 'react-native-date-picker';
 import {commonStyles} from './commonStyle';
@@ -38,21 +38,25 @@ export default class NewLifeDetailScreen extends BaseScreen {
   _confirmEditData() {}
 
   _selectImage() {
-    AndroidPermissions.checkStoragePermissions(
-      () => {
-        AndroidPermissions.checkCameraPermissions(
-          () => {
-            // 权限成功
-          },
-          () => {
-            showToast('请打开相机权限');
-          },
-        );
-      },
-      () => {
-        showToast('请打开存储权限');
-      },
-    );
+      if (isIOS()) {
+
+      } else {
+          AndroidPermissions.checkStoragePermissions(
+              () => {
+                  AndroidPermissions.checkCameraPermissions(
+                      () => {
+                          // 权限成功
+                      },
+                      () => {
+                          showToast('请打开相机权限');
+                      },
+                  );
+              },
+              () => {
+                  showToast('请打开存储权限');
+              },
+          );
+      }
   }
 
   renderScreen() {

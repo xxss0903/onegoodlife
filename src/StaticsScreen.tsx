@@ -163,11 +163,6 @@ export default class StaticsScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <LinearGradient
-        colors={mainData.gradientColor}
-        start={{x: 0, y: 1}}
-        end={{x: 1, y: 0}}
-        style={{flex: 1}}>
         <View style={[commonStyles.flexColumn, {flex: 1}]}>
           {/*<View*/}
           {/*  style={{*/}
@@ -210,7 +205,6 @@ export default class StaticsScreen extends BaseScreen {
             </View>
           </ScrollView>
         </View>
-      </LinearGradient>
     );
   }
 }

@@ -1,5 +1,5 @@
 // 屏幕宽度
-import {Dimensions} from 'react-native';
+import {Dimensions, Platform} from 'react-native';
 import moment from 'moment';
 import {type} from 'yarn/lib/cli';
 import {Margin} from '../space';
@@ -26,5 +26,9 @@ export const isEmpty = str => {
     str.trim().length === 0
   );
 };
+
+export const isIOS = () => {
+  return Platform.OS === 'ios'
+}
 
 export const ChartWidth = screenW - Margin.horizontal * 6;

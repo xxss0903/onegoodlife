@@ -167,11 +167,6 @@ export default class BabiesScreen extends BaseScreen {
 
   renderScreen() {
     return (
-      <LinearGradient
-        colors={mainData.gradientColor}
-        start={{x: 0, y: 1}}
-        end={{x: 1, y: 0}}
-        style={{flex: 1}}>
         <View style={[{flex: 1}]}>
           <View style={[styles.container, {flex: 1}]}>
             <View
@@ -197,7 +192,6 @@ export default class BabiesScreen extends BaseScreen {
             </View>
           </View>
         </View>
-      </LinearGradient>
     );
   }
 }
