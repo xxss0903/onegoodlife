@@ -61,8 +61,9 @@ export const getLastData = async (db, babyId, typeId) => {
   try {
     const dataList = [];
     const results = await db.executeSql(
-        `SELECT rowid, babyId, typeId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} AND typeId = ${typeId}`);
-    console.log("last db data", results[0].rows)
+      `SELECT rowid, babyId, typeId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} AND typeId = ${typeId} order by time desc limit 1`,
+    );
+    console.log('last db data', results[0].rows);
     results.forEach(result => {
       for (let index = 0; index < result.rows.length; index++) {
         dataList.push(result.rows.item(index));
@@ -70,10 +71,10 @@ export const getLastData = async (db, babyId, typeId) => {
     });
     return dataList;
   } catch (error) {
-    console.log("error ", error)
+    console.log('error ', error);
     throw Error('Failed to get todoItems !!!');
   }
-}
+};
 
 // 获取数据列表
 export const getDataList = async (db, babyId, page, limit = 20) => {
@@ -82,8 +83,10 @@ export const getDataList = async (db, babyId, page, limit = 20) => {
     const results = await db.executeSql(
       `SELECT rowid, babyId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} order by time desc limit ${limit} offset ${offset}`,
     );
-    const countResult = await db.executeSql(`SELECT COUNT(babyId) as count FROM ${lifeRecordTableName} where babyId = ${babyId}`)
-    let count = countResult[0].rows.item(0).count
+    const countResult = await db.executeSql(
+      `SELECT COUNT(babyId) as count FROM ${lifeRecordTableName} where babyId = ${babyId}`,
+    );
+    let count = countResult[0].rows.item(0).count;
     let babyList = [];
     results.forEach(result => {
       let dataList = result.rows;
@@ -101,8 +104,8 @@ export const getDataList = async (db, babyId, page, limit = 20) => {
       page: {
         currentPage: page,
         totalData: count,
-        totalPage: Math.ceil(count / limit)
-      }
+        totalPage: Math.ceil(count / limit),
+      },
     };
   } catch (error) {
     logi(error);

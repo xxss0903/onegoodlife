@@ -44,11 +44,14 @@ export default class StaticsScreen extends BaseScreen {
   }
 
   _initListeners() {
-    let colorListener = EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
-      console.log("refresh statics screen color change")
-      this.forceUpdate();
-    });
-    console.log("statics listen color change ", colorListener)
+    let colorListener = EventBus.addEventListener(
+      EventBus.REFRESH_GRADIENT_COLOR,
+      () => {
+        console.log('refresh statics screen color change');
+        this.forceUpdate();
+      },
+    );
+    console.log('statics listen color change ', colorListener);
   }
 
   _refreshData() {
@@ -165,48 +168,38 @@ export default class StaticsScreen extends BaseScreen {
 
   renderScreen() {
     return (
-        <View style={[commonStyles.flexColumn, {flex: 1}]}>
-          {/*<View*/}
-          {/*  style={{*/}
-          {/*    position: 'absolute',*/}
-          {/*    top: Margin.vertical,*/}
-          {/*    left: Margin.horizontal,*/}
-          {/*    zIndex: 999,*/}
-          {/*    width: screenW - Margin.horizontal * 2,*/}
-          {/*  }}>*/}
-          {/*  {this._renderDateRange()}*/}
-          {/*</View>*/}
-          <ScrollView
-            style={{
-              flex: 1,
-              height: screenH,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={() => {
-                  console.log('on refresh control');
-                  // 刷新数据
-                  this._getDataList();
-                }}
-              />
-            }>
-            <View
-              style={[
-                commonStyles.flexColumn,
-                {
-                  flex: 1,
-                  paddingTop: Margin.horizontal,
-                  paddingBottom: Margin.horizontal,
-                },
-              ]}>
-              <View>{this._renderHealthTip()}</View>
-              <View>{this._renderStaticsList()}</View>
-            </View>
-          </ScrollView>
-        </View>
+      <View style={[commonStyles.flexColumn, {flex: 1}]}>
+        <ScrollView
+          style={{
+            flex: 1,
+            height: screenH,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                console.log('on refresh control');
+                // 刷新数据
+                this._getDataList();
+              }}
+            />
+          }>
+          <View
+            style={[
+              commonStyles.flexColumn,
+              {
+                flex: 1,
+                paddingTop: Margin.horizontal,
+                paddingBottom: Margin.horizontal,
+              },
+            ]}>
+            <View>{this._renderHealthTip()}</View>
+            <View>{this._renderStaticsList()}</View>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }

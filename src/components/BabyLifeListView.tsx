@@ -7,10 +7,13 @@ import moment from 'moment';
 import {
   Alert,
   FlatList,
-  Image, RefreshControl,
+  Image,
+  RefreshControl,
   StyleSheet,
   Text,
-  TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback,
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {logi} from '../utils/logutil';
@@ -31,8 +34,10 @@ import {mainData, commonTypeList, TYPE_ID} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
 import {
-  deleteDataByRowId, getDataList,
-  getDataListOrderByTime, getLastData,
+  deleteDataByRowId,
+  getDataList,
+  getDataListOrderByTime,
+  getLastData,
   insertData,
   updateData,
 } from '../utils/dbService';
@@ -42,7 +47,7 @@ import {commonStyles} from '../commonStyle';
 import {Margin} from '../space';
 import {Colors} from '../colors';
 import {db} from '../dataBase.ts';
-import {SwipeListView} from "react-native-swipe-list-view";
+import {SwipeListView} from 'react-native-swipe-list-view';
 
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {dataList: [{itemType: 1}]};
@@ -61,9 +66,9 @@ export default class BabyLifeListView extends React.Component<any, any> {
   private cloneType = null; // 临时保存type的数据
   private newlifeModalRef = null;
   private currentPage = 0;
-  private pageSize = 5;
+  private pageSize = 20;
   private totalPage = 0; // 数据总的页数
-  private closeTimeoutMap = new Map()
+  private closeTimeoutMap = new Map();
 
   constructor(props) {
     super(props);
@@ -76,36 +81,36 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   componentDidMount() {
-   this._initData()
+    this._initData();
   }
 
-  _initData(){
+  _initData() {
     if (isIOS()) {
       this._getDBData(0);
     } else {
       AndroidPermissions.checkStoragePermissions(
-          () => {
-            // this._initLocalData()
-            this._getDBData(0)
-          },
-          () => {
-            // 没有存储权限
-          },
+        () => {
+          // this._initLocalData()
+          this._getDBData(0);
+        },
+        () => {
+          // 没有存储权限
+        },
       );
     }
   }
 
-  async _getDBData(page: number){
+  async _getDBData(page: number) {
     try {
       let dbDataList = await getDataList(
-          db.database,
-          this.props.baby.babyId,
-          page,
-          this.pageSize
+        db.database,
+        this.props.baby.babyId,
+        page,
+        this.pageSize,
       );
-      let dataList = dbDataList.dataList
-      this.totalPage = dbDataList.page.totalPage
-      let tempDataList = []
+      let dataList = dbDataList.dataList;
+      this.totalPage = dbDataList.page.totalPage;
+      let tempDataList = [];
       if (page === 0) {
         // 如果第一个不是统计则添加统计
         if (dataList.length === 0) {
@@ -115,23 +120,24 @@ export default class BabyLifeListView extends React.Component<any, any> {
         }
         tempDataList = dataList;
       } else {
-        tempDataList = this.state.dataList.concat(dataList)
+        tempDataList = this.state.dataList.concat(dataList);
       }
 
-      this.setState({
-            refreshing: false,
-            dataList: tempDataList,
-          },
-          () => {
-        if(page === 0) {
-          this.staticsViewRef?.refreshData();
-        }
-          },
+      this.setState(
+        {
+          refreshing: false,
+          dataList: tempDataList,
+        },
+        () => {
+          if (page === 0) {
+            this.staticsViewRef?.refreshData();
+          }
+        },
       );
     } catch (e: any) {
       this.setState({
-        refreshing: false
-      })
+        refreshing: false,
+      });
       logi('get data error', e);
     }
   }
@@ -397,10 +403,10 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   refreshData() {
     this.setState({
-      refreshing: true
-    })
-    this.currentPage = 0
-    this._getDBData(this.currentPage)
+      refreshing: true,
+    });
+    this.currentPage = 0;
+    this._getDBData(this.currentPage);
   }
 
   // 刷新统计数据图标
@@ -413,152 +419,150 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   // 复制当前数据
-  _copyItem(item){
-    console.log("clone item", item)
-    let cloneItem = JSON.parse(JSON.stringify(item))
-    let now = moment()
+  _copyItem(item) {
+    console.log('clone item', item);
+    let cloneItem = JSON.parse(JSON.stringify(item));
+    let now = moment();
     cloneItem.time = now;
-    cloneItem.rowid = now
-    cloneItem.key = now
+    cloneItem.rowid = now;
+    cloneItem.key = now;
     // 插入到数据库，刷新列表
-    this._insertNewlifeLineImpl(cloneItem)
+    this._insertNewlifeLineImpl(cloneItem);
   }
-
 
   _showRemoveItemDialog(item: any, index: Number) {
-    console.log("remove item", item)
+    console.log('remove item', item);
     Alert.alert(
-        '提示',
-        '确认移除' + (item.name ? item.name : '当前数据') + '吗？',
-        [
-          {
-            text: '取消',
-            onPress: () => {},
-          },
-          {
-            text: '删除',
-            onPress: () => {
-              this._deleteRow(item, index);
-            },
-          },
-        ],
+      '提示',
+      '确认移除' + (item.name ? item.name : '当前数据') + '吗？',
+      [
         {
-          cancelable: true,
-          onDismiss: () => {},
+          text: '取消',
+          onPress: () => {},
         },
+        {
+          text: '删除',
+          onPress: () => {
+            this._deleteRow(item, index);
+          },
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => {},
+      },
     );
   }
 
-  _renderHiddenItem(item, rowMap, index){
+  _renderHiddenItem(item, rowMap, index) {
     return (
-        <View style={styles.rowBack}>
-          <TouchableOpacity
-              style={[
-                styles.backLeftBtn,
-                {
-                  backgroundColor: Colors.primary,
-                  borderTopLeftRadius: Margin.bigCorners,
-                  borderBottomLeftRadius: Margin.bigCorners,
-                  marginBottom: Margin.vertical
-                },
-              ]}
-              onPress={() => {
-                this._closeRow(rowMap, item.time + '');
-                setTimeout(() => {
-                  this._showRemoveItemDialog(item, index);
-                }, 300);
-              }}>
-            <Text style={styles.backTextWhite}>删除</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-              style={[
-                styles.backRightBtn,
-                {
-                  borderTopRightRadius: Margin.bigCorners,
-                  borderBottomRightRadius: Margin.bigCorners,
-                  backgroundColor: Colors.primary5,
-                  marginBottom: Margin.vertical
-                },
-              ]}
-              onPress={() => {
-                // this.deleteRow(rowMap, data.item.key, data.item);
-                this._closeRow(rowMap, item.time + '');
-                setTimeout(() => {
-                  this._copyItem(item)
-                }, 300);
-              }}>
-            <Text style={styles.backTextWhite}>复制</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.rowBack}>
+        <TouchableOpacity
+          style={[
+            styles.backLeftBtn,
+            {
+              backgroundColor: Colors.primary,
+              borderTopLeftRadius: Margin.bigCorners,
+              borderBottomLeftRadius: Margin.bigCorners,
+              marginBottom: Margin.vertical,
+            },
+          ]}
+          onPress={() => {
+            this._closeRow(rowMap, item.time + '');
+            setTimeout(() => {
+              this._showRemoveItemDialog(item, index);
+            }, 300);
+          }}>
+          <Text style={styles.backTextWhite}>删除</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.backRightBtn,
+            {
+              borderTopRightRadius: Margin.bigCorners,
+              borderBottomRightRadius: Margin.bigCorners,
+              backgroundColor: Colors.primary5,
+              marginBottom: Margin.vertical,
+            },
+          ]}
+          onPress={() => {
+            // this.deleteRow(rowMap, data.item.key, data.item);
+            this._closeRow(rowMap, item.time + '');
+            setTimeout(() => {
+              this._copyItem(item);
+            }, 300);
+          }}>
+          <Text style={styles.backTextWhite}>复制</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
-  _scheduleCloseRow(rowKey, rowMap){
+  _scheduleCloseRow(rowKey, rowMap) {
     if (this.closeTimeoutMap.has(rowKey)) {
-      clearTimeout(this.closeTimeoutMap.get(rowKey))
-      this.closeTimeoutMap.delete(rowKey)
+      clearTimeout(this.closeTimeoutMap.get(rowKey));
+      this.closeTimeoutMap.delete(rowKey);
     }
     let closeTimeout = setTimeout(() => {
       this._closeRow(rowMap, rowKey);
-      this.closeTimeoutMap.delete(rowKey)
+      this.closeTimeoutMap.delete(rowKey);
     }, 3000);
-    this.closeTimeoutMap.set(rowKey, closeTimeout)
+    this.closeTimeoutMap.set(rowKey, closeTimeout);
   }
 
   render() {
     return (
       <View style={[styles.container, {}]}>
         <SwipeListView
-            onEndReached={() => {
-              console.log("list reach end")
-              if (this.currentPage < this.totalPage) {
-                this.currentPage++
-                this._getDBData(this.currentPage)
-              } else {
-                console.log("no data")
-              }
-            }}
-            onEndReachedThreshold={0.5}
-            refreshControl={
-              <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={() => {
-                    console.log('on refresh control');
-                    this.currentPage = 0;
-                    // 刷新数据
-                    this._getDBData(0)
-                  }}
-              />
+          onEndReached={() => {
+            console.log('list reach end');
+            if (this.currentPage < this.totalPage) {
+              this.currentPage++;
+              this._getDBData(this.currentPage);
+            } else {
+              console.log('no data');
             }
-            useFlatList={true}
-            data={this.state.dataList}
-            style={{flex: 1, paddingHorizontal: Margin.horizontal}}
-            renderItem={({item, index}) => {
-              if (item.itemType === 1) {
-                return this._renderLifeLineStatics();
-              } else {
-                return this._renderTypeItem(item, index);
-              }
-            }}
-            keyExtractor={(rowData, index) => {
-              return rowData?.time + '';
-            }}
-            renderHiddenItem={(data, rowMap) => {
-              let item = data.item
-              if (item.itemType === 1) {
-                return null;
-              } else {
-                return this._renderHiddenItem(item, rowMap, data.index)
-              }
-
-            }}
-            leftOpenValue={75}
-            rightOpenValue={-75}
-            previewOpenValue={-40}
-            previewOpenDelay={1000}
-            onRowDidOpen={(rowKey, rowMap, toValue) => {
-              this._scheduleCloseRow(rowKey, rowMap)
-            }}
+          }}
+          onEndReachedThreshold={0.5}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                console.log('on refresh control');
+                this.currentPage = 0;
+                // 刷新数据
+                this._getDBData(0);
+              }}
+            />
+          }
+          useFlatList={true}
+          data={this.state.dataList}
+          style={{flex: 1, paddingHorizontal: Margin.horizontal}}
+          renderItem={({item, index}) => {
+            if (item.itemType === 1) {
+              return this._renderLifeLineStatics();
+            } else {
+              return this._renderTypeItem(item, index);
+            }
+          }}
+          keyExtractor={(rowData, index) => {
+            return rowData?.time + '';
+          }}
+          renderHiddenItem={(data, rowMap) => {
+            let item = data.item;
+            if (item.itemType === 1) {
+              return null;
+            } else {
+              return this._renderHiddenItem(item, rowMap, data.index);
+            }
+          }}
+          leftOpenValue={75}
+          rightOpenValue={-75}
+          previewOpenValue={-40}
+          previewOpenDelay={1000}
+          onRowDidOpen={(rowKey, rowMap, toValue) => {
+            this._scheduleCloseRow(rowKey, rowMap);
+          }}
         />
         {this._renderDatetimePicker()}
         {/*{this._renderExportAction()}*/}

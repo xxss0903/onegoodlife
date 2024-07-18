@@ -11,8 +11,8 @@ import {mainData, TYPE_ID} from '../mainData';
 import {COLOR_LINE, commonStyles} from '../commonStyle';
 import moment from 'moment';
 import {Margin} from '../space';
-import {getLastData} from "../utils/dbService.js";
-import {db} from "../dataBase.ts";
+import {getLastData} from '../utils/dbService.js';
+import {db} from '../dataBase.ts';
 
 // 统计独立界面
 export default class StaticsView extends Component<any, any> {
@@ -23,7 +23,7 @@ export default class StaticsView extends Component<any, any> {
       datepickerOpen: false,
       todayDataMap: new Map(), // 今天的数据
       last24Data: new Map(),
-      lastDataMap: new Map() // 最近数据
+      lastDataMap: new Map(), // 最近数据
     };
   }
 
@@ -63,20 +63,31 @@ export default class StaticsView extends Component<any, any> {
     this.refreshData();
   }
 
-
   // 获取类型最新的数据
-  async _initLastData(){
-    console.log("init last data begin")
-    let lastMilkData = await getLastData(db.database, this.props.babyId, TYPE_ID.MILK);
-    let lastPoopData = await getLastData(db.database, this.props.babyId, TYPE_ID.POOP);
-    let lastDiaperData = await getLastData(db.database, this.props.babyId, TYPE_ID.DIAPER);
+  async _initLastData() {
+    console.log('init last data begin');
+    let lastMilkData = await getLastData(
+      db.database,
+      this.props.babyId,
+      TYPE_ID.MILK,
+    );
+    let lastPoopData = await getLastData(
+      db.database,
+      this.props.babyId,
+      TYPE_ID.POOP,
+    );
+    let lastDiaperData = await getLastData(
+      db.database,
+      this.props.babyId,
+      TYPE_ID.DIAPER,
+    );
     let lastData = {
       lastMilkData,
       lastPoopData,
-      lastDiaperData
-    }
-    console.log("get last data", lastData)
-    this._getLastData(lastData)
+      lastDiaperData,
+    };
+    console.log('get last data', lastData);
+    this._getLastData(lastData);
   }
 
   refreshData() {
@@ -106,19 +117,19 @@ export default class StaticsView extends Component<any, any> {
     // 上次喝奶
     let lastDrinkMilk = lastData.lastMilkData;
     if (lastDrinkMilk && lastDrinkMilk.length > 0) {
-      this.state.lastDataMap.set(lastDrinkMilk[0].typeId, lastDrinkMilk[0])
+      this.state.lastDataMap.set(lastDrinkMilk[0].typeId, lastDrinkMilk[0]);
     }
     // 上次拉屎
     let lastPoop = lastData.lastPoopData;
     if (lastPoop && lastPoop.length > 0) {
-      this.state.lastDataMap.set(lastPoop[0].typeId, lastPoop[0])
+      this.state.lastDataMap.set(lastPoop[0].typeId, lastPoop[0]);
     }
     // 上次换尿布
     let lastDiaper = lastData.lastDiaperData;
     if (lastDiaper && lastDiaper.length > 0) {
-      this.state.lastDataMap.set(lastDiaper[0].typeId, lastDiaper[0])
+      this.state.lastDataMap.set(lastDiaper[0].typeId, lastDiaper[0]);
     }
-    this.forceUpdate()
+    this.forceUpdate();
   }
 
   // 获取今天的数据
@@ -160,35 +171,35 @@ export default class StaticsView extends Component<any, any> {
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
-  _getLastTime(time){
-    let isSameDay = moment(time).isSame(moment(), 'day')
+  _getLastTime(time) {
+    let isSameDay = moment(time).isSame(moment(), 'day');
     if (isSameDay) {
-      return moment(time).format("HH:mm")
+      return moment(time).format('HH:mm');
     } else {
-      let isLastDay = moment(time).isSame(moment().subtract(1, 'day'), 'day')
+      let isLastDay = moment(time).isSame(moment().subtract(1, 'day'), 'day');
       if (isLastDay) {
-        return `昨天${moment(time).format("HH:mm")}`
+        return `昨天${moment(time).format('HH:mm')}`;
       } else {
-        return moment(time).format("MM-DD HH:mm")
+        return moment(time).format('MM-DD HH:mm');
       }
     }
 
-    return moment(time).format("HH:MM")
+    return moment(time).format('HH:MM');
   }
 
-  _renderLastDataMap(dataMap: any){
+  _renderLastDataMap(dataMap: any) {
     let keyArray = Array.from(dataMap.keys());
-    console.log("last keys ", keyArray)
+    console.log('last keys ', keyArray);
     let mapView = keyArray.map((key, index) => {
       let data = dataMap.get(key);
       return (
-          <View
-              key={index}
-              style={[commonStyles.flexRow, {marginBottom: Margin.smalHorizontal}]}>
-            <Text style={[styles.contentText]}>
-              {data.name}: {this._getLastTime(data.time)}
-            </Text>
-          </View>
+        <View
+          key={index}
+          style={[commonStyles.flexRow, {marginBottom: Margin.smalHorizontal}]}>
+          <Text style={[styles.contentText]}>
+            {data.name}: {this._getLastTime(data.time)}
+          </Text>
+        </View>
       );
     });
 
@@ -260,13 +271,31 @@ export default class StaticsView extends Component<any, any> {
         <View
           style={[
             commonStyles.flexColumn,
+            commonStyles.center,
             {
               flex: 1,
-              paddingTop: Margin.vertical,
+              paddingTop: Margin.horizontal,
             },
           ]}>
-          <Text style={[{fontSize: 18, paddingVertical: Margin.vertical}]}>
-            {mainData.userInfo.role}，最近忘了给宝宝添加记录咯
+          <Text
+            style={[
+              {
+                fontSize: 20,
+                paddingVertical: Margin.vertical,
+                fontWeight: 'bold',
+              },
+            ]}>
+            亲爱的{mainData.userInfo.role}
+          </Text>
+          <Text
+            style={[
+              {
+                fontSize: 20,
+                paddingVertical: Margin.vertical,
+                fontWeight: 'bold',
+              },
+            ]}>
+            您还没有给宝宝添加记录哦！
           </Text>
         </View>
       );

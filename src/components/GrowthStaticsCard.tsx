@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {commonStyles} from '../commonStyle';
 import {Colors} from '../colors';
 import {Margin} from '../space';
@@ -32,6 +32,7 @@ export default class GrowthStaticsCard extends Component<any, any> {
       staticsData: [{value: 250, label: 'M'}],
       weightTitle: '',
       heightTitle: '',
+      showStaticsChart: false, // 显示生长统计，默认不显示
       girlsHeight: {
         height1List: [],
         height2List: [],
@@ -46,7 +47,9 @@ export default class GrowthStaticsCard extends Component<any, any> {
 
   componentDidMount() {
     // this._getDayStaticsData();
-    this._initBaseData();
+    if (this.state.showStaticsChart) {
+      this._initBaseData();
+    }
     // this._getDayStaticsData();
   }
 
@@ -54,14 +57,14 @@ export default class GrowthStaticsCard extends Component<any, any> {
   _initBaseData() {
     if (mainData.babyInfo.sex === 'boy') {
       this.setState({
-        heightTitle: `（身高-男）`,
-        weightTitle: `（体重-男）`,
+        heightTitle: `身高-男`,
+        weightTitle: `体重-男`,
       });
       this._initBoyGrowthData();
     } else {
       this.setState({
-        heightTitle: `（身高-女）`,
-        weightTitle: `（体重-女）`,
+        heightTitle: `身高-女`,
+        weightTitle: `体重-女`,
       });
       this._initGirlHeightData();
     }
@@ -254,12 +257,12 @@ export default class GrowthStaticsCard extends Component<any, any> {
             <Text
               style={[
                 {
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: 'bold',
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              生长曲线{this.state.weightTitle}
+              {this.state.weightTitle}
             </Text>
           </View>
         </View>
@@ -282,42 +285,14 @@ export default class GrowthStaticsCard extends Component<any, any> {
             <Text
               style={[
                 {
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: 'bold',
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              生长曲线{this.state.heightTitle}
+              {this.state.heightTitle}
             </Text>
           </View>
-          <Menu
-            w={120}
-            style={{}}
-            trigger={triggerProps => {
-              return (
-                <Pressable
-                  style={{
-                    padding: Margin.midHorizontal,
-                    backgroundColor: Colors.loginTouch,
-                    borderRadius: Margin.bigCorners,
-                  }}
-                  accessibilityLabel="More options menu"
-                  {...triggerProps}>
-                  <Image
-                    style={styles.titleIcon}
-                    source={require('../assets/ic_edit_white.png')}
-                  />
-                </Pressable>
-              );
-            }}>
-            <Menu.Item
-              onPress={() => {
-                this._exportGrowthImage();
-              }}>
-              导出
-            </Menu.Item>
-            <Menu.Item onPress={() => {}}>柱状图</Menu.Item>
-          </Menu>
         </View>
         <View style={styles.dataContainer}>
           {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
@@ -326,11 +301,78 @@ export default class GrowthStaticsCard extends Component<any, any> {
     );
   }
 
+  _renderStaticsChart() {
+    if (this.state.showStaticsChart) {
+      return (
+        <View>
+          {this._renderHeight()}
+          {this._renderWeight()}
+        </View>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  _toggleStaticsData() {
+    if (this.state.showStaticsChart) {
+      this.setState({
+        showStaticsChart: false,
+      });
+    } else {
+      this._initBaseData();
+      this.setState({
+        showStaticsChart: true,
+      });
+    }
+  }
+
+  _renderTitle() {
+    return (
+      <View style={[styles.titleContainer, commonStyles.flexRow]}>
+        <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
+          <Image
+            style={styles.titleIcon}
+            source={require('../assets/ic_baby_girl.png')}
+          />
+          <Text
+            style={[
+              {
+                fontSize: 20,
+                fontWeight: 'bold',
+                marginLeft: Margin.midHorizontal,
+              },
+            ]}>
+            生长曲线
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            this._toggleStaticsData();
+          }}
+          style={[
+            commonStyles.center,
+            {
+              width: 40,
+              height: 40,
+              backgroundColor: Colors.loginTouch,
+              borderRadius: Margin.bigCorners,
+            },
+          ]}>
+          <Image
+            style={{resizeMode: 'contain', width: 16, height: 16}}
+            source={require('../assets/ic_down_white.png')}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   render() {
     return (
       <View style={[commonStyles.flexColumn, styles.cardContainer]}>
-        {this._renderHeight()}
-        {this._renderWeight()}
+        {this._renderTitle()}
+        {this._renderStaticsChart()}
       </View>
     );
   }
@@ -350,5 +392,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  dataContainer: {},
+  dataContainer: {
+    marginTop: Margin.vertical,
+  },
 });
