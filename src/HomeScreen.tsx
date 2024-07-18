@@ -86,25 +86,27 @@ export default class HomeScreen extends BaseScreen {
     this.props.navigation.addListener('focus', () => {
       if (mainData.refreshBabies) {
         mainData.refreshBabies = false;
-          EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR)
-          if (mainData.babies && mainData.babies.length > 0) {
+        EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
+        if (mainData.babies && mainData.babies.length > 0) {
           mainData.babyInfo = mainData.babies[0];
-          this.setState({
-            currentBaby: mainData.babies[0],
-            currentBabyIndex: 0,
-          }, () => {
+          this.setState(
+            {
+              currentBaby: mainData.babies[0],
+              currentBabyIndex: 0,
+            },
+            () => {
               let newPageRefs = this.babyPageRefs.filter(value => {
-                  if (value) {
-                      return value;
-                  }
+                if (value) {
+                  return value;
+                }
               });
               this.babyPageRefs = newPageRefs;
               this.pagerRef && this.pagerRef.setPage(0);
               this.babyPageRefs.forEach(value => {
-                  value && value.refreshData();
+                value && value.refreshData();
               });
-          });
-
+            },
+          );
         } else {
           logi('render empty babies');
           this.forceUpdate();
@@ -210,8 +212,8 @@ export default class HomeScreen extends BaseScreen {
 
   _renderHomeView() {
     let babiesWidth = mainData.babies.length * 80;
-    if (babiesWidth > screenW - 120) {
-      babiesWidth = screenW - 120;
+    if (babiesWidth > screenW - Margin.horizontal * 2) {
+      babiesWidth = screenW - Margin.horizontal * 2;
     }
     return (
       <View style={[commonStyles.flexColumn, {flex: 1}]}>
@@ -222,14 +224,14 @@ export default class HomeScreen extends BaseScreen {
           style={[
             commonStyles.flexRow,
             {
-              height: 100,
+              height: 110,
               paddingHorizontal: Margin.horizontal,
             },
           ]}>
           <View style={{}}>
             <FlatList
               horizontal={true}
-              style={{height: 100, width: babiesWidth}}
+              style={{height: 110, width: babiesWidth}}
               data={mainData.babies}
               renderItem={({item, index}) => {
                 console.log('avatar ', item.avatar);
@@ -244,7 +246,7 @@ export default class HomeScreen extends BaseScreen {
           {this._renderAddBabyItem()}
         </View>
         <PagerView
-            useNext={false}
+          useNext={false}
           scrollEnabled={false}
           ref={ref => (this.pagerRef = ref)}
           orientation={'horizontal'}
@@ -271,7 +273,7 @@ export default class HomeScreen extends BaseScreen {
     });
     // 更改寶寶信息，切換pagerview的列表
     this.pagerRef && this.pagerRef.setPage(index);
-    this.babyPageRefs[index].refreshData()
+    this.babyPageRefs[index].refreshData();
   }
 
   _renderAddBabyItem() {
