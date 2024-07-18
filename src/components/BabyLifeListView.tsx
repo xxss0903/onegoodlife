@@ -7,7 +7,7 @@ import moment from 'moment';
 import {
   Alert,
   FlatList,
-  Image,
+  Image, RefreshControl,
   StyleSheet,
   Text,
   TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback,
@@ -64,6 +64,9 @@ export default class BabyLifeListView extends React.Component<any, any> {
   private todayChartRef: any; // 统计数据的渲染引用
   private todayCharts: EChartsType; // 统计图表
   private newlifeModalRef = null;
+  private currentPage = 0;
+  private pageSize = 5;
+  private totalPage = 0; // 数据总的页数
 
   constructor(props) {
     super(props);
@@ -71,55 +74,75 @@ export default class BabyLifeListView extends React.Component<any, any> {
       dataList: tempJsonData.dataList, // 本地的存储的数据列表
       showAddModal: false,
       datepickerOpen: false,
-      size: 20,
-      from: 0
+      refreshing: true
     };
   }
 
   componentDidMount() {
     this._initEcharts();
+   this._initData()
+  }
+
+  _initData(){
     if (isIOS()) {
-      this._initDBData();
+      this._getDBData(0);
     } else {
       AndroidPermissions.checkStoragePermissions(
           () => {
             // this._initLocalData()
-            this._initDBData();
+            this._getDBData(0)
           },
           () => {
             // 没有存储权限
           },
       );
     }
+  }
 
+  async _getDBData(page: number){
+    try {
+      let dbDataList = await getDataList(
+          db.database,
+          this.props.baby.babyId,
+          page,
+          this.pageSize
+      );
+      let dataList = dbDataList.dataList
+      console.log("get datalist", this.currentPage, page)
+      this.totalPage = dbDataList.page.totalPage
+      let tempDataList = []
+      if (page === 0) {
+        // 如果第一个不是统计则添加统计
+        if (dataList.length === 0) {
+          dataList.push({itemType: 1});
+        } else if (dataList[0].itemType !== 1) {
+          dataList.unshift({itemType: 1});
+        }
+        tempDataList = dataList;
+      } else {
+        tempDataList = this.state.dataList.concat(dataList)
+      }
+      console.log("temp datalist length", tempDataList.length)
+
+      this.setState({
+            refreshing: false,
+            dataList: tempDataList,
+          },
+          () => {
+            this.staticsViewRef?.refreshData();
+          },
+      );
+    } catch (e: any) {
+      this.setState({
+        refreshing: false
+      })
+      logi('get data error', e);
+    }
   }
 
   // 获取数据库数据
   async _initDBData() {
-    try {
-      let babyList = await getDataList(
-        db.database,
-        this.props.baby.babyId,
-        this.state.from
-      );
-      console.log("get datalist", babyList)
-      // 如果第一个不是统计则添加统计
-      if (babyList.length === 0) {
-        babyList.push({itemType: 1});
-      } else if (babyList[0].itemType !== 1) {
-        babyList.unshift({itemType: 1});
-      }
-      this.setState(
-        {
-          dataList: babyList,
-        },
-        () => {
-          this.staticsViewRef?.refreshData();
-        },
-      );
-    } catch (e: any) {
-      logi('get data error', e);
-    }
+    this._getDBData(0)
   }
 
   componentWillUnmount() {
@@ -505,6 +528,27 @@ export default class BabyLifeListView extends React.Component<any, any> {
     return (
       <View style={[styles.container, {}]}>
         <SwipeListView
+            onEndReached={() => {
+              console.log("list reach end")
+              if (this.currentPage < this.totalPage) {
+                this.currentPage++
+                this._getDBData(this.currentPage)
+              } else {
+                console.log("no data")
+              }
+            }}
+            onEndReachedThreshold={0.5}
+            refreshControl={
+              <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={() => {
+                    console.log('on refresh control');
+                    this.currentPage = 0;
+                    // 刷新数据
+                    this._getDBData(0)
+                  }}
+              />
+            }
             useFlatList={true}
             data={this.state.dataList}
             style={{flex: 1, paddingHorizontal: Margin.horizontal}}

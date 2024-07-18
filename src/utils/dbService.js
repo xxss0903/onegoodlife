@@ -75,12 +75,15 @@ export const getLastData = async (db, type) => {
 }
 
 // 获取数据列表
-export const getDataList = async (db, babyId, offset, limit = 20) => {
+export const getDataList = async (db, babyId, page, limit = 20) => {
   try {
-    const dataList = [];
+    let offset = page * limit; // 根据页面计算查询开始
     const results = await db.executeSql(
       `SELECT rowid, babyId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} order by time desc limit ${limit} offset ${offset}`,
     );
+    const countResult = await db.executeSql(`SELECT COUNT(babyId) as count FROM ${lifeRecordTableName} where babyId = ${babyId}`)
+    console.log("get data count ", countResult[0].rows.item(0).count)
+    let count = countResult[0].rows.item(0).count
     let babyList = [];
     results.forEach(result => {
       let dataList = result.rows;
@@ -93,7 +96,14 @@ export const getDataList = async (db, babyId, offset, limit = 20) => {
         babyList.push(dataObj);
       }
     });
-    return babyList;
+    return {
+      dataList: babyList,
+      page: {
+        currentPage: page,
+        totalData: count,
+        totalPage: Math.ceil(count / limit)
+      }
+    };
   } catch (error) {
     logi(error);
     throw Error('Failed to get todoItems !!!');
