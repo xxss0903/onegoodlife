@@ -86,23 +86,25 @@ export default class HomeScreen extends BaseScreen {
     this.props.navigation.addListener('focus', () => {
       if (mainData.refreshBabies) {
         mainData.refreshBabies = false;
-        if (mainData.babies && mainData.babies.length > 0) {
+          EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR)
+          if (mainData.babies && mainData.babies.length > 0) {
           mainData.babyInfo = mainData.babies[0];
           this.setState({
             currentBaby: mainData.babies[0],
             currentBabyIndex: 0,
+          }, () => {
+              let newPageRefs = this.babyPageRefs.filter(value => {
+                  if (value) {
+                      return value;
+                  }
+              });
+              this.babyPageRefs = newPageRefs;
+              this.pagerRef && this.pagerRef.setPage(0);
+              this.babyPageRefs.forEach(value => {
+                  value && value.refreshData();
+              });
           });
-          let newPageRefs = this.babyPageRefs.filter(value => {
-            if (value) {
-              return value;
-            }
-          });
-          this.babyPageRefs = newPageRefs;
-          this.pagerRef && this.pagerRef.setPage(0);
-          EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR)
-          this.babyPageRefs.forEach(value => {
-            value && value.refreshData();
-          });
+
         } else {
           logi('render empty babies');
           this.forceUpdate();
@@ -242,6 +244,7 @@ export default class HomeScreen extends BaseScreen {
           {this._renderAddBabyItem()}
         </View>
         <PagerView
+            useNext={false}
           scrollEnabled={false}
           ref={ref => (this.pagerRef = ref)}
           orientation={'horizontal'}
@@ -268,6 +271,7 @@ export default class HomeScreen extends BaseScreen {
     });
     // 更改寶寶信息，切換pagerview的列表
     this.pagerRef && this.pagerRef.setPage(index);
+    this.babyPageRefs[index].refreshData()
   }
 
   _renderAddBabyItem() {

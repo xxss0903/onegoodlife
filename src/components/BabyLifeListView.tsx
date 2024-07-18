@@ -109,7 +109,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
           this.pageSize
       );
       let dataList = dbDataList.dataList
-      console.log("get datalist", this.currentPage, page)
+      console.log("get datalist of babyid", this.props.baby.babyId, this.currentPage, page)
       this.totalPage = dbDataList.page.totalPage
       let tempDataList = []
       if (page === 0) {
@@ -413,8 +413,11 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   refreshData() {
-    console.log('homescreen refresh data 111');
-    this._initDBData();
+    this.setState({
+      refreshing: true
+    })
+    this.currentPage = 0
+    this._getDBData(this.currentPage)
   }
 
   // 刷新统计数据图标
