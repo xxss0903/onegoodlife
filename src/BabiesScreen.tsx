@@ -7,7 +7,7 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
 import {GradientColors, mainData} from './mainData';
 import {formatTimeToDate} from './utils/until';
@@ -103,57 +103,59 @@ export default class BabiesScreen extends BaseScreen {
     let bgColor = GradientColors[`gradientColor${bgIndex}`];
 
     return (
-      <TouchableWithoutFeedback
+      <TouchableHighlight
+          underlayColor={Colors.grayEe}
+          style={{
+            marginTop: Margin.vertical,
+            borderRadius: Margin.bigCorners,
+          }}
         onPress={() => {
           this._editBaby(item);
         }}>
-        <View>
-          <LinearGradient
+        <LinearGradient
             colors={item.bgColor ? item.bgColor : bgColor}
             start={{x: 0, y: 1}}
             style={[
               commonStyles.flexColumn,
               {
-                padding: Margin.horizontal,
                 borderRadius: Margin.bigCorners,
-                marginTop: Margin.vertical,
-                height: 140,
-                marginHorizontal: Margin.horizontal,
+                height: 120,
+                justifyContent: 'center',
+                paddingHorizontal: Margin.horizontal
               },
             ]}
             end={{x: 1, y: 0}}>
-            <View style={[commonStyles.flexRow]}>
-              {!(item && item.avatar) ? (
+          <View style={[commonStyles.flexRow]}>
+            {!(item && item.avatar) ? (
                 this._renderDefaultAvatar(item)
-              ) : (
+            ) : (
                 <Avatar
-                  size={'xl'}
-                  source={{
-                    uri: item.avatar,
-                  }}
+                    size={'xl'}
+                    source={{
+                      uri: item.avatar,
+                    }}
                 />
-              )}
-              <View
+            )}
+            <View
                 style={[
                   commonStyles.flexColumn,
                   {marginLeft: Margin.horizontal, justifyContent: 'center'},
                 ]}>
-                <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                  姓名：{item.name}
-                </Text>
-                {item.nickname ? (
+              <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
+                姓名：{item.name}
+              </Text>
+              {item.nickname ? (
                   <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
                     小名：{item.nickname}
                   </Text>
-                ) : null}
-                <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
-                  生日：{formatTimeToDate(item.birthDay)}
-                </Text>
-              </View>
+              ) : null}
+              <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
+                生日：{formatTimeToDate(item.birthDay)}
+              </Text>
             </View>
-          </LinearGradient>
-        </View>
-      </TouchableWithoutFeedback>
+          </View>
+        </LinearGradient>
+      </TouchableHighlight>
     );
   }
 
@@ -162,6 +164,9 @@ export default class BabiesScreen extends BaseScreen {
   }
 
   _pinBabyImpl(baby, index) {
+    if (index === 0) {
+      return;
+    }
     let tempBabies = [baby];
     for (let i = 0; i < mainData.babies.length; i++) {
       if (i !== index) {
@@ -201,52 +206,9 @@ export default class BabiesScreen extends BaseScreen {
               keyExtractor={(rowData, index) => {
                 return rowData?.babyId + '';
               }}
+              style={{flex: 1, paddingHorizontal: Margin.horizontal}}
               renderHiddenItem={(data, rowMap) => {
-                return (
-                  <View style={styles.rowBack}>
-                    <TouchableOpacity
-                      style={[
-                        styles.backLeftBtn,
-                        {
-                          backgroundColor: Colors.primary,
-                          height: 140,
-                          borderTopLeftRadius: Margin.bigCorners,
-                          borderBottomLeftRadius: Margin.bigCorners,
-                          top: Margin.vertical,
-                        },
-                      ]}
-                      onPress={() => {
-                        // this.deleteRow(rowMap, data.item.key, data.item);
-                        this._closeRow(rowMap, data.item.babyId + '');
-                        setTimeout(() => {
-                          this._showRemoveBabyDialog(data.item, data.index);
-                        }, 300);
-                      }}>
-                      <Text style={styles.backTextWhite}>删除</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.backRightBtn,
-                        {
-                          backgroundColor: data.item.bgColor,
-                          height: 140,
-                          borderTopRightRadius: Margin.bigCorners,
-                          borderBottomRightRadius: Margin.bigCorners,
-                          top: Margin.vertical,
-                        },
-                      ]}
-                      onPress={() => {
-                        // this.deleteRow(rowMap, data.item.key, data.item);
-                        console.log('data item', data, rowMap);
-                        this._closeRow(rowMap, data.item.babyId + '');
-                        setTimeout(() => {
-                          this._pinBabyImpl(data.item, data.index);
-                        }, 300);
-                      }}>
-                      <Text style={styles.backTextWhite}>置顶</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
+                return this._renderHiddenItem(rowMap, data);
               }}
               leftOpenValue={75}
               rightOpenValue={-75}
@@ -273,6 +235,52 @@ export default class BabiesScreen extends BaseScreen {
       </View>
     );
   }
+
+  _renderHiddenItem(rowMap, data) {
+    return (
+        <View style={styles.rowBack}>
+          <TouchableOpacity
+              style={[
+                styles.backLeftBtn,
+                {
+                  backgroundColor: Colors.primary,
+                  borderTopLeftRadius: Margin.bigCorners,
+                  borderBottomLeftRadius: Margin.bigCorners,
+                  top: Margin.vertical,
+                },
+              ]}
+              onPress={() => {
+                // this.deleteRow(rowMap, data.item.key, data.item);
+                this._closeRow(rowMap, data.item.babyId + '');
+                setTimeout(() => {
+                  this._showRemoveBabyDialog(data.item, data.index);
+                }, 300);
+              }}>
+            <Text style={styles.backTextWhite}>删除</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+              style={[
+                styles.backRightBtn,
+                {
+                  backgroundColor: Colors.primary5,
+                  borderTopRightRadius: Margin.bigCorners,
+                  borderBottomRightRadius: Margin.bigCorners,
+                  top: Margin.vertical,
+                },
+              ]}
+              onPress={() => {
+                // this.deleteRow(rowMap, data.item.key, data.item);
+                console.log('data item', data, rowMap);
+                this._closeRow(rowMap, data.item.babyId + '');
+                setTimeout(() => {
+                  this._pinBabyImpl(data.item, data.index);
+                }, 300);
+              }}>
+            <Text style={styles.backTextWhite}>置顶</Text>
+          </TouchableOpacity>
+        </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -288,7 +296,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: 75,
-    right: Margin.horizontal,
+    right: Margin.midHorizontal,
   },
   backRightBtnLeft: {
     right: 75,
@@ -297,7 +305,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   backLeftBtn: {
-    left: Margin.horizontal,
+    left: Margin.midHorizontal,
     alignItems: 'center',
     bottom: 0,
     justifyContent: 'center',

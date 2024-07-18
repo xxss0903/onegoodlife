@@ -128,7 +128,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   _editNewlifeLineImpl(data) {
-    logi('edit 1 new data', data);
     this._editItemInDB(data, mainData.babyInfo.babyId);
     // 插入到最新的数据，这里还是根据时间进行设置
     let dataList = this._editItemByResortTime(this.state.dataList, data);
@@ -139,7 +138,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   _insertNewlifeLineImpl(data) {
-    logi('insert 2 new data', data);
     this._insertItemToDB(data, mainData.babyInfo.babyId);
     // 插入到最新的数据，这里还是根据时间进行设置
     let dataList = this._insertItemByResortTime(this.state.dataList, data);
@@ -151,7 +149,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
         this._refreshStaticsCharts();
       },
     );
-    // this.state.dataList.unshift(this.cloneType)
   }
 
   _renderTypeIcon() {}
@@ -175,7 +172,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
           // 弹出删除弹窗
           this._showDeleteDialog(item, index);
         }}
-        underlayColor={Colors.grayD3}
+        underlayColor={Colors.grayEe}
         activeOpacity={1}
         onPress={() => {
           // 进入详情
@@ -693,7 +690,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     top: 0,
-    right: 0,
+    right: Margin.midHorizontal,
     width: 75,
   },
   backRightBtnLeft: {
@@ -743,7 +740,7 @@ const styles = StyleSheet.create({
     color: Colors.black333,
   },
   backLeftBtn: {
-    left: Margin.horizontal,
+    left: Margin.midHorizontal,
     alignItems: 'center',
     bottom: 0,
     justifyContent: 'center',
