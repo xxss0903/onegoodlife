@@ -31,7 +31,7 @@ import {mainData, commonTypeList} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
 import {
-  deleteDataByRowId,
+  deleteDataByRowId, getDataList,
   getDataListOrderByTime,
   insertData,
   updateData,
@@ -71,6 +71,8 @@ export default class BabyLifeListView extends React.Component<any, any> {
       dataList: tempJsonData.dataList, // 本地的存储的数据列表
       showAddModal: false,
       datepickerOpen: false,
+      size: 20,
+      from: 0
     };
   }
 
@@ -95,10 +97,12 @@ export default class BabyLifeListView extends React.Component<any, any> {
   // 获取数据库数据
   async _initDBData() {
     try {
-      let babyList = await getDataListOrderByTime(
+      let babyList = await getDataList(
         db.database,
         this.props.baby.babyId,
+        this.state.from
       );
+      console.log("get datalist", babyList)
       // 如果第一个不是统计则添加统计
       if (babyList.length === 0) {
         babyList.push({itemType: 1});
@@ -515,7 +519,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
               return rowData?.time + '';
             }}
             renderHiddenItem={(data, rowMap) => {
-              console.log("render hidden item", data)
               let item = data.item
               if (item.itemType === 1) {
                 return null;

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {mainData} from '../mainData';
+import {GradientColors, mainData} from '../mainData';
 
 export class DeviceStorage {
   static KEY_LOCAL_DATA = 'KEY_LOCAL_DATA';
@@ -49,6 +49,9 @@ export class DeviceStorage {
       for (const resKey in res) {
         mainData[resKey] = res[resKey];
       }
+    }
+    if (!mainData.gradientColor) {
+      mainData.gradientColor = GradientColors.gradientColor0
     }
   }
 }

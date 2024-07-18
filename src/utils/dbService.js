@@ -60,7 +60,7 @@ export const getLastData = async (db, type) => {
   try {
     const dataList = [];
     const results = await db.executeSql(
-        `SELECT rowid, name, json, time FROM ${lifeRecordTableName}`,
+        `SELECT rowid, babyId, name, json, time FROM ${lifeRecordTableName}`,
     );
     results.forEach(result => {
       for (let index = 0; index < result.rows.length; index++) {
@@ -75,18 +75,25 @@ export const getLastData = async (db, type) => {
 }
 
 // 获取数据列表
-export const getDataList = async db => {
+export const getDataList = async (db, babyId, offset, limit = 20) => {
   try {
     const dataList = [];
     const results = await db.executeSql(
-      `SELECT rowid, name, json, time FROM ${lifeRecordTableName}`,
+      `SELECT rowid, babyId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} order by time desc limit ${limit} offset ${offset}`,
     );
+    let babyList = [];
     results.forEach(result => {
+      let dataList = result.rows;
       for (let index = 0; index < result.rows.length; index++) {
-        dataList.push(result.rows.item(index));
+        let dbData = dataList.item(index);
+        let data = decodeFuc(dbData.json);
+        let dataObj = JSON.parse(data);
+        dataObj.rowid = dbData.rowid;
+        dataObj.babyId = dbData.babyId;
+        babyList.push(dataObj);
       }
     });
-    return dataList;
+    return babyList;
   } catch (error) {
     logi(error);
     throw Error('Failed to get todoItems !!!');
@@ -113,7 +120,6 @@ export const getDataListOrderByTime = async (db, babyId) => {
         babyList.push(dataObj);
       }
     });
-    console.log('data list ', babyList);
     return babyList;
   } catch (error) {
     logi('get baby timeline data err', error);
@@ -131,7 +137,6 @@ export const insertData = async (db, data, dataStr, babyId) => {
 export const updateData = async (db, data, dataStr, babyId) => {
   const insertQuery = `UPDATE ${lifeRecordTableName} SET name="${data.name}", babyId=${babyId}, time=${data.time}, json="${dataStr}" WHERE rowid = ${data.rowid}`;
   let exeRes = db.executeSql(insertQuery);
-  logi('update res', exeRes);
   return exeRes;
 };
 
