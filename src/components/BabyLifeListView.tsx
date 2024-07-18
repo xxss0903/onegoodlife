@@ -27,12 +27,12 @@ import {
   TooltipComponent,
 } from 'echarts/components';
 import {isIOS, screenW} from '../utils/until';
-import {mainData, commonTypeList} from '../mainData';
+import {mainData, commonTypeList, TYPE_ID} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
 import {
   deleteDataByRowId, getDataList,
-  getDataListOrderByTime,
+  getDataListOrderByTime, getLastData,
   insertData,
   updateData,
 } from '../utils/dbService';
@@ -59,10 +59,6 @@ echarts.use([
 export default class BabyLifeListView extends React.Component<any, any> {
   private staticsViewRef = null; // 统计数据view
   private cloneType = null; // 临时保存type的数据
-  private last24HourChartRef: any; // 统计数据的渲染引用
-  private last24HourCharts: EChartsType; // 统计图表
-  private todayChartRef: any; // 统计数据的渲染引用
-  private todayCharts: EChartsType; // 统计图表
   private newlifeModalRef = null;
   private currentPage = 0;
   private pageSize = 5;
@@ -75,12 +71,11 @@ export default class BabyLifeListView extends React.Component<any, any> {
       dataList: tempJsonData.dataList, // 本地的存储的数据列表
       showAddModal: false,
       datepickerOpen: false,
-      refreshing: true
+      refreshing: true,
     };
   }
 
   componentDidMount() {
-    this._initEcharts();
    this._initData()
   }
 
@@ -109,7 +104,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
           this.pageSize
       );
       let dataList = dbDataList.dataList
-      console.log("get datalist of babyid", this.props.baby.babyId, this.currentPage, page)
       this.totalPage = dbDataList.page.totalPage
       let tempDataList = []
       if (page === 0) {
@@ -123,14 +117,15 @@ export default class BabyLifeListView extends React.Component<any, any> {
       } else {
         tempDataList = this.state.dataList.concat(dataList)
       }
-      console.log("temp datalist length", tempDataList.length)
 
       this.setState({
             refreshing: false,
             dataList: tempDataList,
           },
           () => {
-            this.staticsViewRef?.refreshData();
+        if(page === 0) {
+          this.staticsViewRef?.refreshData();
+        }
           },
       );
     } catch (e: any) {
@@ -141,18 +136,8 @@ export default class BabyLifeListView extends React.Component<any, any> {
     }
   }
 
-  // 获取数据库数据
-  async _initDBData() {
-    this._getDBData(0)
-  }
-
   componentWillUnmount() {
     EventBus.clearAllListeners();
-  }
-
-  async _refreshLocalData(item) {
-    // 数据库删除数据
-    await deleteDataByRowId(db.database, item.rowid);
   }
 
   _editNewlifeLineImpl(data) {
@@ -178,8 +163,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
       },
     );
   }
-
-  _renderTypeIcon() {}
 
   _renderTypeItem(item, index) {
     let time = moment(item.time).format('yyyy-MM-DD HH:mm');
@@ -425,24 +408,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this.staticsViewRef?.refreshData();
   }
 
-  _initEcharts() {
-    if (this.todayChartRef) {
-      this.todayCharts = echarts.init(this.todayChartRef, 'light', {
-        renderer: 'svg',
-        width: screenW,
-        height: screenW * 0.6,
-      });
-    }
-    if (this.last24HourChartRef) {
-      this.last24HourCharts = echarts.init(this.last24HourChartRef, 'light', {
-        renderer: 'svg',
-        width: screenW,
-        height: screenW * 0.6,
-      });
-    }
-  }
-
-
   _closeRow(rowMap, rowKey) {
     rowMap[rowKey]?.closeRow();
   }
@@ -595,19 +560,6 @@ export default class BabyLifeListView extends React.Component<any, any> {
               this._scheduleCloseRow(rowKey, rowMap)
             }}
         />
-        {/*<FlatList*/}
-        {/*    nestedScrollEnabled={true}*/}
-        {/*    style={{flex: 1, paddingHorizontal: Margin.horizontal}}*/}
-        {/*    data={this.state.dataList}*/}
-        {/*    renderItem={({item, index}) => {*/}
-        {/*      if (item.itemType === 1) {*/}
-        {/*        return this._renderLifeLineStatics();*/}
-        {/*      } else {*/}
-        {/*        return this._renderTypeItem(item, index);*/}
-        {/*      }*/}
-        {/*    }}*/}
-        {/*/>*/}
-
         {this._renderDatetimePicker()}
         {/*{this._renderExportAction()}*/}
       </View>
@@ -620,6 +572,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
         <StaticsView
           ref={ref => (this.staticsViewRef = ref)}
           dataList={this.state.dataList}
+          babyId={this.props.baby.babyId}
         />
       </View>
     );

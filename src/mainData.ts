@@ -38,16 +38,16 @@ export const vaccineTags = [
 
 // 生活类型id
 export const TYPE_ID = {
-  MILK: 1,
-  POOP: 2,
-  PEE: 3,
-  JAUNDICE: 4,
-  SPITMILK: 5,
-  OTHER: 6,
-  HEIGHT: 7,
-  WEIGHT: 8,
-  DIAPER: 9,
-  VACCINE: 10,
+  MILK: 1, // 喝奶
+  POOP: 2, // 拉屎
+  PEE: 3, // 撒尿
+  JAUNDICE: 4, // 黄疸
+  SPITMILK: 5, // 吐奶
+  OTHER: 6, // 其他
+  HEIGHT: 7, // 身高
+  WEIGHT: 8, // 体重
+  DIAPER: 9, // 尿布
+  VACCINE: 10, // 疫苗
 };
 
 // 内置的常用类型，不可更改和删除

@@ -7,10 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {mainData} from '../mainData';
+import {mainData, TYPE_ID} from '../mainData';
 import {COLOR_LINE, commonStyles} from '../commonStyle';
 import moment from 'moment';
 import {Margin} from '../space';
+import {getLastData} from "../utils/dbService.js";
+import {db} from "../dataBase.ts";
 
 // 统计独立界面
 export default class StaticsView extends Component<any, any> {
@@ -19,8 +21,9 @@ export default class StaticsView extends Component<any, any> {
     this.state = {
       showAddModal: false,
       datepickerOpen: false,
-      todayDataMap: new Map(),
+      todayDataMap: new Map(), // 今天的数据
       last24Data: new Map(),
+      lastDataMap: new Map() // 最近数据
     };
   }
 
@@ -60,11 +63,26 @@ export default class StaticsView extends Component<any, any> {
     this.refreshData();
   }
 
+
+  // 获取类型最新的数据
+  async _initLastData(){
+    console.log("init last data begin")
+    let lastMilkData = await getLastData(db.database, this.props.babyId, TYPE_ID.MILK);
+    let lastPoopData = await getLastData(db.database, this.props.babyId, TYPE_ID.POOP);
+    let lastDiaperData = await getLastData(db.database, this.props.babyId, TYPE_ID.DIAPER);
+    let lastData = {
+      lastMilkData,
+      lastPoopData,
+      lastDiaperData
+    }
+    console.log("get last data", lastData)
+    this._getLastData(lastData)
+  }
+
   refreshData() {
     let todayData = this._getTodayData();
+    this._initLastData();
     this._getStaticsDataView(todayData, data => {
-      console.log('refresh today data', data, data.size);
-
       this.setState(
         {
           todayDataMap: data,
@@ -84,13 +102,23 @@ export default class StaticsView extends Component<any, any> {
   }
 
   // 获取固定类型的最近的数据
-  _getLastData() {
+  _getLastData(lastData) {
     // 上次喝奶
-    let lastDrinkMilk = '';
+    let lastDrinkMilk = lastData.lastMilkData;
+    if (lastDrinkMilk && lastDrinkMilk.length > 0) {
+      this.state.lastDataMap.set(lastDrinkMilk[0].typeId, lastDrinkMilk[0])
+    }
     // 上次拉屎
-    let lastPoop = '';
-    // 上次打疫苗
-    let lastJuance = '';
+    let lastPoop = lastData.lastPoopData;
+    if (lastPoop && lastPoop.length > 0) {
+      this.state.lastDataMap.set(lastPoop[0].typeId, lastPoop[0])
+    }
+    // 上次换尿布
+    let lastDiaper = lastData.lastDiaperData;
+    if (lastDiaper && lastDiaper.length > 0) {
+      this.state.lastDataMap.set(lastDiaper[0].typeId, lastDiaper[0])
+    }
+    this.forceUpdate()
   }
 
   // 获取今天的数据
@@ -130,6 +158,41 @@ export default class StaticsView extends Component<any, any> {
       }
     }
     return JSON.parse(JSON.stringify(tempDataList));
+  }
+
+  _getLastTime(time){
+    let isSameDay = moment(time).isSame(moment(), 'day')
+    if (isSameDay) {
+      return moment(time).format("HH:mm")
+    } else {
+      let isLastDay = moment(time).isSame(moment().subtract(1, 'day'), 'day')
+      if (isLastDay) {
+        return `昨天${moment(time).format("HH:mm")}`
+      } else {
+        return moment(time).format("MM-DD HH:mm")
+      }
+    }
+
+    return moment(time).format("HH:MM")
+  }
+
+  _renderLastDataMap(dataMap: any){
+    let keyArray = Array.from(dataMap.keys());
+    console.log("last keys ", keyArray)
+    let mapView = keyArray.map((key, index) => {
+      let data = dataMap.get(key);
+      return (
+          <View
+              key={index}
+              style={[commonStyles.flexRow, {marginBottom: Margin.smalHorizontal}]}>
+            <Text style={[styles.contentText]}>
+              {data.name}: {this._getLastTime(data.time)}
+            </Text>
+          </View>
+      );
+    });
+
+    return <View>{mapView}</View>;
   }
 
   _renderDataMap(dataMap: any) {
@@ -176,7 +239,7 @@ export default class StaticsView extends Component<any, any> {
                 ]}>
                 最近数据
               </Text>
-              {this._renderDataMap(this.state.last24Data)}
+              {this._renderLastDataMap(this.state.lastDataMap)}
             </View>
             {/*当天的统计*/}
             <View style={[commonStyles.flexColumn, {flex: 1}]}>
@@ -185,9 +248,9 @@ export default class StaticsView extends Component<any, any> {
                   {marginBottom: Margin.smalHorizontal},
                   styles.titleText,
                 ]}>
-                当天统计
+                24小时统计
               </Text>
-              {this._renderDataMap(this.state.todayDataMap)}
+              {this._renderDataMap(this.state.last24Data)}
             </View>
           </View>
         </View>

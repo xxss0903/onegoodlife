@@ -53,15 +53,16 @@ export const getDataInRange = async (db, from, to) => {
 /**
  * 最新的选择类型的数据
  * @param db
- * @param type
+ * @param babyId
+ * @param typeId
  * @returns {Promise<*[]>}
  */
-export const getLastData = async (db, type) => {
+export const getLastData = async (db, babyId, typeId) => {
   try {
     const dataList = [];
     const results = await db.executeSql(
-        `SELECT rowid, babyId, name, json, time FROM ${lifeRecordTableName}`,
-    );
+        `SELECT rowid, babyId, typeId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} AND typeId = ${typeId}`);
+    console.log("last db data", results[0].rows)
     results.forEach(result => {
       for (let index = 0; index < result.rows.length; index++) {
         dataList.push(result.rows.item(index));
@@ -69,7 +70,7 @@ export const getLastData = async (db, type) => {
     });
     return dataList;
   } catch (error) {
-    logi(error);
+    console.log("error ", error)
     throw Error('Failed to get todoItems !!!');
   }
 }
@@ -82,7 +83,6 @@ export const getDataList = async (db, babyId, page, limit = 20) => {
       `SELECT rowid, babyId, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} order by time desc limit ${limit} offset ${offset}`,
     );
     const countResult = await db.executeSql(`SELECT COUNT(babyId) as count FROM ${lifeRecordTableName} where babyId = ${babyId}`)
-    console.log("get data count ", countResult[0].rows.item(0).count)
     let count = countResult[0].rows.item(0).count
     let babyList = [];
     results.forEach(result => {
@@ -139,7 +139,7 @@ export const getDataListOrderByTime = async (db, babyId) => {
 
 // 插入单条数据
 export const insertData = async (db, data, dataStr, babyId) => {
-  const insertQuery = `INSERT INTO ${lifeRecordTableName} (rowid, name, babyId, time, json) values (${data.time}, "${data.name}", ${babyId}, ${data.time}, "${dataStr}")`;
+  const insertQuery = `INSERT INTO ${lifeRecordTableName} (rowid, typeId, name, babyId, time, json) values (${data.time}, ${data.typeId}, "${data.name}", ${babyId}, ${data.time}, "${dataStr}")`;
   return db.executeSql(insertQuery);
 };
 
