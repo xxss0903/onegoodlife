@@ -7,6 +7,7 @@ import {mainData} from './mainData.ts';
 
 export default class BaseScreen extends React.Component<any, any> {
   render() {
+
     return (
       <SafeAreaInsetsContext.Consumer>
         {insets => (

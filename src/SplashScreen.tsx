@@ -6,6 +6,7 @@ import {logi} from './utils/logutil';
 import BaseScreen from './BaseScreen.tsx';
 import LottieView from 'lottie-react-native';
 import {db} from './dataBase.ts';
+import {mainData} from "./mainData.ts";
 
 export default class SplashScreen extends React.Component<any, any> {
   componentDidMount() {
@@ -14,6 +15,7 @@ export default class SplashScreen extends React.Component<any, any> {
     let loadPromise = new Promise(async resolve => {
       await this._initDb();
       await DeviceStorage.getMainData();
+      console.log('init maindata', mainData.gradientColor)
       resolve('');
     });
 

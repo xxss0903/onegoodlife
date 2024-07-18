@@ -31,7 +31,6 @@ import BaseScreen from './BaseScreen.tsx';
 import {Colors} from './colors';
 import {logi} from './utils/logutil';
 import {screenH, screenW} from './utils/until';
-import LinearGradient from 'react-native-linear-gradient';
 import {showToast} from './utils/toastUtil.js';
 import {DeviceStorage} from './utils/deviceStorage.js';
 
@@ -100,6 +99,7 @@ export default class HomeScreen extends BaseScreen {
           });
           this.babyPageRefs = newPageRefs;
           this.pagerRef && this.pagerRef.setPage(0);
+          EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR)
           this.babyPageRefs.forEach(value => {
             value && value.refreshData();
           });

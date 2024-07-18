@@ -170,7 +170,9 @@ export default class BabiesScreen extends BaseScreen {
     }
     mainData.refreshBabies = true;
     mainData.babies = tempBabies;
+    mainData.babyInfo = mainData.babies[0]
     DeviceStorage.refreshMainData();
+    EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR)
     this.forceUpdate();
   }
 

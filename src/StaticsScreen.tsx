@@ -44,9 +44,11 @@ export default class StaticsScreen extends BaseScreen {
   }
 
   _initListeners() {
-    EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
+    let colorListener = EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
+      console.log("refresh statics screen color change")
       this.forceUpdate();
     });
+    console.log("statics listen color change ", colorListener)
   }
 
   _refreshData() {

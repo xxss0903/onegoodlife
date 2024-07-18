@@ -57,10 +57,12 @@ export default class MineScreen extends BaseScreen {
         this.forceUpdate();
       },
     );
-    EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
+    let colorListener = EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
       console.log('refresh gradient color of minescreen ');
       this.forceUpdate();
     });
+      console.log("mine screen listen color change", colorListener)
+
   }
 
   componentWillUnmount() {

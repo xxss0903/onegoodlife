@@ -150,8 +150,11 @@ export default class BabyInfoScreen extends BaseScreen {
     logi('insert new baby', this.state.babyInfo);
     mainData.refreshBabies = true;
     mainData.babies.unshift(JSON.parse(JSON.stringify(this.state.babyInfo)));
+    mainData.babyInfo = JSON.parse(JSON.stringify(this.state.babyInfo))
+
     DeviceStorage.refreshMainData();
     EventBus.sendEvent(EventBus.REFRESH_BABIES_SCREEN);
+    EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
     this.props.navigation.goBack();
   }
 
