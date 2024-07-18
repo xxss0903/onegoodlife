@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {
-  FlatList,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Image, KeyboardAvoidingView,
+    Modal, Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import {
   diaperTemplateData,
@@ -782,7 +782,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   render() {
     let datetime = this.cloneType ? new Date(this.cloneType.time) : new Date();
     return (
-      <>
+        <>
         <Modal
           animationType="fade"
           transparent={true}
@@ -790,7 +790,12 @@ export default class AddNewLifeModal extends Component<any, any> {
             this.showModal(!this.state.showAddModal);
           }}
           visible={this.state.showAddModal}>
-          <View style={styles.addModalContainer}>
+            <KeyboardAvoidingView
+                style={{flex: 1}}
+                keyboardVerticalOffset={0}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
+                <View style={styles.addModalContainer}>
             <View style={styles.addContentContainer}>
               <View
                 style={{
@@ -832,6 +837,7 @@ export default class AddNewLifeModal extends Component<any, any> {
               </View>
             </View>
           </View>
+            </KeyboardAvoidingView>
         </Modal>
         <DatePicker
           is24hourSource="locale"
@@ -855,7 +861,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             });
           }}
         />
-      </>
+        </>
     );
   }
 }
