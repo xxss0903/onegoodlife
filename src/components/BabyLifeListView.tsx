@@ -10,7 +10,7 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableHighlight,
+  TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {logi} from '../utils/logutil';
@@ -42,6 +42,7 @@ import {commonStyles} from '../commonStyle';
 import {Margin} from '../space';
 import {Colors} from '../colors';
 import {db} from '../dataBase.ts';
+import {SwipeListView} from "react-native-swipe-list-view";
 
 // 测试用数据json，用来存储本地的数据，比如typeMap可以通过动态进行添加存储在本地
 const tempJsonData = {dataList: [{itemType: 1}]};
@@ -413,13 +414,99 @@ export default class BabyLifeListView extends React.Component<any, any> {
     }
   }
 
+
+  _closeRow(rowMap, rowKey) {
+    rowMap[rowKey]?.closeRow();
+  }
+
+  // 复制当前数据
+  _copyItem(item){
+    console.log("clone item", item)
+    let cloneItem = JSON.parse(JSON.stringify(item))
+    let now = moment()
+    cloneItem.time = now;
+    cloneItem.rowid = now
+    cloneItem.key = now
+    // 插入到数据库，刷新列表
+    this._insertNewlifeLineImpl(cloneItem)
+  }
+
+
+  _showRemoveItemDialog(item: any, index: Number) {
+    console.log("remove item", item)
+    Alert.alert(
+        '提示',
+        '确认移除' + (item.name ? item.name : '当前数据') + '吗？',
+        [
+          {
+            text: '取消',
+            onPress: () => {},
+          },
+          {
+            text: '删除',
+            onPress: () => {
+              this._deleteRow(item, index);
+            },
+          },
+        ],
+        {
+          cancelable: true,
+          onDismiss: () => {},
+        },
+    );
+  }
+
+  _renderHiddenItem(item, rowMap, index){
+    return (
+        <View style={styles.rowBack}>
+          <TouchableOpacity
+              style={[
+                styles.backLeftBtn,
+                {
+                  backgroundColor: Colors.primary,
+                  borderTopLeftRadius: Margin.bigCorners,
+                  borderBottomLeftRadius: Margin.bigCorners,
+                  marginBottom: Margin.vertical
+                },
+              ]}
+              onPress={() => {
+                this._closeRow(rowMap, item.time + '');
+                setTimeout(() => {
+                  this._showRemoveItemDialog(item, index);
+                }, 300);
+              }}>
+            <Text style={styles.backTextWhite}>删除</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+              style={[
+                styles.backRightBtn,
+                {
+                  borderTopRightRadius: Margin.bigCorners,
+                  borderBottomRightRadius: Margin.bigCorners,
+                  backgroundColor: Colors.primary5,
+                  marginBottom: Margin.vertical
+                },
+              ]}
+              onPress={() => {
+                // this.deleteRow(rowMap, data.item.key, data.item);
+                this._closeRow(rowMap, item.time + '');
+                setTimeout(() => {
+                  this._copyItem(item)
+                }, 300);
+              }}>
+            <Text style={styles.backTextWhite}>复制</Text>
+          </TouchableOpacity>
+        </View>
+    );
+  }
+
   render() {
     return (
       <View style={[styles.container, {}]}>
-        <FlatList
-            nestedScrollEnabled={true}
-            style={{flex: 1, paddingHorizontal: Margin.horizontal}}
+        <SwipeListView
+            useFlatList={true}
             data={this.state.dataList}
+            style={{flex: 1, paddingHorizontal: Margin.horizontal}}
             renderItem={({item, index}) => {
               if (item.itemType === 1) {
                 return this._renderLifeLineStatics();
@@ -427,7 +514,41 @@ export default class BabyLifeListView extends React.Component<any, any> {
                 return this._renderTypeItem(item, index);
               }
             }}
+            keyExtractor={(rowData, index) => {
+              return rowData?.time + '';
+            }}
+            renderHiddenItem={(data, rowMap) => {
+              console.log("render hidden item", data)
+              let item = data.item
+              if (item.itemType === 1) {
+                return null;
+              } else {
+                return this._renderHiddenItem(item, rowMap, data.index)
+              }
+
+            }}
+            leftOpenValue={75}
+            rightOpenValue={-75}
+            previewOpenValue={-40}
+            previewOpenDelay={1000}
+            onRowDidOpen={(rowKey, rowMap, toValue) => {
+              setTimeout(() => {
+                this._closeRow(rowMap, rowKey);
+              }, 3000);
+            }}
         />
+        {/*<FlatList*/}
+        {/*    nestedScrollEnabled={true}*/}
+        {/*    style={{flex: 1, paddingHorizontal: Margin.horizontal}}*/}
+        {/*    data={this.state.dataList}*/}
+        {/*    renderItem={({item, index}) => {*/}
+        {/*      if (item.itemType === 1) {*/}
+        {/*        return this._renderLifeLineStatics();*/}
+        {/*      } else {*/}
+        {/*        return this._renderTypeItem(item, index);*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*/>*/}
 
         {this._renderDatetimePicker()}
         {/*{this._renderExportAction()}*/}
@@ -572,6 +693,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     top: 0,
+    right: 0,
     width: 75,
   },
   backRightBtnLeft: {
@@ -619,5 +741,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.black333,
+  },
+  backLeftBtn: {
+    left: Margin.horizontal,
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    width: 75,
   },
 });
