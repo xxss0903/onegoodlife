@@ -25,6 +25,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SwipeListView} from 'react-native-swipe-list-view';
 
 export default class BabiesScreen extends BaseScreen {
+  private closeTimeoutMap = new Map()
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -185,6 +187,18 @@ export default class BabiesScreen extends BaseScreen {
     rowMap[rowKey]?.closeRow();
   }
 
+  _scheduleCloseRow(rowKey, rowMap){
+    if (this.closeTimeoutMap.has(rowKey)) {
+      clearTimeout(this.closeTimeoutMap.get(rowKey))
+      this.closeTimeoutMap.delete(rowKey)
+    }
+    let closeTimeout = setTimeout(() => {
+      this._closeRow(rowMap, rowKey);
+      this.closeTimeoutMap.delete(rowKey)
+    }, 3000);
+    this.closeTimeoutMap.set(rowKey, closeTimeout)
+  }
+
   renderScreen() {
     return (
       <View style={[{flex: 1}]}>
@@ -216,9 +230,7 @@ export default class BabiesScreen extends BaseScreen {
               previewOpenDelay={1000}
               onRowDidOpen={(rowKey, rowMap, toValue) => {
                 console.log('open row ' + rowKey, rowMap);
-                setTimeout(() => {
-                  this._closeRow(rowMap, rowKey);
-                }, 3000);
+                this._scheduleCloseRow(rowKey, rowMap)
               }}
             />
           </View>

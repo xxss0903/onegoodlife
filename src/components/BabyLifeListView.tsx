@@ -67,6 +67,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
   private currentPage = 0;
   private pageSize = 5;
   private totalPage = 0; // 数据总的页数
+  private closeTimeoutMap = new Map()
 
   constructor(props) {
     super(props);
@@ -524,6 +525,18 @@ export default class BabyLifeListView extends React.Component<any, any> {
     );
   }
 
+  _scheduleCloseRow(rowKey, rowMap){
+    if (this.closeTimeoutMap.has(rowKey)) {
+      clearTimeout(this.closeTimeoutMap.get(rowKey))
+      this.closeTimeoutMap.delete(rowKey)
+    }
+    let closeTimeout = setTimeout(() => {
+      this._closeRow(rowMap, rowKey);
+      this.closeTimeoutMap.delete(rowKey)
+    }, 3000);
+    this.closeTimeoutMap.set(rowKey, closeTimeout)
+  }
+
   render() {
     return (
       <View style={[styles.container, {}]}>
@@ -576,9 +589,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
             previewOpenValue={-40}
             previewOpenDelay={1000}
             onRowDidOpen={(rowKey, rowMap, toValue) => {
-              setTimeout(() => {
-                this._closeRow(rowMap, rowKey);
-              }, 3000);
+              this._scheduleCloseRow(rowKey, rowMap)
             }}
         />
         {/*<FlatList*/}
@@ -737,8 +748,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     top: 0,
-    right: Margin.midHorizontal,
-    width: 75,
+    right: 2,
+    width: 85,
   },
   backRightBtnLeft: {
     right: 75,
@@ -787,12 +798,12 @@ const styles = StyleSheet.create({
     color: Colors.black333,
   },
   backLeftBtn: {
-    left: Margin.midHorizontal,
+    left: 2,
     alignItems: 'center',
     bottom: 0,
     justifyContent: 'center',
     position: 'absolute',
     top: 0,
-    width: 75,
+    width: 85,
   },
 });
