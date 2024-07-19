@@ -170,7 +170,79 @@ export default class BabyLifeListView extends React.Component<any, any> {
     );
   }
 
-  _renderTypeItem(item, index) {
+  _renderMilkItem(item, index){
+    let time = moment(item.time).format('yyyy-MM-DD HH:mm');
+    let tags = item.selectedTags;
+
+    let tagView = null;
+    if (tags && tags.length > 0) {
+      tagView = renderTagList(tags, [], null, true);
+    }
+
+    // 根据typeId查找type
+    let type = commonTypeList[0];
+    return (
+        <TouchableHighlight
+            onLongPress={() => {
+              // 弹出删除弹窗
+              this._showDeleteDialog(item, index);
+            }}
+            underlayColor={Colors.grayEe}
+            activeOpacity={1}
+            onPress={() => {
+              // 进入详情
+              this._gotoItemDetail(item);
+            }}
+            key={item.time + '_' + item.typeId}
+            style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
+          <View style={[commonStyles.flexRow]}>
+            <View style={styles.timelineItemType}>
+              <Image
+                  style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
+                  source={type.icon}
+              />
+            </View>
+            <View style={styles.timelineItemContent}>
+              <Text style={[styles.rowTitleText]}>宝宝{item.name}啦</Text>
+              <Text
+                  style={[styles.rowCommonText, {marginTop: Margin.midHorizontal}]}>
+                时间：{time}
+              </Text>
+              {item.isMotherMilk ? <Text
+                  style={[
+                    {marginTop: Margin.midHorizontal},
+                    styles.rowCommonText,
+                  ]}>
+                左边：{item.leftTime}分钟 右边：{item.rightTime}分钟
+              </Text> : <Text
+                  style={[
+                    {marginTop: Margin.midHorizontal},
+                    styles.rowCommonText,
+                  ]}>
+                剂量：{item.dose}ml
+              </Text>}
+              {tagView ? (
+                  <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginTop: Margin.vertical,
+                      }}>
+                    {tagView}
+                  </View>
+              ) : null}
+              {item.remark ? (
+                  <Text style={{marginTop: Margin.midHorizontal}}>
+                    {item.remark}
+                  </Text>
+              ) : null}
+            </View>
+          </View>
+        </TouchableHighlight>
+    );
+  }
+
+  _renderDefaultItem(item, index) {
     let time = moment(item.time).format('yyyy-MM-DD HH:mm');
     let tags = item.selectedTags;
 
@@ -181,100 +253,102 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
     // 根据typeId查找type
     let type = mainData.typeMapList.filter(
-      value => value.id === item.typeId,
+        value => value.id === item.typeId,
     )[0];
     return (
-      <TouchableHighlight
-        onLongPress={() => {
-          // 弹出删除弹窗
-          this._showDeleteDialog(item, index);
-        }}
-        underlayColor={Colors.grayEe}
-        activeOpacity={1}
-        onPress={() => {
-          // 进入详情
-          this._gotoItemDetail(item);
-        }}
-        key={item.time + '_' + item.typeId}
-        style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
-        <View style={[commonStyles.flexRow]}>
-          <View style={styles.timelineItemType}>
-            <Image
-              style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
-              source={type.icon}
-            />
+        <TouchableHighlight
+            onLongPress={() => {
+              // 弹出删除弹窗
+              this._showDeleteDialog(item, index);
+            }}
+            underlayColor={Colors.grayEe}
+            activeOpacity={1}
+            onPress={() => {
+              // 进入详情
+              this._gotoItemDetail(item);
+            }}
+            key={item.time + '_' + item.typeId}
+            style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
+          <View style={[commonStyles.flexRow]}>
+            <View style={styles.timelineItemType}>
+              <Image
+                  style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
+                  source={type.icon}
+              />
+            </View>
+            <View style={styles.timelineItemContent}>
+              <Text style={[styles.rowTitleText]}>宝宝{item.name}啦</Text>
+              <Text
+                  style={[styles.rowCommonText, {marginTop: Margin.midHorizontal}]}>
+                时间：{time}
+              </Text>
+              {item.typeId === commonTypeList[3].id ? (
+                  <View
+                      style={[
+                        commonStyles.flexRow,
+                        {marginTop: Margin.midHorizontal},
+                      ]}>
+                    <Text style={[styles.rowCommonText]}>
+                      {'额头：'}
+                      {item.jaundiceValue.header}
+                    </Text>
+                    <Text
+                        style={[
+                          styles.rowCommonText,
+                          {marginLeft: Margin.horizontal},
+                        ]}>
+                      胸口：{item.jaundiceValue.chest}
+                    </Text>
+                  </View>
+              ) : null}
+              {item.typeId === commonTypeList[6].id ? (
+                  <Text
+                      style={[
+                        {marginTop: Margin.midHorizontal},
+                        styles.rowCommonText,
+                      ]}>
+                    身高：{item.height} cm
+                  </Text>
+              ) : null}
+              {item.typeId === commonTypeList[7].id ? (
+                  <Text
+                      style={[
+                        {marginTop: Margin.midHorizontal},
+                        styles.rowCommonText,
+                      ]}>
+                    体重：{item.weight} kg
+                  </Text>
+              ) : null}
+              {tagView ? (
+                  <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        marginTop: Margin.vertical,
+                      }}>
+                    {tagView}
+                  </View>
+              ) : null}
+              {item.remark ? (
+                  <Text style={{marginTop: Margin.midHorizontal}}>
+                    {item.remark}
+                  </Text>
+              ) : null}
+            </View>
           </View>
-          <View style={styles.timelineItemContent}>
-            <Text style={[styles.rowTitleText]}>宝宝{item.name}啦</Text>
-            <Text
-              style={[styles.rowCommonText, {marginTop: Margin.midHorizontal}]}>
-              时间：{time}
-            </Text>
-            {item.dose ? (
-              <Text
-                style={[
-                  {marginTop: Margin.midHorizontal},
-                  styles.rowCommonText,
-                ]}>
-                剂量：{item.dose}ml
-              </Text>
-            ) : null}
-            {item.typeId === commonTypeList[3].id ? (
-              <View
-                style={[
-                  commonStyles.flexRow,
-                  {marginTop: Margin.midHorizontal},
-                ]}>
-                <Text style={[styles.rowCommonText]}>
-                  {'额头：'}
-                  {item.jaundiceValue.header}
-                </Text>
-                <Text
-                  style={[
-                    styles.rowCommonText,
-                    {marginLeft: Margin.horizontal},
-                  ]}>
-                  胸口：{item.jaundiceValue.chest}
-                </Text>
-              </View>
-            ) : null}
-            {item.typeId === commonTypeList[6].id ? (
-              <Text
-                style={[
-                  {marginTop: Margin.midHorizontal},
-                  styles.rowCommonText,
-                ]}>
-                身高：{item.height} cm
-              </Text>
-            ) : null}
-            {item.typeId === commonTypeList[7].id ? (
-              <Text
-                style={[
-                  {marginTop: Margin.midHorizontal},
-                  styles.rowCommonText,
-                ]}>
-                体重：{item.weight} kg
-              </Text>
-            ) : null}
-            {tagView ? (
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  marginTop: Margin.vertical,
-                }}>
-                {tagView}
-              </View>
-            ) : null}
-            {item.remark ? (
-              <Text style={{marginTop: Margin.midHorizontal}}>
-                {item.remark}
-              </Text>
-            ) : null}
-          </View>
-        </View>
-      </TouchableHighlight>
+        </TouchableHighlight>
     );
+  }
+
+  _renderTypeItem(item, index) {
+    switch(item.typeId) {
+      case TYPE_ID.MILK:
+        return this._renderMilkItem(item, index)
+        break;
+      default:
+        return this._renderDefaultItem(item, index)
+        break;
+    }
   }
 
   _toggleDatetimePicker(open: Boolean) {

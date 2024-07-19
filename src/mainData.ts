@@ -2,7 +2,7 @@
 import moment from 'moment';
 import {Colors} from './colors';
 
-export const milkTags = ['纯奶粉', '母乳', '混合喂养']; // 牛奶类型
+export const milkTags = ['奶粉', '母乳']; // 牛奶类型
 export const poopTags = [
   '黄色',
   '褐色',
@@ -204,6 +204,9 @@ export const milkTemplateData = {
   tags: milkTags, // 细分类型：比如吃奶的混合奶，纯奶，奶粉等
   selectedTags: [milkTags[0]], // 选中的类型
   dose: 30, // 剂量，母乳多少毫升
+  leftTime: 5, // 左边喝奶时间，分钟
+  rightTime: 5, // 右边喝奶时间，分钟
+  isMotherMilk: false, // 是母乳
   pictures: [
     {
       time: moment().valueOf(), // 时间戳
