@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
     FlatList,
     Image, KeyboardAvoidingView,
-    Modal, Platform,
+    Platform,
     StyleSheet,
     Text,
     TextInput,
@@ -26,9 +26,10 @@ import {logi} from '../utils/logutil';
 import DatePicker from 'react-native-date-picker';
 import {commonStyles} from '../commonStyle';
 import {renderTagList} from './commonViews';
-import {Checkbox, CheckIcon, Select, Spinner} from 'native-base';
+import {Checkbox, CheckIcon, Select, Modal} from 'native-base';
 import {Margin} from '../space';
 import {Colors} from '../colors';
+import {screenW} from "../utils/until.js";
 
 // 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
@@ -857,14 +858,18 @@ export default class AddNewLifeModal extends Component<any, any> {
   render() {
     let datetime = this.cloneType ? new Date(this.cloneType.time) : new Date();
     return (
-        <>
+        <View style={{}}>
         <Modal
-          animationType="fade"
-          transparent={true}
+            isOpen={this.state.showAddModal}
+            onClose={() => {
+                this.setState({
+                    showAddModal: false
+                })
+            }}
           onRequestClose={() => {
             this.showModal(!this.state.showAddModal);
           }}
-          visible={this.state.showAddModal}>
+            style={{flex: 1}}>
             <KeyboardAvoidingView
                 style={{flex: 1}}
                 keyboardVerticalOffset={0}
@@ -936,7 +941,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             });
           }}
         />
-        </>
+        </View>
     );
   }
 }
@@ -994,6 +999,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
+      width: screenW,
     backgroundColor: '#00000033',
   },
   addContentContainer: {
