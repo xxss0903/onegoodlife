@@ -76,6 +76,7 @@ export default class MineScreen extends BaseScreen {
           {mainData.userInfo.avatarUrl ? (
             <Avatar
               style={{width: 80, height: 80}}
+              bg={'transparent'}
               source={{
                 uri: mainData.userInfo.avatarUrl,
               }}
@@ -83,6 +84,7 @@ export default class MineScreen extends BaseScreen {
           ) : (
             <Avatar
               style={{width: 80, height: 80}}
+              bg={'transparent'}
               source={require('./assets/ic_default_user.webp')}
             />
           )}

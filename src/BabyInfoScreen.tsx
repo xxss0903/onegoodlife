@@ -57,29 +57,64 @@ export default class BabyInfoScreen extends BaseScreen {
   }
 
   _openCamera() {
-    ImagePicker.openCamera({
-      width: 400,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      console.log(image);
-      let imgPath = image.path;
-      this.state.babyInfo.avatar = imgPath;
-      this.forceUpdate();
-    });
+      if (isIOS()) {
+          setTimeout(() => {
+              ImagePicker.openCamera({
+                  width: 400,
+                  height: 400,
+                  writeTempFile: false,
+                  cropping: true,
+              }).then(image => {
+                  console.log(image);
+                  let imgPath = image.path;
+                  this.state.babyInfo.avatar = imgPath;
+                  this.forceUpdate();
+              });
+          }, 300)
+
+      } else {
+          ImagePicker.openCamera({
+              width: 400,
+              height: 400,
+              cropping: true,
+          }).then(image => {
+              console.log(image);
+              let imgPath = image.path;
+              this.state.babyInfo.avatar = imgPath;
+              this.forceUpdate();
+          });
+      }
+
   }
 
   _openGallery() {
-    ImagePicker.openPicker({
-      width: 400,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      console.log(image);
-      let imgPath = image.path;
-      this.state.babyInfo.avatar = imgPath;
-      this.forceUpdate();
-    });
+      if (isIOS()) {
+          setTimeout(() => {
+              ImagePicker.openPicker({
+                  width: 400,
+                  height: 400,
+                  writeTempFile: true,
+                  cropping: true,
+              }).then(image => {
+                  console.log(image);
+                  let imgPath = image.path;
+                  this.state.babyInfo.avatar = imgPath;
+                  this.forceUpdate();
+              });
+          }, 300)
+      } else {
+          ImagePicker.openPicker({
+              width: 400,
+              height: 400,
+              cropping: true,
+          }).then(image => {
+              console.log(image);
+              let imgPath = image.path;
+              this.state.babyInfo.avatar = imgPath;
+              this.forceUpdate();
+          });
+      }
+
   }
 
   // 选择照片/拍照

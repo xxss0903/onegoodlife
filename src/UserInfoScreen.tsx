@@ -7,13 +7,13 @@ import {
 } from 'react-native';
 import {mainData} from './mainData';
 import {commonStyles} from './commonStyle';
-import {Avatar, CheckIcon, Select} from 'native-base';
+import {Avatar, CheckIcon, Image, Select} from 'native-base';
 import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
 import React from 'react';
 import {Colors} from './colors';
 import {DeviceStorage} from './utils/deviceStorage';
-import {isEmpty} from './utils/until';
+import {isEmpty, isIOS} from './utils/until';
 import {showToast} from './utils/toastUtil';
 import EventBus from './utils/eventBus';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -36,6 +36,7 @@ export default class UserInfoScreen extends BaseScreen {
   }
 
   componentDidMount() {
+    console.log("user info", mainData.userInfo)
     this.setState({
       userInfo: mainData.userInfo,
     });
@@ -63,29 +64,67 @@ export default class UserInfoScreen extends BaseScreen {
   }
 
   _openCamera() {
-    ImagePicker.openCamera({
-      width: 400,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      console.log(image);
-      let imgPath = image.path;
-      this.state.userInfo.avatarUrl = imgPath;
-      this.forceUpdate();
-    });
+    if (isIOS()) {
+      setTimeout(() => {
+        ImagePicker.openCamera({
+          width: 400,
+          height: 400,
+          mediaType: 'photo',
+          writeTempFile: true,
+          cropping: true,
+        }).then(image => {
+          console.log(image);
+          let imgPath = image.path;
+          this.state.userInfo.avatarUrl = imgPath;
+          this.forceUpdate();
+        });
+      }, 300)
+    } else {
+      ImagePicker.openCamera({
+        width: 400,
+        height: 400,
+        mediaType: 'photo',
+        cropping: true,
+      }).then(image => {
+        console.log(image);
+        let imgPath = image.path;
+        this.state.userInfo.avatarUrl = imgPath;
+        this.forceUpdate();
+      });
+    }
+
   }
 
   _openGallery() {
-    ImagePicker.openPicker({
-      width: 400,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      console.log(image);
-      let imgPath = image.path;
-      this.state.userInfo.avatarUrl = imgPath;
-      this.forceUpdate();
-    });
+    if (isIOS()) {
+      setTimeout(() => {
+        ImagePicker.openPicker({
+          width: 400,
+          height: 400,
+          mediaType: 'photo',
+          writeTempFile: true,
+          cropping: true,
+        }).then(image => {
+          console.log(image);
+          let imgPath = image.path;
+          this.state.userInfo.avatarUrl = imgPath;
+          this.forceUpdate();
+        });
+      }, 300)
+    } else {
+      ImagePicker.openPicker({
+        width: 400,
+        height: 400,
+        mediaType: 'photo',
+        cropping: true,
+      }).then(image => {
+        console.log(image);
+        let imgPath = image.path;
+        this.state.userInfo.avatarUrl = imgPath;
+        this.forceUpdate();
+      });
+    }
+
   }
 
   renderScreen() {
@@ -107,14 +146,18 @@ export default class UserInfoScreen extends BaseScreen {
             onPress={() => {
               this._changeUserAvatar();
             }}>
-            <Avatar
-              style={{width: 80, height: 80}}
-              bg={'transparent'}
-              source={{
-                uri: this.state.userInfo.avatarUrl,
-              }}>
-              <Avatar.Badge bg="green.500" />
-            </Avatar>
+            {this.state.userInfo.avatarUrl ? <Avatar
+                style={{width: 80, height: 80}}
+                bg={'transparent'}
+                source={{
+                  uri: this.state.userInfo.avatarUrl,
+                }}>
+              <Avatar.Badge bg="green.500"/>
+            </Avatar> : <Avatar
+                style={{width: 80, height: 80}}
+                bg={'transparent'}
+                source={require('./assets/ic_user_default.png')}
+            />}
           </TouchableOpacity>
 
           <View
