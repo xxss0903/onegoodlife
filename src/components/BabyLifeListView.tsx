@@ -156,8 +156,8 @@ export default class BabyLifeListView extends React.Component<any, any> {
     });
   }
 
-  _insertNewlifeLineImpl(data) {
-    this._insertItemToDB(data, mainData.babyInfo.babyId);
+  async _insertNewlifeLineImpl(data: any) {
+    await this._insertItemToDB(data, mainData.babyInfo.babyId);
     // 插入到最新的数据，这里还是根据时间进行设置
     let dataList = this._insertItemByResortTime(this.state.dataList, data);
     this.setState(
@@ -340,12 +340,18 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   // 插入数据到数据库
   async _insertItemToDB(data, babyId) {
-    await insertData(
-      db.database,
-      data,
-      encodeFuc(JSON.stringify(data)),
-      babyId,
-    );
+    try {
+      let insertRes = await insertData(
+          db.database,
+          data,
+          encodeFuc(JSON.stringify(data)),
+          babyId,
+      );
+      console.log("insert new item res", insertRes)
+    } catch (e) {
+      console.log("insert errr", e)
+    }
+
   }
 
   // 重新排序记录，根据时间插入
@@ -420,12 +426,12 @@ export default class BabyLifeListView extends React.Component<any, any> {
 
   // 复制当前数据
   _copyItem(item) {
-    console.log('clone item', item);
     let cloneItem = JSON.parse(JSON.stringify(item));
-    let now = moment();
+    let now = moment().valueOf();
     cloneItem.time = now;
     cloneItem.rowid = now;
     cloneItem.key = now;
+    console.log('clone item', item);
     // 插入到数据库，刷新列表
     this._insertNewlifeLineImpl(cloneItem);
   }

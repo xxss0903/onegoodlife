@@ -360,7 +360,7 @@ export default class GrowthStaticsCard extends Component<any, any> {
             },
           ]}>
           <Image
-            style={{resizeMode: 'contain', width: 16, height: 16}}
+            style={{resizeMode: 'contain', width: 16, height: 16, transform: [{rotate: this.state.showStaticsChart ? '180deg' : '0deg'}]}}
             source={require('../assets/ic_down_white.png')}
           />
         </TouchableOpacity>
