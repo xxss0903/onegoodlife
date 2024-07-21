@@ -36,6 +36,50 @@ export const vaccineTags = [
   '轮状病毒',
 ]; // 疫苗类型
 
+// 统计类型
+export const StaticsType = {
+  DAY: 'day', // 按天统计
+  WEEK: 'week',
+  MONTH: 'month',
+  RANGE: 'range',
+  POWDER: 'powder',
+  MOTHERMILK: 'mothermilk',
+  MIX: 'mix'
+};
+
+export const staticsTypeList = [
+  {
+    id: 1,
+    name: '奶粉',
+    value: 'type_1',
+    text: '奶粉',
+    position: 0,
+    icon: require('./assets/ic_powder.png'),
+    bgColor: Colors.primary4,
+    type: StaticsType.POWDER
+  },
+  {
+    id: 2,
+    name: '母乳',
+    value: 'type_2',
+    text: '母乳',
+    position: 1,
+    icon: require('./assets/ic_milk.png'),
+    bgColor: Colors.primary4,
+    type: StaticsType.MOTHERMILK
+  },
+  {
+    id: 3,
+    name: '母乳/奶粉',
+    value: 'type_3',
+    text: '母乳/奶粉',
+    position: 2,
+    icon: require('./assets/ic_pie.png'),
+    bgColor: Colors.primary4,
+    type: StaticsType.MIX
+  },
+]
+
 // 生活类型id
 export const TYPE_ID = {
   MILK: 1, // 喝奶

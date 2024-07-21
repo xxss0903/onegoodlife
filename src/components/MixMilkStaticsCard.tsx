@@ -10,9 +10,9 @@ import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
 
 /**
- * 奶粉统计
+ * 母乳/奶粉混合统计
  */
-export default class DrinkMilkStaticsCard extends Component<any, any> {
+export default class MixMilkStaticsCard extends Component<any, any> {
   private lineChartConfig = {
     backgroundColor: Colors.white,
     backgroundGradientFrom: Colors.white,
@@ -64,7 +64,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
-      title: '奶粉',
+      title: '母乳/奶粉',
       staticsType: StaticsType.POWDER, // 表格类型: 'line', 'bar', 'pie'
       dateType: StaticsType.DAY,
       // {value: 250, label: 'M'}

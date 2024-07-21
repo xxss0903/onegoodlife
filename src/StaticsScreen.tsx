@@ -14,15 +14,17 @@ import {commonStyles} from './commonStyle';
 import BaseScreen from './BaseScreen.tsx';
 import {Margin} from './space';
 import DrinkMilkStaticsCard, {
-  StaticsType,
 } from './components/DrinkMilkStaticsCard.tsx';
 import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
-import {mainData} from './mainData.ts';
+import {StaticsType, commonActions, mainData, staticsTypeList} from './mainData.ts';
 import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
 import LinearGradient from 'react-native-linear-gradient';
 import {screenH} from './utils/until';
 import EventBus from './utils/eventBus';
+import {FloatingAction} from "react-native-floating-action";
+import MixMilkStaticsCard from "./components/MixMilkStaticsCard.tsx";
+import MotherMilkStaticsCard from "./components/MotherMilkStaticsCard.tsx";
 
 export default class StaticsScreen extends BaseScreen {
   private milkCardRef = null; // 喝奶统计卡片
@@ -35,6 +37,7 @@ export default class StaticsScreen extends BaseScreen {
       staticsList: [], // 统计列表，统计比如喝奶次数，拉屎次数等，可以自行配置
       dataList: [], // 所有的数据
       dataType: StaticsType.DAY, // 统计类型，按天还是按周统计
+      staticsCardList: [staticsTypeList[0], staticsTypeList[1]]
     };
   }
 
@@ -145,17 +148,41 @@ export default class StaticsScreen extends BaseScreen {
 
   _renderHealthTip() {}
 
+  _renderMixMilkStaticsCard(){
+    return <MixMilkStaticsCard/>
+  }
+
+  // 统计卡片列表
   _renderStaticsList() {
+    let staticsListView = this.state.staticsCardList.map(value => {
+      let view = null;
+      switch (value.type) {
+        case StaticsType.MIX:
+          view = <MixMilkStaticsCard/>
+          break;
+        case StaticsType.MOTHERMILK:
+          view = <MotherMilkStaticsCard/>
+          break;
+        case StaticsType.POWDER:
+          view = <DrinkMilkStaticsCard/>
+          break;
+
+      }
+      if (view) {
+        return (
+            <View style={{marginBottom: Margin.vertical}}>
+              {view}
+            </View>
+        )
+      }
+    })
+    console.log("render card list", staticsListView)
     return (
       <View style={[commonStyles.flexColumn]}>
-        <View>
-          <DrinkMilkStaticsCard
-            ref={ref => (this.milkCardRef = ref)}
-            dataList={this.state.dataList}
-            dataType={this.state.dataType}
-          />
+        <View style={[commonStyles.flexColumn]}>
+          {staticsListView}
         </View>
-        <View style={[{marginTop: Margin.vertical}]}>
+        <View>
           <GrowthStaticsCard
             ref={ref => (this.growthCardRef = ref)}
             dataList={this.state.dataList}
@@ -199,6 +226,26 @@ export default class StaticsScreen extends BaseScreen {
             <View>{this._renderStaticsList()}</View>
           </View>
         </ScrollView>
+        <FloatingAction
+            distanceToEdge={{vertical: 50, horizontal: 40}}
+            buttonSize={60}
+            ref={ref => {
+              this.floatingActionRef = ref;
+            }}
+            actions={staticsTypeList}
+            onPressItem={typeName => {
+              console.log('click item', typeName);
+              if (typeName === '全部') {
+                this.props.navigation.navigate('AllTypeScreen');
+              } else {
+                this.isTypeEdit = false;
+                let items = mainData.commonActions.filter(
+                    item => item.name === typeName,
+                );
+                items && items.length > 0 && this._addNewLifeline(items[0]);
+              }
+            }}
+        />
       </View>
     );
   }

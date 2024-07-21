@@ -8,11 +8,12 @@ import moment from 'moment';
 import {mainData, StaticsType, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
+import StaticsView from "./StaticsView.tsx";
 
 /**
- * 奶粉统计
+ * 母乳统计
  */
-export default class DrinkMilkStaticsCard extends Component<any, any> {
+export default class MotherMilkStaticsCard extends Component<any, any> {
   private lineChartConfig = {
     backgroundColor: Colors.white,
     backgroundGradientFrom: Colors.white,
@@ -64,7 +65,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
-      title: '奶粉',
+      title: '母乳',
       staticsType: StaticsType.POWDER, // 表格类型: 'line', 'bar', 'pie'
       dateType: StaticsType.DAY,
       // {value: 250, label: 'M'}
