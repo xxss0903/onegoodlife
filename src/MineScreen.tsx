@@ -76,10 +76,9 @@ export default class MineScreen extends BaseScreen {
       <View style={[styles.container, commonStyles.flexColumn, {flex: 1}]}>
         <View style={[styles.userInfoContainer, commonStyles.center]}>
           {mainData.userInfo.avatarUrl ? (
-            <Avatar
+            <Image
               key={mainData.userInfo.avatarUrl}
-              style={{width: 80, height: 80}}
-              bg={'transparent'}
+              style={{width: 88, height: 88, borderRadius: 44}}
               source={{
                 uri: mainData.userInfo.avatarUrl,
               }}

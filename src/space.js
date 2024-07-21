@@ -24,6 +24,7 @@ export const Margin = {
   bottom: 10,
   rowVertical: 16,
   tabHeight: 40,
+  avatarSize: 80,
 };
 export const Size = {
   fabIconSize: 40,

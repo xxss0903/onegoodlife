@@ -4,10 +4,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Image
 } from 'react-native';
 import {mainData} from './mainData';
 import {commonStyles} from './commonStyle';
-import {Avatar, CheckIcon, Image, Select} from 'native-base';
+import {Avatar, CheckIcon, Select} from 'native-base';
 import {Margin} from './space';
 import BaseScreen from './BaseScreen.tsx';
 import React from 'react';
@@ -72,9 +73,11 @@ export default class UserInfoScreen extends BaseScreen {
           mediaType: 'photo',
           writeTempFile: true,
           cropping: true,
+          includeBase64:true
         }).then(image => {
-          console.log(image);
-          let imgPath = image.path;
+          console.log('select img', image);
+          let base64Img = `data:image/png;base64,${image.data}`
+          let imgPath = base64Img;
           this.state.userInfo.avatarUrl = imgPath;
           this.forceUpdate();
         });
@@ -103,10 +106,11 @@ export default class UserInfoScreen extends BaseScreen {
           height: 400,
           mediaType: 'photo',
           writeTempFile: true,
-          cropping: true,
+          includeBase64:true
         }).then(image => {
-          console.log(image);
-          let imgPath = image.path;
+          console.log('select img', image);
+          let base64Img = `data:image/png;base64,${image.data}`
+          let imgPath = base64Img;
           this.state.userInfo.avatarUrl = imgPath;
           this.forceUpdate();
         });
@@ -146,15 +150,15 @@ export default class UserInfoScreen extends BaseScreen {
             onPress={() => {
               this._changeUserAvatar();
             }}>
-            {this.state.userInfo.avatarUrl ? <Avatar
-                style={{width: 80, height: 80}}
-                bg={'transparent'}
+            {this.state.userInfo.avatarUrl ? <Image
+                width={Margin.avatarSize}
+                height={Margin.avatarSize}
+                style={{width: Margin.avatarSize, height: Margin.avatarSize, borderRadius: Margin.avatarSize/2}}
                 source={{
                   uri: this.state.userInfo.avatarUrl,
                 }}>
-              <Avatar.Badge bg="green.500"/>
-            </Avatar> : <Avatar
-                style={{width: 80, height: 80}}
+            </Image> : <Avatar
+                style={{width: Margin.avatarSize, height: Margin.avatarSize}}
                 bg={'transparent'}
                 source={require('./assets/ic_user_default.png')}
             />}

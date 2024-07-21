@@ -79,9 +79,12 @@ export default class BabyInfoScreen extends BaseScreen {
           height: 400,
           writeTempFile: false,
           cropping: true,
+          includeBase64:true
         }).then(image => {
-          console.log(image);
-          let imgPath = image.path;
+          console.log('select img', image);
+          let base64Img = `data:image/png;base64,${image.data}`
+          let imgPath = base64Img;
+          this.state.babyInfo.avatar = imgPath;
           this.state.babyInfo.avatar = imgPath;
           this.forceUpdate();
         });
@@ -108,9 +111,11 @@ export default class BabyInfoScreen extends BaseScreen {
           height: 400,
           writeTempFile: true,
           cropping: true,
+          includeBase64:true
         }).then(image => {
-          console.log(image);
-          let imgPath = image.path;
+          console.log('select img', image);
+          let base64Img = `data:image/png;base64,${image.data}`
+          let imgPath = base64Img;
           this.state.babyInfo.avatar = imgPath;
           this.forceUpdate();
         });
@@ -215,6 +220,11 @@ export default class BabyInfoScreen extends BaseScreen {
     }
   }
 
+  _renderBabyAvatar(baby){
+    console.log("render baby avatar", baby.avatar)
+    return <Image width={Margin.avatarSize} height={Margin.avatarSize} key={baby.sex} style={{width: Margin.avatarSize, height: Margin.avatarSize, borderRadius: Margin.avatarSize/2}} source={{uri: baby.avatar}} />;
+  }
+
   _renderDefaultAvatar(baby: any) {
     console.log('render baby sex 222', baby.sex);
     let avatarUrl = '';
@@ -223,7 +233,7 @@ export default class BabyInfoScreen extends BaseScreen {
     } else {
       avatarUrl = girlAvatar;
     }
-    return <Avatar key={baby.sex} size={'xl'} source={avatarUrl} />;
+    return <Avatar style={{width: Margin.avatarSize, height: Margin.avatarSize}} key={baby.sex} size={'xl'} source={avatarUrl} />;
   }
 
   renderScreen() {
@@ -377,7 +387,7 @@ export default class BabyInfoScreen extends BaseScreen {
                   onPress={() => {
                     this._choosePicture();
                   }}>
-                  {this._renderDefaultAvatar(this.state.babyInfo)}
+                  {isEmpty(this.state.babyInfo.avatar) ? this._renderDefaultAvatar(this.state.babyInfo) : this._renderBabyAvatar(this.state.babyInfo)}
                 </TouchableOpacity>
               </View>
             </View>

@@ -97,6 +97,7 @@ export default class BabiesScreen extends BaseScreen {
         <Avatar
           key={baby.sex}
           size={'xl'}
+          style={{width: Margin.avatarSize, height: Margin.avatarSize}}
           source={require('./assets/ic_baby_boy.png')}
         />
       );
@@ -105,6 +106,7 @@ export default class BabiesScreen extends BaseScreen {
         <Avatar
           key={baby.sex}
           size={'xl'}
+          style={{width: Margin.avatarSize, height: Margin.avatarSize}}
           source={require('./assets/ic_baby_girl.png')}
         />
       );
@@ -144,6 +146,7 @@ export default class BabiesScreen extends BaseScreen {
             ) : (
               <Avatar
                 size={'xl'}
+                style={{width: Margin.avatarSize, height: Margin.avatarSize}}
                 key={item.avatar}
                 source={{
                   uri: item.avatar,
