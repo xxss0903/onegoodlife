@@ -44,6 +44,8 @@ export const StaticsType = {
   RANGE: 'range',
   POWDER: 'powder',
   MOTHERMILK: 'mothermilk',
+  HEIGHT: 'height',
+  WEIGHT: 'weight',
   MIX: 'mix'
 };
 
@@ -84,6 +86,26 @@ export const staticsTypeList = [
     icon: require('./assets/ic_pie.png'),
     bgColor: Colors.primary4,
     type: StaticsType.MIX
+  },
+  {
+    id: 4,
+    name: '生长曲线-身高',
+    value: 'type_4',
+    text: '生长曲线-身高',
+    position: 3,
+    icon: require('./assets/ic_height.png'),
+    bgColor: Colors.primary4,
+    type: StaticsType.HEIGHT
+  },
+  {
+    id: 5,
+    name: '生长曲线-体重',
+    value: 'type_5',
+    text: '生长曲线-体重',
+    position: 4,
+    icon: require('./assets/ic_weight.png'),
+    bgColor: Colors.primary4,
+    type: StaticsType.WEIGHT
   },
 ]
 
@@ -229,6 +251,7 @@ export const mainData = {
     oldPeeData: null,
     oldPoopData: null,
   },
+  staticsCardList: [staticsTypeList[0]] // 统计类型卡片列表
 };
 
 // 常用按钮

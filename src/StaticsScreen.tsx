@@ -18,13 +18,13 @@ import DrinkMilkStaticsCard, {
 import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
 import {StaticsType, commonActions, mainData, staticsTypeList} from './mainData.ts';
-import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
-import LinearGradient from 'react-native-linear-gradient';
 import {screenH} from './utils/until';
 import EventBus from './utils/eventBus';
 import {FloatingAction} from "react-native-floating-action";
 import MixMilkStaticsCard from "./components/MixMilkStaticsCard.tsx";
 import MotherMilkStaticsCard from "./components/MotherMilkStaticsCard.tsx";
+import WeightStaticsCard from "./components/WeightStaticsCard.tsx";
+import HeightStaticsCard from "./components/HeightStaticsCard.tsx";
 
 export default class StaticsScreen extends BaseScreen {
   private milkCardRef = null; // 喝奶统计卡片
@@ -154,7 +154,7 @@ export default class StaticsScreen extends BaseScreen {
 
   // 统计卡片列表
   _renderStaticsList() {
-    let staticsListView = this.state.staticsCardList.map(value => {
+    let staticsListView = mainData.staticsCardList.map(value => {
       let view = null;
       switch (value.type) {
         case StaticsType.MIX:
@@ -165,6 +165,12 @@ export default class StaticsScreen extends BaseScreen {
           break;
         case StaticsType.POWDER:
           view = <DrinkMilkStaticsCard/>
+          break;
+        case StaticsType.WEIGHT:
+          view = <WeightStaticsCard/>
+          break;
+        case StaticsType.HEIGHT:
+          view = <HeightStaticsCard/>
           break;
 
       }
@@ -179,16 +185,7 @@ export default class StaticsScreen extends BaseScreen {
     console.log("render card list", staticsListView)
     return (
       <View style={[commonStyles.flexColumn]}>
-        <View style={[commonStyles.flexColumn]}>
-          {staticsListView}
-        </View>
-        <View>
-          <GrowthStaticsCard
-            ref={ref => (this.growthCardRef = ref)}
-            dataList={this.state.dataList}
-            dataType={this.state.dataType}
-          />
-        </View>
+        {staticsListView}
       </View>
     );
   }
