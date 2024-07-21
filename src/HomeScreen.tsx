@@ -117,6 +117,9 @@ export default class HomeScreen extends BaseScreen {
     EventBus.addEventListener(EventBus.INSERT_NEW_LIFETIME, data => {
       this._insertNewlifeLineImpl(data);
     });
+    EventBus.addEventListener(EventBus.REFRESH_USER_INFO, data => {
+      this.forceUpdate();
+    });
   }
 
   _editNewLifeline(item: any) {
@@ -311,7 +314,10 @@ export default class HomeScreen extends BaseScreen {
   _renderDefaultAvatar(baby, index) {
     if (baby.sex === 'boy') {
       return (
-        <Avatar size={'lg'} source={require('./assets/ic_baby_boy.png')}>
+        <Avatar
+          key={baby.sex + index}
+          size={'lg'}
+          source={require('./assets/ic_baby_boy.png')}>
           {this.state.currentBabyIndex === index ? (
             <Avatar.Badge bg="green.500" />
           ) : null}
@@ -319,7 +325,10 @@ export default class HomeScreen extends BaseScreen {
       );
     } else {
       return (
-        <Avatar size={'lg'} source={require('./assets/ic_baby_girl.png')}>
+        <Avatar
+          key={baby.sex + index}
+          size={'lg'}
+          source={require('./assets/ic_baby_girl.png')}>
           {this.state.currentBabyIndex === index ? (
             <Avatar.Badge bg="green.500" />
           ) : null}
@@ -393,6 +402,7 @@ export default class HomeScreen extends BaseScreen {
             <Avatar
               size={'lg'}
               bg={'transparent'}
+              key={item.avatar}
               source={{
                 uri: item.avatar,
               }}>

@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import {
-    FlatList,
-    Image, KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
   diaperTemplateData,
@@ -29,7 +30,7 @@ import {renderTagList} from './commonViews';
 import {Checkbox, CheckIcon, Select, Modal} from 'native-base';
 import {Margin} from '../space';
 import {Colors} from '../colors';
-import {screenW} from "../utils/until.js";
+import {screenW} from '../utils/until.js';
 
 // 添加类型的弹窗
 export default class AddNewLifeModal extends Component<any, any> {
@@ -83,107 +84,112 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   // 奶粉，是量
-  _renderMilkPowderVolume(commonDoseTagView){
-
-      return (
-          <View>
-              <View
-                  style={[
-                      {height: 40, marginTop: 12},
-                      commonStyles.flexRow,
-                      commonStyles.center,
-                  ]}>
-                  <Text style={[styles.rowTitleText]}>喝奶量：</Text>
-                  <TextInput
-                      style={[commonStyles.commonTextInputStyle, {}]}
-                      value={this.cloneType.dose.toString()}
-                      onChangeText={text => {
-                          let dose;
-                          if (text) {
-                              dose = parseInt(text);
-                          } else {
-                              dose = '';
-                          }
-                          this.cloneType.dose = dose;
-                          this.forceUpdate();
-                      }}
-                      keyboardType={'number-pad'}
-                      placeholderTextColor={'#bbbbbb'}
-                      placeholder={'请输入喝奶量'}
-                  />
-              </View>
-              <View
-                  style={[
-                      commonStyles.flexRow,
-                      {alignItems: 'center', marginTop: Margin.vertical},
-                  ]}>
-                  <Text style={styles.rowTitleText}>最近奶量：</Text>
-                  {commonDoseTagView}
-              </View>
-          </View>
-      )
+  _renderMilkPowderVolume(commonDoseTagView) {
+    return (
+      <View>
+        <View
+          style={[
+            {height: 40, marginTop: 12},
+            commonStyles.flexRow,
+            commonStyles.center,
+          ]}>
+          <Text style={[styles.rowTitleText]}>喝奶量：</Text>
+          <TextInput
+            style={[commonStyles.commonTextInputStyle, {}]}
+            value={this.cloneType.dose.toString()}
+            onChangeText={text => {
+              let dose;
+              if (text) {
+                dose = parseInt(text);
+              } else {
+                dose = '';
+              }
+              this.cloneType.dose = dose;
+              this.forceUpdate();
+            }}
+            keyboardType={'number-pad'}
+            placeholderTextColor={'#bbbbbb'}
+            placeholder={'请输入喝奶量'}
+          />
+        </View>
+        <View
+          style={[
+            commonStyles.flexRow,
+            {alignItems: 'center', marginTop: Margin.vertical},
+          ]}>
+          <Text style={styles.rowTitleText}>最近奶量：</Text>
+          {commonDoseTagView}
+        </View>
+      </View>
+    );
   }
 
   // 喝母乳，左右多少分钟
   _renderMotherMilkVolume() {
-
-      return (
-          <View style={[
-              {height: 40, marginTop: 12, alignItems: 'center'},
+    return (
+      <View
+        style={[
+          {height: 40, marginTop: 12, alignItems: 'center'},
           commonStyles.flexRow,
-  ]}>
-              <View style={[commonStyles.flexRow, {alignItems: 'center', width: 130}]}>
-                  <Text style={[styles.rowTitleText]}>左边时间：</Text>
-                  <TextInput
-                      style={[ {
-                          fontSize: 16,
-                          textAlign: 'left',
-                          paddingVertical: Margin.vertical,
-                          paddingHorizontal: Margin.midHorizontal,
-                      }]}
-                      value={this.cloneType.leftTime?.toString()}
-                      onChangeText={text => {
-                          let minute;
-                          if (text) {
-                              minute = parseInt(text);
-                          } else {
-                              minute = '';
-                          }
-                          this.cloneType.leftTime = minute;
-                          this.forceUpdate();
-                      }}
-                      keyboardType={'number-pad'}
-                      placeholderTextColor={'#bbbbbb'}
-                      placeholder={'时间'}
-                  />
-              </View>
-              <View style={[commonStyles.flexRow, {alignItems: 'center', width: 130}]}>
-                  <Text style={[styles.rowTitleText]}>右边时间：</Text>
-                  <TextInput
-                      style={[ {
-                          fontSize: 16,
-                          textAlign: 'left',
-                          paddingVertical: Margin.vertical,
-                          paddingHorizontal: Margin.midHorizontal,
-                      }]}
-                      value={this.cloneType.rightTime?.toString()}
-                      onChangeText={text => {
-                          let minute;
-                          if (text) {
-                              minute = parseInt(text);
-                          } else {
-                              minute = '';
-                          }
-                          this.cloneType.rightTime = minute;
-                          this.forceUpdate();
-                      }}
-                      keyboardType={'number-pad'}
-                      placeholderTextColor={'#bbbbbb'}
-                      placeholder={'时间'}
-                  />
-              </View>
-          </View>
-      )
+        ]}>
+        <View
+          style={[commonStyles.flexRow, {alignItems: 'center', width: 130}]}>
+          <Text style={[styles.rowTitleText]}>左边时间：</Text>
+          <TextInput
+            style={[
+              {
+                fontSize: 16,
+                textAlign: 'left',
+                paddingVertical: Margin.vertical,
+                paddingHorizontal: Margin.midHorizontal,
+              },
+            ]}
+            value={this.cloneType.leftTime?.toString()}
+            onChangeText={text => {
+              let minute;
+              if (text) {
+                minute = parseInt(text);
+              } else {
+                minute = '';
+              }
+              this.cloneType.leftTime = minute;
+              this.forceUpdate();
+            }}
+            keyboardType={'number-pad'}
+            placeholderTextColor={'#bbbbbb'}
+            placeholder={'时间'}
+          />
+        </View>
+        <View
+          style={[commonStyles.flexRow, {alignItems: 'center', width: 130}]}>
+          <Text style={[styles.rowTitleText]}>右边时间：</Text>
+          <TextInput
+            style={[
+              {
+                fontSize: 16,
+                textAlign: 'left',
+                paddingVertical: Margin.vertical,
+                paddingHorizontal: Margin.midHorizontal,
+              },
+            ]}
+            value={this.cloneType.rightTime?.toString()}
+            onChangeText={text => {
+              let minute;
+              if (text) {
+                minute = parseInt(text);
+              } else {
+                minute = '';
+              }
+              this.cloneType.rightTime = minute;
+              this.forceUpdate();
+            }}
+            keyboardType={'number-pad'}
+            placeholderTextColor={'#bbbbbb'}
+            placeholder={'时间'}
+          />
+        </View>
+      </View>
+    );
   }
 
   _renderMilkContent(type: any) {
@@ -202,14 +208,14 @@ export default class AddNewLifeModal extends Component<any, any> {
       this.cloneType.tags,
       this.cloneType.selectedTags,
       tag => {
-          console.log("select milk type", tag, this.cloneType.selectedTags)
+        console.log('select milk type', tag, this.cloneType.selectedTags);
         this.forceUpdate();
       },
       false,
       false,
     );
-    let isMotherMilk = this.cloneType.selectedTags[0] === "母乳" // 喝奶粉的
-      this.cloneType.isMotherMilk = isMotherMilk;
+    let isMotherMilk = this.cloneType.selectedTags[0] === '母乳'; // 喝奶粉的
+    this.cloneType.isMotherMilk = isMotherMilk;
     let formatTime = moment(this.cloneType.time).format('yyyy-MM-DD HH:mm');
     // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表
     let commonDoseTagView = renderTagList(this.milkDoseList, [], dose => {
@@ -227,7 +233,9 @@ export default class AddNewLifeModal extends Component<any, any> {
           <Text style={[styles.rowTitleText]}>选择日期：</Text>
           <Text style={[styles.rowContentText]}>{formatTime}</Text>
         </TouchableOpacity>
-          {!isMotherMilk ? this._renderMilkPowderVolume(commonDoseTagView) : this._renderMotherMilkVolume()}
+        {!isMotherMilk
+          ? this._renderMilkPowderVolume(commonDoseTagView)
+          : this._renderMotherMilkVolume()}
 
         <View
           style={[
@@ -858,66 +866,65 @@ export default class AddNewLifeModal extends Component<any, any> {
   render() {
     let datetime = this.cloneType ? new Date(this.cloneType.time) : new Date();
     return (
-        <View style={{}}>
+      <View style={{}}>
         <Modal
-            isOpen={this.state.showAddModal}
-            onClose={() => {
-                this.setState({
-                    showAddModal: false
-                })
-            }}
+          isOpen={this.state.showAddModal}
+          onClose={() => {
+            this.setState({
+              showAddModal: false,
+            });
+          }}
           onRequestClose={() => {
             this.showModal(!this.state.showAddModal);
           }}
-            style={{flex: 1}}>
-            <KeyboardAvoidingView
-                style={{flex: 1}}
-                keyboardVerticalOffset={0}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-            >
-                <View style={styles.addModalContainer}>
-            <View style={styles.addContentContainer}>
-              <View
-                style={{
-                  height: 40,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Text style={[styles.titleText]}>
-                  添加{this.currentAddType?.name}
-                </Text>
-              </View>
-              <View style={{marginBottom: Margin.vertical}}>
-                {this._renderContentView()}
-              </View>
-              <View style={styles.line} />
-              <View style={styles.modalFooter}>
-                <TouchableOpacity
-                  style={styles.btnModalFooter}
-                  onPress={() => {
-                    this.showModal(false);
+          style={{flex: 1}}>
+          <KeyboardAvoidingView
+            style={{flex: 1}}
+            keyboardVerticalOffset={0}
+            behavior={'padding'}>
+            <View style={styles.addModalContainer}>
+              <View style={styles.addContentContainer}>
+                <View
+                  style={{
+                    height: 40,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}>
-                  <Text>取消</Text>
-                </TouchableOpacity>
-                <View style={commonStyles.verticalLine} />
-                <TouchableOpacity
-                  style={styles.btnModalFooter}
-                  onPress={() => {
-                    if (this._checkAddTypeData(this.cloneType)) {
+                  <Text style={[styles.titleText]}>
+                    添加{this.currentAddType?.name}
+                  </Text>
+                </View>
+                <View style={{marginBottom: Margin.vertical}}>
+                  {this._renderContentView()}
+                </View>
+                <View style={styles.line} />
+                <View style={styles.modalFooter}>
+                  <TouchableOpacity
+                    style={styles.btnModalFooter}
+                    onPress={() => {
                       this.showModal(false);
-                      logi('this.pros', this.cloneType);
-                      // 添加数据
-                      this.props.addNewLifeline(this.cloneType);
-                    } else {
-                    }
-                  }}>
-                  <Text>确认</Text>
-                </TouchableOpacity>
+                    }}>
+                    <Text>取消</Text>
+                  </TouchableOpacity>
+                  <View style={commonStyles.verticalLine} />
+                  <TouchableOpacity
+                    style={styles.btnModalFooter}
+                    onPress={() => {
+                      if (this._checkAddTypeData(this.cloneType)) {
+                        this.showModal(false);
+                        logi('this.pros', this.cloneType);
+                        // 添加数据
+                        this.props.addNewLifeline(this.cloneType);
+                      } else {
+                      }
+                    }}>
+                    <Text>确认</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-            </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
         </Modal>
         <DatePicker
           is24hourSource="locale"
@@ -941,7 +948,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             });
           }}
         />
-        </View>
+      </View>
     );
   }
 }
@@ -999,7 +1006,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
-      width: screenW,
+    width: screenW,
     backgroundColor: '#00000033',
   },
   addContentContainer: {

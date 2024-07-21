@@ -7,10 +7,11 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
-  TouchableWithoutFeedback, TouchableHighlight,
+  TouchableWithoutFeedback,
+  TouchableHighlight,
 } from 'react-native';
 import {GradientColors, mainData} from './mainData';
-import {formatTimeToDate} from './utils/until';
+import {formatTimeToDate, isEmpty} from './utils/until';
 import {commonStyles} from './commonStyle';
 import EventBus from './utils/eventBus';
 import {Colors} from './colors';
@@ -25,7 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SwipeListView} from 'react-native-swipe-list-view';
 
 export default class BabiesScreen extends BaseScreen {
-  private closeTimeoutMap = new Map()
+  private closeTimeoutMap = new Map();
 
   constructor(props: any) {
     super(props);
@@ -40,6 +41,7 @@ export default class BabiesScreen extends BaseScreen {
     this.refreshEvent = EventBus.addEventListener(
       EventBus.REFRESH_BABIES_SCREEN,
       () => {
+        console.log('babies list', mainData.babies);
         this.forceUpdate();
       },
     );
@@ -89,13 +91,22 @@ export default class BabiesScreen extends BaseScreen {
   }
 
   _renderDefaultAvatar(baby) {
+    console.log('render baby sex', baby.sex);
     if (baby.sex === 'boy') {
       return (
-        <Avatar size={'xl'} source={require('./assets/ic_baby_boy.png')} />
+        <Avatar
+          key={baby.sex}
+          size={'xl'}
+          source={require('./assets/ic_baby_boy.png')}
+        />
       );
     } else {
       return (
-        <Avatar size={'xl'} source={require('./assets/ic_baby_girl.png')} />
+        <Avatar
+          key={baby.sex}
+          size={'xl'}
+          source={require('./assets/ic_baby_girl.png')}
+        />
       );
     }
   }
@@ -106,50 +117,51 @@ export default class BabiesScreen extends BaseScreen {
 
     return (
       <TouchableHighlight
-          underlayColor={Colors.grayEe}
-          style={{
-            marginTop: Margin.vertical,
-            borderRadius: Margin.bigCorners,
-          }}
+        underlayColor={Colors.grayEe}
+        style={{
+          marginTop: Margin.vertical,
+          borderRadius: Margin.bigCorners,
+        }}
         onPress={() => {
           this._editBaby(item);
         }}>
         <LinearGradient
-            colors={item.bgColor ? item.bgColor : bgColor}
-            start={{x: 0, y: 1}}
-            style={[
-              commonStyles.flexColumn,
-              {
-                borderRadius: Margin.bigCorners,
-                height: 120,
-                justifyContent: 'center',
-                paddingHorizontal: Margin.horizontal
-              },
-            ]}
-            end={{x: 1, y: 0}}>
+          colors={item.bgColor ? item.bgColor : bgColor}
+          start={{x: 0, y: 1}}
+          style={[
+            commonStyles.flexColumn,
+            {
+              borderRadius: Margin.bigCorners,
+              height: 120,
+              justifyContent: 'center',
+              paddingHorizontal: Margin.horizontal,
+            },
+          ]}
+          end={{x: 1, y: 0}}>
           <View style={[commonStyles.flexRow]}>
-            {!(item && item.avatar) ? (
-                this._renderDefaultAvatar(item)
+            {isEmpty(item.avatar) ? (
+              this._renderDefaultAvatar(item)
             ) : (
-                <Avatar
-                    size={'xl'}
-                    source={{
-                      uri: item.avatar,
-                    }}
-                />
+              <Avatar
+                size={'xl'}
+                key={item.avatar}
+                source={{
+                  uri: item.avatar,
+                }}
+              />
             )}
             <View
-                style={[
-                  commonStyles.flexColumn,
-                  {marginLeft: Margin.horizontal, justifyContent: 'center'},
-                ]}>
+              style={[
+                commonStyles.flexColumn,
+                {marginLeft: Margin.horizontal, justifyContent: 'center'},
+              ]}>
               <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
                 姓名：{item.name}
               </Text>
               {item.nickname ? (
-                  <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
-                    小名：{item.nickname}
-                  </Text>
+                <Text style={[{fontSize: 20, fontWeight: 'bold'}]}>
+                  小名：{item.nickname}
+                </Text>
               ) : null}
               <Text style={[{fontSize: 18, marginTop: Margin.vertical}]}>
                 生日：{formatTimeToDate(item.birthDay)}
@@ -177,9 +189,9 @@ export default class BabiesScreen extends BaseScreen {
     }
     mainData.refreshBabies = true;
     mainData.babies = tempBabies;
-    mainData.babyInfo = mainData.babies[0]
+    mainData.babyInfo = mainData.babies[0];
     DeviceStorage.refreshMainData();
-    EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR)
+    EventBus.sendEvent(EventBus.REFRESH_GRADIENT_COLOR);
     this.forceUpdate();
   }
 
@@ -187,16 +199,16 @@ export default class BabiesScreen extends BaseScreen {
     rowMap[rowKey]?.closeRow();
   }
 
-  _scheduleCloseRow(rowKey, rowMap){
+  _scheduleCloseRow(rowKey, rowMap) {
     if (this.closeTimeoutMap.has(rowKey)) {
-      clearTimeout(this.closeTimeoutMap.get(rowKey))
-      this.closeTimeoutMap.delete(rowKey)
+      clearTimeout(this.closeTimeoutMap.get(rowKey));
+      this.closeTimeoutMap.delete(rowKey);
     }
     let closeTimeout = setTimeout(() => {
       this._closeRow(rowMap, rowKey);
-      this.closeTimeoutMap.delete(rowKey)
+      this.closeTimeoutMap.delete(rowKey);
     }, 3000);
-    this.closeTimeoutMap.set(rowKey, closeTimeout)
+    this.closeTimeoutMap.set(rowKey, closeTimeout);
   }
 
   renderScreen() {
@@ -230,7 +242,7 @@ export default class BabiesScreen extends BaseScreen {
               previewOpenDelay={1000}
               onRowDidOpen={(rowKey, rowMap, toValue) => {
                 console.log('open row ' + rowKey, rowMap);
-                this._scheduleCloseRow(rowKey, rowMap)
+                this._scheduleCloseRow(rowKey, rowMap);
               }}
             />
           </View>
@@ -250,47 +262,47 @@ export default class BabiesScreen extends BaseScreen {
 
   _renderHiddenItem(rowMap, data) {
     return (
-        <View style={styles.rowBack}>
-          <TouchableOpacity
-              style={[
-                styles.backLeftBtn,
-                {
-                  backgroundColor: Colors.primary,
-                  borderTopLeftRadius: Margin.bigCorners,
-                  borderBottomLeftRadius: Margin.bigCorners,
-                  top: Margin.vertical,
-                },
-              ]}
-              onPress={() => {
-                // this.deleteRow(rowMap, data.item.key, data.item);
-                this._closeRow(rowMap, data.item.babyId + '');
-                setTimeout(() => {
-                  this._showRemoveBabyDialog(data.item, data.index);
-                }, 300);
-              }}>
-            <Text style={styles.backTextWhite}>删除</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-              style={[
-                styles.backRightBtn,
-                {
-                  backgroundColor: Colors.primary5,
-                  borderTopRightRadius: Margin.bigCorners,
-                  borderBottomRightRadius: Margin.bigCorners,
-                  top: Margin.vertical,
-                },
-              ]}
-              onPress={() => {
-                // this.deleteRow(rowMap, data.item.key, data.item);
-                console.log('data item', data, rowMap);
-                this._closeRow(rowMap, data.item.babyId + '');
-                setTimeout(() => {
-                  this._pinBabyImpl(data.item, data.index);
-                }, 300);
-              }}>
-            <Text style={styles.backTextWhite}>置顶</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.rowBack}>
+        <TouchableOpacity
+          style={[
+            styles.backLeftBtn,
+            {
+              backgroundColor: Colors.primary,
+              borderTopLeftRadius: Margin.bigCorners,
+              borderBottomLeftRadius: Margin.bigCorners,
+              top: Margin.vertical,
+            },
+          ]}
+          onPress={() => {
+            // this.deleteRow(rowMap, data.item.key, data.item);
+            this._closeRow(rowMap, data.item.babyId + '');
+            setTimeout(() => {
+              this._showRemoveBabyDialog(data.item, data.index);
+            }, 300);
+          }}>
+          <Text style={styles.backTextWhite}>删除</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.backRightBtn,
+            {
+              backgroundColor: Colors.primary5,
+              borderTopRightRadius: Margin.bigCorners,
+              borderBottomRightRadius: Margin.bigCorners,
+              top: Margin.vertical,
+            },
+          ]}
+          onPress={() => {
+            // this.deleteRow(rowMap, data.item.key, data.item);
+            console.log('data item', data, rowMap);
+            this._closeRow(rowMap, data.item.babyId + '');
+            setTimeout(() => {
+              this._pinBabyImpl(data.item, data.index);
+            }, 300);
+          }}>
+          <Text style={styles.backTextWhite}>置顶</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }

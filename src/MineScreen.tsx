@@ -57,12 +57,14 @@ export default class MineScreen extends BaseScreen {
         this.forceUpdate();
       },
     );
-    let colorListener = EventBus.addEventListener(EventBus.REFRESH_GRADIENT_COLOR, () => {
-      console.log('refresh gradient color of minescreen ');
-      this.forceUpdate();
-    });
-      console.log("mine screen listen color change", colorListener)
-
+    let colorListener = EventBus.addEventListener(
+      EventBus.REFRESH_GRADIENT_COLOR,
+      () => {
+        console.log('refresh gradient color of minescreen ');
+        this.forceUpdate();
+      },
+    );
+    console.log('mine screen listen color change', colorListener);
   }
 
   componentWillUnmount() {
@@ -75,6 +77,7 @@ export default class MineScreen extends BaseScreen {
         <View style={[styles.userInfoContainer, commonStyles.center]}>
           {mainData.userInfo.avatarUrl ? (
             <Avatar
+              key={mainData.userInfo.avatarUrl}
               style={{width: 80, height: 80}}
               bg={'transparent'}
               source={{
@@ -83,6 +86,7 @@ export default class MineScreen extends BaseScreen {
             />
           ) : (
             <Avatar
+              key={'mine_default'}
               style={{width: 80, height: 80}}
               bg={'transparent'}
               source={require('./assets/ic_default_user.webp')}
