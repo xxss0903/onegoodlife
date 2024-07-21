@@ -56,7 +56,7 @@ export const commonTypeList = [
     id: 1,
     name: '喝奶',
     value: 'type_1',
-    text: '牛奶',
+    text: '喝奶',
     position: 0,
     icon: require('./assets/ic_milk.png'),
     bgColor: Colors.primary4,

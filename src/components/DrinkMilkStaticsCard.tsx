@@ -8,6 +8,7 @@ import moment from 'moment';
 import {mainData, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
+import StaticsView from "./StaticsView.tsx";
 
 // 统计类型
 export const StaticsType = {
@@ -15,6 +16,9 @@ export const StaticsType = {
   WEEK: 'week',
   MONTH: 'month',
   RANGE: 'range',
+  POWDER: 'powder',
+  MOTHERMILK: 'mothermilk',
+  MIX: 'mix'
 };
 
 /**
@@ -72,16 +76,17 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
-      staticsType: 'line', // 表格类型: 'line', 'bar', 'pie'
-      dataType: StaticsType.DAY,
+      title: '奶粉',
+      staticsType: StaticsType.POWDER, // 表格类型: 'line', 'bar', 'pie'
+      dateType: StaticsType.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
     };
   }
 
   componentDidMount() {
-    // this._getDayStaticsData();
-    this._getDayStaticsData();
+    // this._getPowderStaticsData();
+    this._getPowderStaticsData();
   }
 
   // 获取过去24小时的数据
@@ -120,7 +125,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
-  _getDayStaticsData() {
+  _getPowderStaticsData() {
     let today = this._getLast24HoursData();
     let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
     console.log(' statics today data', milkData);
@@ -155,20 +160,20 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     });
   }
 
-  _getWeekStaticsData() {}
+  _getMotherMilkStaticsData() {}
 
-  _getMonthStaticsData() {}
+  _getMixStaticsData() {}
 
   refreshData() {
-    switch (this.state.dataType) {
-      case StaticsType.DAY:
-        this._getDayStaticsData();
+    switch (this.state.staticsType) {
+      case StaticsType.POWDER:
+        this._getPowderStaticsData();
         break;
-      case StaticsType.WEEK:
-        this._getWeekStaticsData();
+      case StaticsType.MOTHERMILK:
+        this._getMotherMilkStaticsData();
         break;
-      case StaticsType.MONTH:
-        this._getMonthStaticsData();
+      case StaticsType.MIX:
+        this._getMixStaticsData();
         break;
       case StaticsType.RANGE:
         break;
@@ -178,7 +183,8 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
 
   _editCard() {}
 
-  _renderLineChart() {
+  // 母乳统计
+  _renderMotherMilkChart() {
     return <LineChart width={ChartWidth} data={this.state.staticsData} />;
   }
 
@@ -186,7 +192,8 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     return <PieChart data={this.state.staticsData} />;
   }
 
-  _renderBarChart() {
+  // 奶粉统计
+  _renderPowderChart() {
     return (
       <BarChart
         width={ChartWidth}
@@ -203,12 +210,12 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
 
   _renderChart(type: string) {
     switch (type) {
-      case 'pie':
+      case StaticsType.MIX:
         return this._renderPieChart();
-      case 'line':
-        return this._renderLineChart();
-      case 'bar':
-        return this._renderBarChart();
+      case StaticsType.MOTHERMILK:
+        return this._renderMotherMilkChart();
+      case StaticsType.POWDER:
+        return this._renderPowderChart();
     }
     return null;
   }
@@ -217,6 +224,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   _changeStaticsType(type: string) {
     this.setState({
       staticsType: type,
+      title: ''
     });
   }
 
@@ -237,7 +245,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              喝奶量
+              喝奶量-{this.state.title}
             </Text>
           </View>
           <Menu
@@ -262,21 +270,30 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
             }}>
             <Menu.Item
               onPress={() => {
-                this._changeStaticsType('bar');
+                this.setState({
+                  staticsType: StaticsType.POWDER,
+                  title: '奶粉'
+                });
               }}>
-              本周
+              奶粉
             </Menu.Item>
             <Menu.Item
               onPress={() => {
-                this._changeStaticsType('line');
+                this.setState({
+                  staticsType: StaticsType.MOTHERMILK,
+                  title: '母乳'
+                });
               }}>
-              本月
+              母乳
             </Menu.Item>
             <Menu.Item
               onPress={() => {
-                this._changeStaticsType('pie');
+                this.setState({
+                  staticsType: StaticsType.MIX,
+                  title: '母乳/奶粉'
+                });
               }}>
-              本年
+              奶粉/母乳
             </Menu.Item>
           </Menu>
         </View>
