@@ -228,7 +228,7 @@ export default class StaticsView extends Component<any, any> {
   render() {
     if (
       (this.state.last24Data && this.state.last24Data.size) ||
-      (this.state.todayDataMap && this.state.todayDataMap.size)
+      (this.state.lastDataMap && this.state.lastDataMap.size)
     ) {
       return (
         <View
@@ -295,7 +295,7 @@ export default class StaticsView extends Component<any, any> {
                 fontWeight: 'bold',
               },
             ]}>
-            您还没有给宝宝添加记录哦！
+            最近还没给宝宝添加记录哦！
           </Text>
         </View>
       );
