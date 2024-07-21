@@ -5,9 +5,12 @@ import {Colors} from '../colors';
 import {ChartWidth, screenW} from '../utils/until';
 import {Margin} from '../space';
 import moment from 'moment';
-import {mainData, StaticsType, TYPE_ID} from '../mainData.ts';
+import {mainData, StaticsDate, StaticsType, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
+import {getDataListOrderByTime} from "../utils/dbService.js";
+import {db} from "../dataBase.ts";
+import EventBus from "../utils/eventBus.js";
 
 /**
  * 奶粉统计
@@ -65,21 +68,22 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       maxMilkDose: 120,
       minMilkDose: 0,
       title: '奶粉',
-      staticsType: StaticsType.POWDER, // 表格类型: 'line', 'bar', 'pie'
-      dateType: StaticsType.DAY,
+      dateType: StaticsDate.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
     };
   }
 
   componentDidMount() {
-    // this._getPowderStaticsData();
-    this._getPowderStaticsData();
+    // this._getLast24StaticsData();
+    this._getLast24StaticsData();
   }
 
+
+
   // 获取过去24小时的数据
-  _getLast24HoursData() {
-    let dataList = [];
+  async _getLast24HoursData() {
+    let dataList = await getDataListOrderByTime(db.database, mainData.babyInfo.babyId)
     let tempDataList: any[] = [];
     // 过去24小时的时间戳
     let last24HourMoment = moment().subtract(1, 'day').valueOf();
@@ -113,8 +117,8 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
-  _getPowderStaticsData() {
-    let today = this._getLast24HoursData();
+  async _getLast24StaticsData() {
+    let today = await this._getLast24HoursData();
     let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
     console.log(' statics today data', milkData);
     let data: any[] = [];
@@ -153,57 +157,35 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   _getMixStaticsData() {}
 
   refreshData() {
-    switch (this.state.staticsType) {
-      case StaticsType.POWDER:
-        this._getPowderStaticsData();
+    switch (this.state.dateType) {
+      case StaticsDate.DAY:
+        this._getLast24StaticsData();
         break;
-      case StaticsType.MOTHERMILK:
+      case StaticsDate.WEEK:
         this._getMotherMilkStaticsData();
         break;
-      case StaticsType.MIX:
+      case StaticsDate.MONTH:
         this._getMixStaticsData();
         break;
-      case StaticsType.RANGE:
+      case StaticsDate.RANGE:
         break;
     }
     this.forceUpdate();
   }
 
-  _editCard() {}
-
   // 母乳统计
-  _renderMotherMilkChart() {
+  _renderLineChart() {
     return <LineChart width={ChartWidth} data={this.state.staticsData} />;
-  }
-
-  _renderPieChart() {
-    return <PieChart data={this.state.staticsData} />;
-  }
-
-  // 奶粉统计
-  _renderPowderChart() {
-    return (
-      <BarChart
-        width={ChartWidth}
-        barWidth={22}
-        noOfSections={3}
-        barBorderRadius={4}
-        frontColor="lightgray"
-        data={this.state.staticsData}
-        yAxisThickness={0}
-        xAxisThickness={0}
-      />
-    );
   }
 
   _renderChart(type: string) {
     switch (type) {
-      case StaticsType.MIX:
-        return this._renderPieChart();
-      case StaticsType.MOTHERMILK:
-        return this._renderMotherMilkChart();
-      case StaticsType.POWDER:
-        return this._renderPowderChart();
+      case StaticsDate.DAY:
+        return this._renderLineChart();
+      case StaticsDate.WEEK:
+        return this._renderLineChart();
+      case StaticsDate.MONTH:
+        return this._renderLineChart();
     }
     return null;
   }
@@ -211,7 +193,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   // 更改统计类型
   _changeStaticsType(type: string) {
     this.setState({
-      staticsType: type,
+      _dateType: type,
       title: ''
     });
   }
@@ -223,7 +205,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
           <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
             <Image
               style={styles.titleIcon}
-              source={require('../assets/ic_milk.png')}
+              source={require('../assets/ic_powder.png')}
             />
             <Text
               style={[
@@ -259,35 +241,40 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
             <Menu.Item
               onPress={() => {
                 this.setState({
-                  staticsType: StaticsType.POWDER,
-                  title: '奶粉'
+                  dateType: StaticsDate.DAY,
                 });
               }}>
-              奶粉
+              天
             </Menu.Item>
             <Menu.Item
               onPress={() => {
                 this.setState({
-                  staticsType: StaticsType.MOTHERMILK,
-                  title: '母乳'
+                  dateType: StaticsDate.WEEK,
                 });
               }}>
-              母乳
+              周
             </Menu.Item>
             <Menu.Item
               onPress={() => {
                 this.setState({
-                  staticsType: StaticsType.MIX,
-                  title: '母乳/奶粉'
+                  dateType: StaticsDate.MONTH,
                 });
               }}>
-              奶粉/母乳
+              月
+            </Menu.Item>
+            <Menu.Item
+                style={{}}
+                onPress={() => {
+                  // 移除当前统计卡片
+                  EventBus.sendEvent(EventBus.REMOVE_CARD, StaticsType.POWDER)
+                }}>
+              移除
             </Menu.Item>
           </Menu>
         </View>
         <View style={styles.dataContainer}>
           {this.state.staticsData?.length > 0
-            ? this._renderChart(this.state.staticsType)
+            ? this._renderChart(this.state.dateType)
             : null}
         </View>
       </View>

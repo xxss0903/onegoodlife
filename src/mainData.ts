@@ -47,6 +47,13 @@ export const StaticsType = {
   MIX: 'mix'
 };
 
+export const StaticsDate = {
+  DAY: 'day', // 按天统计
+  WEEK: 'week',
+  MONTH: 'month',
+  RANGE: 'range',
+};
+
 export const staticsTypeList = [
   {
     id: 1,
