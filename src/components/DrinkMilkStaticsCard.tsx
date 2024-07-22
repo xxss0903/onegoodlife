@@ -117,6 +117,47 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
+  // 获取上个月数据，就是每天的量然后获取到整个月
+  _getLastMonthStaticsData(){
+
+  }
+
+  // 按天获取统计数量
+  async _getDayStaticsData(){
+    let today = await this._getLast24HoursData();
+    let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
+    console.log(' statics today data', milkData);
+    let data: any[] = [];
+    let maxValue = -1;
+    let minValue = -1;
+    milkData.forEach((value: any) => {
+      let timeLabel = moment(value.time).format('HH:mm');
+      let obj = {value: value.dose, label: timeLabel};
+      data.unshift(obj);
+      if (maxValue < 0) {
+        maxValue = value.dose;
+      }
+      if (minValue < 0) {
+        minValue = value.dose;
+      }
+      if (value.dose > maxValue) {
+        maxValue = value.dose;
+      }
+      if (minValue > value.dose) {
+        minValue = value.dose;
+      }
+    });
+
+    minValue = minValue - 20 < 0 ? 0 : minValue - 20;
+    maxValue += 20;
+    console.log('labels and data', minValue, maxValue);
+    this.setState({
+      minMilkDose: minValue,
+      maxMilkDose: maxValue,
+      staticsData: data,
+    });
+  }
+
   async _getLast24StaticsData() {
     let today = await this._getLast24HoursData();
     let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
@@ -162,10 +203,10 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
         this._getLast24StaticsData();
         break;
       case StaticsDate.WEEK:
-        this._getMotherMilkStaticsData();
+        this._getDayStaticsData();
         break;
       case StaticsDate.MONTH:
-        this._getMixStaticsData();
+        this._getLastMonthStaticsData();
         break;
       case StaticsDate.RANGE:
         break;
