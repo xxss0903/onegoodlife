@@ -8,9 +8,12 @@ import moment from 'moment';
 import {mainData, StaticsDate, StaticsType, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
-import {getDataListOrderByTime} from "../utils/dbService.js";
-import {db} from "../dataBase.ts";
-import EventBus from "../utils/eventBus.js";
+import {
+  getDataListByDateRange,
+  getDataListOrderByTime,
+} from '../utils/dbService.js';
+import {db} from '../dataBase.ts';
+import EventBus from '../utils/eventBus.js';
 
 /**
  * 奶粉统计
@@ -76,14 +79,21 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
 
   componentDidMount() {
     // this._getLast24StaticsData();
-    this._getLast24StaticsData();
+    // this._getLast24StaticsData();
   }
-
-
 
   // 获取过去24小时的数据
   async _getLast24HoursData() {
-    let dataList = await getDataListOrderByTime(db.database, mainData.babyInfo.babyId)
+    let now = moment();
+    let last24Moment = now.diff(1, 'days').valueOf();
+    let dataList = await getDataListByDateRange(
+      db.database,
+      mainData.babyInfo.babyId,
+      TYPE_ID.MILK,
+      last24Moment,
+      now.valueOf(),
+    );
+    console.log('last 24 hours milk list', dataList);
     let tempDataList: any[] = [];
     // 过去24小时的时间戳
     let last24HourMoment = moment().subtract(1, 'day').valueOf();
@@ -118,12 +128,10 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   }
 
   // 获取上个月数据，就是每天的量然后获取到整个月
-  _getLastMonthStaticsData(){
-
-  }
+  _getLastMonthStaticsData() {}
 
   // 按天获取统计数量
-  async _getDayStaticsData(){
+  async _getDayStaticsData() {
     let today = await this._getLast24HoursData();
     let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
     console.log(' statics today data', milkData);
@@ -159,9 +167,15 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   }
 
   async _getLast24StaticsData() {
-    let today = await this._getLast24HoursData();
-    let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
-    console.log(' statics today data', milkData);
+    let last24Moment = moment().subtract(1, 'day').valueOf();
+    let milkData = await getDataListByDateRange(
+      db.database,
+      mainData.babyInfo.babyId,
+      TYPE_ID.MILK,
+      last24Moment,
+      moment().valueOf(),
+    );
+    console.log('statics today data', milkData);
     let data: any[] = [];
     let maxValue = -1;
     let minValue = -1;
@@ -235,7 +249,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   _changeStaticsType(type: string) {
     this.setState({
       _dateType: type,
-      title: ''
+      title: '',
     });
   }
 
@@ -304,11 +318,11 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
               月
             </Menu.Item>
             <Menu.Item
-                style={{}}
-                onPress={() => {
-                  // 移除当前统计卡片
-                  EventBus.sendEvent(EventBus.REMOVE_CARD, StaticsType.POWDER)
-                }}>
+              style={{}}
+              onPress={() => {
+                // 移除当前统计卡片
+                EventBus.sendEvent(EventBus.REMOVE_CARD, StaticsType.POWDER);
+              }}>
               移除
             </Menu.Item>
           </Menu>

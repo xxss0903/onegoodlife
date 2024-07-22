@@ -13,22 +13,28 @@ import {Colors} from './colors';
 import {commonStyles} from './commonStyle';
 import BaseScreen from './BaseScreen.tsx';
 import {Margin} from './space';
-import DrinkMilkStaticsCard, {
-} from './components/DrinkMilkStaticsCard.tsx';
+import DrinkMilkStaticsCard from './components/DrinkMilkStaticsCard.tsx';
 import {getDataListOrderByTime} from './utils/dbService';
 import {db} from './dataBase.ts';
-import {StaticsType, commonActions, mainData, staticsTypeList} from './mainData.ts';
+import {
+  StaticsType,
+  commonActions,
+  mainData,
+  staticsTypeList,
+} from './mainData.ts';
 import {screenH} from './utils/until';
 import EventBus from './utils/eventBus';
-import {FloatingAction} from "react-native-floating-action";
-import MixMilkStaticsCard from "./components/MixMilkStaticsCard.tsx";
-import MotherMilkStaticsCard from "./components/MotherMilkStaticsCard.tsx";
-import WeightStaticsCard from "./components/WeightStaticsCard.tsx";
-import HeightStaticsCard from "./components/HeightStaticsCard.tsx";
+import {FloatingAction} from 'react-native-floating-action';
+import MixMilkStaticsCard from './components/MixMilkStaticsCard.tsx';
+import MotherMilkStaticsCard from './components/MotherMilkStaticsCard.tsx';
+import WeightStaticsCard from './components/WeightStaticsCard.tsx';
+import HeightStaticsCard from './components/HeightStaticsCard.tsx';
 
 export default class StaticsScreen extends BaseScreen {
   private milkCardRef = null; // 喝奶统计卡片
   private growthCardRef = null; // 成长统计
+  private cardRefList: any[] = []; // 统计卡片的引用列表
+
   constructor(props) {
     super(props);
     this.state = {
@@ -37,7 +43,7 @@ export default class StaticsScreen extends BaseScreen {
       staticsList: [], // 统计列表，统计比如喝奶次数，拉屎次数等，可以自行配置
       dataList: [], // 所有的数据
       dataType: StaticsType.DAY, // 统计类型，按天还是按周统计
-      staticsCardList: [staticsTypeList[0], staticsTypeList[1]]
+      staticsCardList: [staticsTypeList[0], staticsTypeList[1]],
     };
   }
 
@@ -57,32 +63,18 @@ export default class StaticsScreen extends BaseScreen {
     console.log('statics listen color change ', colorListener);
   }
 
-  _refreshData() {
-    this.growthCardRef?.refreshData();
-    this.milkCardRef?.refreshData();
-  }
-
   async _getDataList() {
-    console.log('get refresh data start 111');
     this.setState({
       refreshing: true,
     });
-    getDataListOrderByTime(db.database, mainData.babyInfo.babyId)
-      .then(dataList => {
-        console.log('get data end', dataList);
-        this.setState(
-          {
-            refreshing: false,
-            dataList: dataList,
-          },
-          () => {
-            this._refreshData();
-          },
-        );
-      })
-      .catch(err => {
-        console.log('get refresh data err', err);
+    setTimeout(() => {
+      this.setState({
+        refreshing: false,
       });
+    }, 1000);
+    this.cardRefList.forEach(ref => {
+      ref.refreshData();
+    });
   }
 
   _changeStaticsDate(type: any) {
@@ -148,46 +140,66 @@ export default class StaticsScreen extends BaseScreen {
 
   _renderHealthTip() {}
 
-  _renderMixMilkStaticsCard(){
-    return <MixMilkStaticsCard/>
+  _renderMixMilkStaticsCard() {
+    return <MixMilkStaticsCard />;
   }
 
   // 统计卡片列表
   _renderStaticsList() {
-    let staticsListView = mainData.staticsCardList.map(value => {
+    let staticsListView = mainData.staticsCardList.map((value, index) => {
       let view = null;
       switch (value.type) {
         case StaticsType.MIX:
-          view = <MixMilkStaticsCard/>
+          view = (
+            <MixMilkStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => this.cardRefList.push(ref)}
+            />
+          );
           break;
         case StaticsType.MOTHERMILK:
-          view = <MotherMilkStaticsCard/>
+          view = (
+            <MotherMilkStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => this.cardRefList.push(ref)}
+            />
+          );
           break;
         case StaticsType.POWDER:
-          view = <DrinkMilkStaticsCard/>
+          view = (
+            <DrinkMilkStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => this.cardRefList.push(ref)}
+            />
+          );
           break;
         case StaticsType.WEIGHT:
-          view = <WeightStaticsCard/>
+          view = (
+            <WeightStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => this.cardRefList.push(ref)}
+            />
+          );
           break;
         case StaticsType.HEIGHT:
-          view = <HeightStaticsCard/>
+          view = (
+            <HeightStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => this.cardRefList.push(ref)}
+            />
+          );
           break;
-
       }
       if (view) {
         return (
-            <View style={{marginBottom: Margin.vertical}}>
-              {view}
-            </View>
-        )
+          <View key={`id_${value.id}`} style={{marginBottom: Margin.vertical}}>
+            {view}
+          </View>
+        );
       }
-    })
-    console.log("render card list", staticsListView)
-    return (
-      <View style={[commonStyles.flexColumn]}>
-        {staticsListView}
-      </View>
-    );
+    });
+    console.log('render card list', staticsListView);
+    return <View style={[commonStyles.flexColumn]}>{staticsListView}</View>;
   }
 
   renderScreen() {
@@ -204,7 +216,6 @@ export default class StaticsScreen extends BaseScreen {
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={() => {
-                console.log('on refresh control');
                 // 刷新数据
                 this._getDataList();
               }}
@@ -224,24 +235,24 @@ export default class StaticsScreen extends BaseScreen {
           </View>
         </ScrollView>
         <FloatingAction
-            distanceToEdge={{vertical: 50, horizontal: 40}}
-            buttonSize={60}
-            ref={ref => {
-              this.floatingActionRef = ref;
-            }}
-            actions={staticsTypeList}
-            onPressItem={typeName => {
-              console.log('click item', typeName);
-              if (typeName === '全部') {
-                this.props.navigation.navigate('AllTypeScreen');
-              } else {
-                this.isTypeEdit = false;
-                let items = mainData.commonActions.filter(
-                    item => item.name === typeName,
-                );
-                items && items.length > 0 && this._addNewLifeline(items[0]);
-              }
-            }}
+          distanceToEdge={{vertical: 50, horizontal: 40}}
+          buttonSize={60}
+          ref={ref => {
+            this.floatingActionRef = ref;
+          }}
+          actions={staticsTypeList}
+          onPressItem={typeName => {
+            console.log('click item', typeName);
+            if (typeName === '全部') {
+              this.props.navigation.navigate('AllTypeScreen');
+            } else {
+              this.isTypeEdit = false;
+              let items = mainData.commonActions.filter(
+                item => item.name === typeName,
+              );
+              items && items.length > 0 && this._addNewLifeline(items[0]);
+            }
+          }}
         />
       </View>
     );

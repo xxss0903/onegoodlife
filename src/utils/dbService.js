@@ -113,6 +113,42 @@ export const getDataList = async (db, babyId, page, limit = 20) => {
   }
 };
 
+/**
+ * 根据时间间隔获取数据
+ * @param db
+ * @param babyId
+ * @param typeId 类型
+ * @param from 开始时间，时间戳
+ * @param to 结束时间，时间戳
+ * @returns {Promise<void>}
+ */
+export const getDataListByDateRange = async (db, babyId, typeId, from, to) => {
+  try {
+    if (!babyId) {
+      console.log('empty data');
+      return [];
+    }
+    let sql = `SELECT rowid, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} AND typeId = ${typeId} AND time BETWEEN ${from} AND ${to} order by time desc`;
+    console.log('datalist range ', sql);
+    const results = await db.executeSql(sql);
+    let babyList = [];
+    results.forEach(result => {
+      let dataList = result.rows;
+      for (let index = 0; index < result.rows.length; index++) {
+        let dbData = dataList.item(index);
+        let data = decodeFuc(dbData.json);
+        let dataObj = JSON.parse(data);
+        dataObj.rowid = dbData.rowid;
+        babyList.push(dataObj);
+      }
+    });
+    return babyList;
+  } catch (error) {
+    logi('getDataListByDateRange err', error);
+    throw Error('Failed to get todoItems !!!');
+  }
+};
+
 export const getDataListOrderByTime = async (db, babyId) => {
   try {
     if (!babyId) {
