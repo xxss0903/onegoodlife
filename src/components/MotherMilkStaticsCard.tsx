@@ -27,6 +27,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
       maxMilkDose: 120,
       minMilkDose: 0,
       title: '母乳',
+      dateTitle: '',
       dateType: StaticsDate.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
@@ -127,6 +128,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
       staticsData: data,
       leftTimeData,
       rightTimeData,
+      dateTitle: '最近一月',
     });
   }
 
@@ -228,6 +230,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
       staticsData: data,
       leftTimeData,
       rightTimeData,
+      dateTitle: '最近一周',
     });
   }
 
@@ -303,6 +306,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
       staticsData: data,
       leftTimeData,
       rightTimeData,
+      dateTitle: '24小时内',
     });
   }
 
@@ -390,7 +394,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              喝奶量-{this.state.title}
+              喝奶量-{this.state.title}（{this.state.dateTitle}）
             </Text>
           </View>
           <Menu

@@ -76,6 +76,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       maxMilkDose: 120,
       minMilkDose: 0,
       title: '奶粉',
+      dateTitle: '',
       dateType: StaticsDate.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
@@ -83,35 +84,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   }
 
   componentDidMount() {
-    // this._getLast24StaticsData();
-    // this._getLast24StaticsData();
-  }
-
-  // 获取过去24小时的数据
-  async _getLast24HoursData() {
-    let now = moment();
-    let last24Moment = now.diff(1, 'days').valueOf();
-    let dataList = await getDataListByDateRange(
-      db.database,
-      mainData.babyInfo.babyId,
-      TYPE_ID.MILK,
-      last24Moment,
-      now.valueOf(),
-    );
-    console.log('last 24 hours milk list', dataList);
-    let tempDataList: any[] = [];
-    // 过去24小时的时间戳
-    let last24HourMoment = moment().subtract(1, 'day').valueOf();
-
-    for (let i = 0; i < dataList.length; i++) {
-      let data = dataList[i];
-      if (data.time > last24HourMoment) {
-        if (data.typeId === TYPE_ID.MILK) {
-          tempDataList.push(data);
-        }
-      }
-    }
-    return JSON.parse(JSON.stringify(tempDataList));
+    this._getLast24StaticsData();
   }
 
   // 获取上个月数据，就是每天的量然后获取到整个月
@@ -124,39 +97,53 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       lastMonthMoment,
       moment().valueOf(),
     );
-    console.log('statics today data', milkData);
+    console.log('statics week data', milkData);
+
+    // 使用map将日期进行统计计算相加
+    let doseMilkMap = new Map();
+    for (let i = 0; i < milkData.length; i++) {
+      let value = milkData[i];
+      let dateStr = moment(value.time).format('MM-DD');
+      if (doseMilkMap.has(dateStr)) {
+        let totalDose = doseMilkMap.get(dateStr) + value.dose;
+        doseMilkMap.set(dateStr, totalDose);
+      } else {
+        doseMilkMap.set(dateStr, value.dose);
+      }
+    }
+
+    console.log('value map ', doseMilkMap);
+
     let data: any[] = [];
     let maxValue = -1;
     let minValue = -1;
-    milkData.forEach((value: any) => {
-      let timeLabel = moment(value.time).format('HH:mm');
-      let obj = {
-        value: value.dose,
-        label: timeLabel,
-        labelTextStyle: styleObject,
-      };
+    for (const key of doseMilkMap.keys()) {
+      let value = doseMilkMap.get(key);
+      console.log('key in map', key, value);
+      let obj = {value, label: key, labelTextStyle: styleObject};
       data.unshift(obj);
       if (maxValue < 0) {
-        maxValue = value.dose;
+        maxValue = value;
       }
       if (minValue < 0) {
-        minValue = value.dose;
+        minValue = value;
       }
-      if (value.dose > maxValue) {
-        maxValue = value.dose;
+      if (value > maxValue) {
+        maxValue = value;
       }
-      if (minValue > value.dose) {
-        minValue = value.dose;
+      if (minValue > value) {
+        minValue = value;
       }
-    });
+    }
 
     minValue = minValue - 20 < 0 ? 0 : minValue - 20;
     maxValue += 20;
-    console.log('labels and data', minValue, maxValue);
+    console.log('max min value', minValue, maxValue);
     this.setState({
       minMilkDose: minValue,
       maxMilkDose: maxValue,
       staticsData: data,
+      dateTitle: '最近一月',
     });
   }
 
@@ -216,6 +203,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       minMilkDose: minValue,
       maxMilkDose: maxValue,
       staticsData: data,
+      dateTitle: '最近一周',
     });
   }
 
@@ -269,6 +257,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       minMilkDose: minValue,
       maxMilkDose: maxValue,
       staticsData: data,
+      dateTitle: '24小时内',
     });
   }
 
@@ -296,6 +285,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   _renderLineChart() {
     return (
       <LineChart
+        color={Colors.primary}
         showVerticalLines
         height={200}
         stepValue={10}
@@ -333,7 +323,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              喝奶量-{this.state.title}
+              喝奶量-{this.state.title}（{this.state.dateTitle}）
             </Text>
           </View>
           <Menu
