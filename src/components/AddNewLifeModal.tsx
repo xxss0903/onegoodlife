@@ -46,6 +46,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   private oldJaundiceData = null;
   private milkDoseList = [30, 50, 60, 70];
   private currentAddType = null;
+  private datePickerMode = 'datetime';
 
   constructor(props: any) {
     super(props);
@@ -53,6 +54,7 @@ export default class AddNewLifeModal extends Component<any, any> {
       showAddModal: false,
       datepickerOpen: false,
     };
+    this.datePickerMode = 'datetime';
   }
 
   // 新增类型
@@ -196,6 +198,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderMilkContent(type: any) {
+    this.datePickerMode = 'datetime';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldMilkData) {
@@ -292,6 +295,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderWeightContent(type) {
+    this.datePickerMode = 'date';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldWeightData) {
@@ -313,6 +317,9 @@ export default class AddNewLifeModal extends Component<any, any> {
       false,
     );
     let formatTime = moment(this.cloneType.time).format('yyyy-MM-DD HH:mm');
+    if (this.cloneType.weight <= 0) {
+      this.cloneType.weight = 4;
+    }
     return (
       <View>
         <TouchableOpacity
@@ -337,7 +344,7 @@ export default class AddNewLifeModal extends Component<any, any> {
             }}
             keyboardType={'number-pad'}
             placeholderTextColor={'#bbbbbb'}
-            placeholder={'请输入喝奶量'}
+            placeholder={'请输入体重'}
           />
         </View>
         <View style={{marginTop: Margin.vertical}}>{tagView}</View>
@@ -361,6 +368,7 @@ export default class AddNewLifeModal extends Component<any, any> {
 
   // 打疫苗
   _renderVaccine() {
+    this.datePickerMode = 'date';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldVaccine) {
@@ -434,6 +442,7 @@ export default class AddNewLifeModal extends Component<any, any> {
 
   // 尿布
   _renderDiaper(type) {
+    this.datePickerMode = 'datetime';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldDiaperData) {
@@ -483,6 +492,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderHeightContent(type) {
+    this.datePickerMode = 'date';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldHeightData) {
@@ -561,6 +571,7 @@ export default class AddNewLifeModal extends Component<any, any> {
 
   // 拉屎
   _renderPoopContent(type) {
+    this.datePickerMode = 'datetime';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldPoopData) {
@@ -610,6 +621,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderPeeContent(type) {
+    this.datePickerMode = 'datetime';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldPeeData) {
@@ -660,6 +672,7 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderJaundiceContent(type) {
+    this.datePickerMode = 'date';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldJaundiceData) {
@@ -764,10 +777,12 @@ export default class AddNewLifeModal extends Component<any, any> {
   }
 
   _renderOtherContent(type) {
+    this.datePickerMode = 'datetime';
     return <View />;
   }
 
   _renderSpitMilkContent(type) {
+    this.datePickerMode = 'datetime';
     // 拷贝一个新的数据
     if (!this.cloneType) {
       if (this.oldSpitMilkData) {
@@ -937,7 +952,7 @@ export default class AddNewLifeModal extends Component<any, any> {
           open={this.state.datepickerOpen}
           date={datetime}
           modal={true}
-          mode={'datetime'}
+          mode={this.datePickerMode}
           onConfirm={date => {
             // 确认选择，将日期转为时间戳
             this.cloneType.time = moment(date).valueOf();

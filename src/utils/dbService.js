@@ -149,6 +149,40 @@ export const getDataListByDateRange = async (db, babyId, typeId, from, to) => {
   }
 };
 
+/**
+ * 根据type类型获取所有的数据，主要是身高等
+ * @param db
+ * @param babyId
+ * @param typeId
+ * @returns {Promise<*[]>}
+ */
+export const getDataListByType = async (db, babyId, typeId) => {
+  try {
+    if (!babyId) {
+      console.log('empty data');
+      return [];
+    }
+    let sql = `SELECT rowid, name, json, time FROM ${lifeRecordTableName} where babyId = ${babyId} AND typeId = ${typeId} order by time desc`;
+    console.log('datalist range ', sql);
+    const results = await db.executeSql(sql);
+    let babyList = [];
+    results.forEach(result => {
+      let dataList = result.rows;
+      for (let index = 0; index < result.rows.length; index++) {
+        let dbData = dataList.item(index);
+        let data = decodeFuc(dbData.json);
+        let dataObj = JSON.parse(data);
+        dataObj.rowid = dbData.rowid;
+        babyList.push(dataObj);
+      }
+    });
+    return babyList;
+  } catch (error) {
+    logi('getDataListByDateRange err', error);
+    return [];
+  }
+};
+
 export const getDataListOrderByTime = async (db, babyId) => {
   try {
     if (!babyId) {

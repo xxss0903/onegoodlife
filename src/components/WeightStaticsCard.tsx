@@ -7,7 +7,10 @@ import {mainData, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
 import {ChartWidth} from '../utils/until';
-import girlsHeight from '../data/girls-height.json';
+import girlsWeight from '../data/girls-weight.json';
+import moment from 'moment/moment';
+import {getDataListByType} from '../utils/dbService';
+import {db} from '../dataBase.ts';
 
 // 统计类型
 export const StaticsType = {
@@ -29,18 +32,19 @@ export default class WeightStaticsCard extends Component<any, any> {
       staticsType: 'line', // 表格类型: 'line', 'bar', 'pie'
       dataType: StaticsType.DAY,
       // {value: 250, label: 'M'}
-      staticsData: [{value: 250, label: 'M'}],
+      staticsData: [],
       weightTitle: '',
       heightTitle: '',
       showStaticsChart: false, // 显示生长统计，默认不显示
-      girlsHeight: {
-        height1List: [],
-        height2List: [],
-        height3List: [],
-        height4List: [],
-        height5List: [],
-        height6List: [],
-        height7List: [],
+      maxValue: 10,
+      girlsWeight: {
+        dataList1: [],
+        dataList2: [],
+        dataList3: [],
+        dataList4: [],
+        dataList5: [],
+        dataList6: [],
+        dataList7: [],
       },
     };
   }
@@ -50,106 +54,132 @@ export default class WeightStaticsCard extends Component<any, any> {
     if (this.state.showStaticsChart) {
       this._initBaseData();
     }
-    // this._getDayStaticsData();
+    this._getStaticsData();
+  }
+
+  async _getDataListFromDb() {
+    const dataList = await getDataListByType(
+      db.database,
+      mainData.babyInfo.babyId,
+      TYPE_ID.HEIGHT,
+    );
+    return dataList;
+  }
+
+  async _getStaticsData() {
+    let heightList = await this._getDataListFromDb();
+    let heightMap = new Map();
+    heightList.forEach(value => {
+      let month = moment(value.time).format('YYYY-MM');
+      if (heightMap.has(month)) {
+        if (value.height > heightMap.get(month)) {
+          heightMap.set(month, value.height); // 将最大的高度作为当前月份最高的更新
+        }
+      } else {
+        heightMap.set(month, value.height);
+      }
+    });
+    // 高度的值
+    console.log('height map ', heightMap);
   }
 
   // 初始化初始统计数据
   _initBaseData() {
+    console.log('init base data 1 ', mainData.babyInfo.sex);
     if (mainData.babyInfo.sex === 'boy') {
       this.setState({
-        heightTitle: `身高-男`,
         weightTitle: `体重-男`,
       });
       this._initBoyGrowthData();
     } else {
       this.setState({
-        heightTitle: `身高-女`,
         weightTitle: `体重-女`,
       });
-      this._initGirlHeightData();
+      this._initGirlWeightData();
     }
   }
 
   _initBoyGrowthData() {}
 
-  _initGirlHeightData() {
-    let height1List: any[] = []; //下
-    let height2List: any[] = []; //中下
-    let height3List: any[] = []; // 中下
-    let height4List: any[] = []; // 中身高
-    let height5List: any[] = []; // 中上
-    let height6List: any[] = []; // 重伤
-    let height7List: any[] = []; //上
+  _initGirlWeightData() {
+    let dataList1: any[] = []; //下
+    let dataList2: any[] = []; //中下
+    let dataList3: any[] = []; // 中下
+    let dataList4: any[] = []; // 中身高
+    let dataList5: any[] = []; // 中上
+    let dataList6: any[] = []; // 重伤
+    let dataList7: any[] = []; //上
 
-    girlsHeight.forEach(value => {
+    girlsWeight.forEach(value => {
       let month = value['age']; // 月份
-      let heights = value['percentiles'];
-      height1List.push({value: heights[0]['v'], label: month + ''});
-      height2List.push({value: heights[1]['v'], label: month + ''});
-      height3List.push({value: heights[2]['v'], label: month + ''});
-      height4List.push({value: heights[3]['v'], label: month + ''});
-      height5List.push({value: heights[4]['v'], label: month + ''});
-      height6List.push({value: heights[5]['v'], label: month + ''});
-      height7List.push({value: heights[6]['v'], label: month + ''});
+      let weightList = value['percentiles'];
+      dataList1.push({value: weightList[0]['v'], label: month + ''});
+      dataList2.push({value: weightList[1]['v'], label: month + ''});
+      dataList3.push({value: weightList[2]['v'], label: month + ''});
+      dataList4.push({value: weightList[3]['v'], label: month + ''});
+      dataList5.push({value: weightList[4]['v'], label: month + ''});
+      dataList6.push({value: weightList[5]['v'], label: month + ''});
+      dataList7.push({value: weightList[6]['v'], label: month + ''});
     });
+    console.log('init base weight data', dataList1);
     this.setState({
-      girlsHeight: {
-        height1List,
-        height2List,
-        height3List,
-        height4List,
-        height5List,
-        height6List,
-        height7List,
+      girlsWeight: {
+        dataList1,
+        dataList2,
+        dataList3,
+        dataList4,
+        dataList5,
+        dataList6,
+        dataList7,
       },
     });
   }
 
   refreshData() {
     this._initBaseData();
+    this._getStaticsData();
   }
 
-  _editCard() {}
-
   _renderBoyGrowthLineChart() {
-    const height1List = this.state.girlsHeight['height1List'];
-    const height3List = this.state.girlsHeight['height3List'];
-    const height4List = this.state.girlsHeight['height4List'];
-    const height5List = this.state.girlsHeight['height5List'];
-    const height7List = this.state.girlsHeight['height7List'];
-    if (height1List && height1List.length > 0) {
+    const dataList1 = this.state.girlsWeight['dataList1'];
+    const dataList3 = this.state.girlsWeight['dataList3'];
+    const dataList4 = this.state.girlsWeight['dataList4'];
+    const dataList5 = this.state.girlsWeight['dataList5'];
+    const dataList7 = this.state.girlsWeight['dataList7'];
+    if (dataList1 && dataList1.length > 0) {
       return (
         <LineChart
-          height={240}
-          maxValue={40}
+          height={340}
+          showVerticalLines={true}
+          verticalLinesColor={Colors.grayEe}
           hideDataPoints={true}
-          yAxisOffset={40}
+          verticalLinesStrokeDashArray={[4, 8]}
           showXAxisIndices={false}
           thickness={1}
           width={ChartWidth}
           dataSet={[
             {
-              data: height1List,
+              data: dataList1,
               color: '#FFAFCC80',
               strokeDashArray: dashData,
             },
             {
-              data: height3List,
+              data: dataList3,
               color: '#CDB4DB80',
               strokeDashArray: dashData,
             },
             {
-              data: height4List,
+              data: dataList4,
               color: '#A2D2FF80',
               strokeDashArray: dashData,
             },
             {
-              data: height5List,
+              data: dataList5,
               color: '#CDB4DB80',
               strokeDashArray: dashData,
             },
             {
-              data: height7List,
+              data: dataList7,
               color: '#FFAFCC80',
               strokeDashArray: dashData,
             },
@@ -171,20 +201,20 @@ export default class WeightStaticsCard extends Component<any, any> {
   }
 
   _renderGirlGrowthLineChart() {
-    const height1List = this.state.girlsHeight['height1List'];
-    const height3List = this.state.girlsHeight['height3List'];
-    const height4List = this.state.girlsHeight['height4List'];
-    const height5List = this.state.girlsHeight['height5List'];
-    const height7List = this.state.girlsHeight['height7List'];
-    if (height1List && height1List.length > 0) {
+    const dataList1 = this.state.girlsWeight['dataList1'];
+    const dataList3 = this.state.girlsWeight['dataList3'];
+    const dataList4 = this.state.girlsWeight['dataList4'];
+    const dataList5 = this.state.girlsWeight['dataList5'];
+    const dataList7 = this.state.girlsWeight['dataList7'];
+    console.log('render girl weight', dataList1);
+    if (dataList1 && dataList1.length > 0) {
       return (
         <LineChart
           height={240}
-          maxValue={40}
+          maxValue={this.state.maxValue}
           showVerticalLines={true}
           verticalLinesColor={Colors.grayEe}
           hideDataPoints={true}
-          yAxisOffset={40}
           initialSpacing={10}
           spacing={24}
           verticalLinesStrokeDashArray={[4, 8]}
@@ -193,39 +223,31 @@ export default class WeightStaticsCard extends Component<any, any> {
           width={ChartWidth}
           dataSet={[
             {
-              data: height1List,
+              data: dataList1,
               color: '#FFAFCC80',
               strokeDashArray: dashData,
             },
             {
-              data: height3List,
+              data: dataList3,
               color: '#CDB4DB80',
               strokeDashArray: dashData,
             },
             {
-              data: height4List,
+              data: dataList4,
               color: '#A2D2FF80',
               strokeDashArray: dashData,
             },
             {
-              data: height5List,
+              data: dataList5,
               color: '#CDB4DB80',
               strokeDashArray: dashData,
             },
             {
-              data: height7List,
+              data: dataList7,
               color: '#FFAFCC80',
               strokeDashArray: dashData,
             },
             // 身高数据
-            {
-              data: [
-                {value: 48, label: '0'},
-                {value: 55, label: '0.2'},
-                {value: 60, label: '0.3'},
-                {value: 62, label: '0.5'},
-              ],
-            },
           ]}
         />
       );
@@ -246,6 +268,7 @@ export default class WeightStaticsCard extends Component<any, any> {
   _exportGrowthImage() {}
 
   _renderWeight() {
+    console.log('render weight chart');
     return (
       <View style={{marginTop: Margin.horizontal}}>
         <View style={[styles.titleContainer, commonStyles.flexRow]}>
@@ -266,49 +289,14 @@ export default class WeightStaticsCard extends Component<any, any> {
             </Text>
           </View>
         </View>
-        <View style={styles.dataContainer}>
-          {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
-        </View>
-      </View>
-    );
-  }
-
-  _renderHeight() {
-    return (
-      <View style={{}}>
-        <View style={[styles.titleContainer, commonStyles.flexRow]}>
-          <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
-            <Image
-              style={styles.titleIcon}
-              source={require('../assets/ic_height.png')}
-            />
-            <Text
-              style={[
-                {
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  marginLeft: Margin.midHorizontal,
-                },
-              ]}>
-              {this.state.heightTitle}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.dataContainer}>
-          {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
-        </View>
+        <View style={styles.dataContainer}>{this._renderLineChart()}</View>
       </View>
     );
   }
 
   _renderStaticsChart() {
     if (this.state.showStaticsChart) {
-      return (
-        <View>
-          {this._renderHeight()}
-          {this._renderWeight()}
-        </View>
-      );
+      return <View>{this._renderWeight()}</View>;
     } else {
       return null;
     }
@@ -360,7 +348,14 @@ export default class WeightStaticsCard extends Component<any, any> {
             },
           ]}>
           <Image
-            style={{resizeMode: 'contain', width: 16, height: 16, transform: [{rotate: this.state.showStaticsChart ? '180deg' : '0deg'}]}}
+            style={{
+              resizeMode: 'contain',
+              width: 16,
+              height: 16,
+              transform: [
+                {rotate: this.state.showStaticsChart ? '180deg' : '0deg'},
+              ],
+            }}
             source={require('../assets/ic_down_white.png')}
           />
         </TouchableOpacity>

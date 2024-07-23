@@ -46,7 +46,7 @@ export const StaticsType = {
   MOTHERMILK: 'mothermilk',
   HEIGHT: 'height',
   WEIGHT: 'weight',
-  MIX: 'mix'
+  MIX: 'mix',
 };
 
 export const StaticsDate = {
@@ -65,7 +65,7 @@ export const staticsTypeList = [
     position: 0,
     icon: require('./assets/ic_powder.png'),
     bgColor: Colors.primary4,
-    type: StaticsType.POWDER
+    type: StaticsType.POWDER,
   },
   {
     id: 2,
@@ -75,17 +75,7 @@ export const staticsTypeList = [
     position: 1,
     icon: require('./assets/ic_milk.png'),
     bgColor: Colors.primary4,
-    type: StaticsType.MOTHERMILK
-  },
-  {
-    id: 3,
-    name: '母乳/奶粉',
-    value: 'type_3',
-    text: '母乳/奶粉',
-    position: 2,
-    icon: require('./assets/ic_pie.png'),
-    bgColor: Colors.primary4,
-    type: StaticsType.MIX
+    type: StaticsType.MOTHERMILK,
   },
   {
     id: 4,
@@ -95,7 +85,7 @@ export const staticsTypeList = [
     position: 3,
     icon: require('./assets/ic_height.png'),
     bgColor: Colors.primary4,
-    type: StaticsType.HEIGHT
+    type: StaticsType.HEIGHT,
   },
   {
     id: 5,
@@ -105,9 +95,9 @@ export const staticsTypeList = [
     position: 4,
     icon: require('./assets/ic_weight.png'),
     bgColor: Colors.primary4,
-    type: StaticsType.WEIGHT
+    type: StaticsType.WEIGHT,
   },
-]
+];
 
 // 生活类型id
 export const TYPE_ID = {
@@ -251,7 +241,7 @@ export const mainData = {
     oldPeeData: null,
     oldPoopData: null,
   },
-  staticsCardList: [staticsTypeList[0]] // 统计类型卡片列表
+  staticsCardList: [staticsTypeList[0], staticsTypeList[3]], // 统计类型卡片列表
 };
 
 // 常用按钮
