@@ -15,6 +15,11 @@ import {
 import {db} from '../dataBase.ts';
 import EventBus from '../utils/eventBus.js';
 
+const styleObject = {
+  transform: [{rotate: '60deg'}],
+  paddingLeft: Margin.horizontal,
+};
+
 /**
  * 奶粉统计
  */
@@ -128,19 +133,26 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
   }
 
   // 获取上个月数据，就是每天的量然后获取到整个月
-  _getLastMonthStaticsData() {}
-
-  // 按天获取统计数量
-  async _getDayStaticsData() {
-    let today = await this._getLast24HoursData();
-    let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
-    console.log(' statics today data', milkData);
+  async _getLastMonthStaticsData() {
+    let lastMonthMoment = moment().subtract(30, 'day').valueOf();
+    let milkData = await getDataListByDateRange(
+      db.database,
+      mainData.babyInfo.babyId,
+      TYPE_ID.MILK,
+      lastMonthMoment,
+      moment().valueOf(),
+    );
+    console.log('statics today data', milkData);
     let data: any[] = [];
     let maxValue = -1;
     let minValue = -1;
     milkData.forEach((value: any) => {
       let timeLabel = moment(value.time).format('HH:mm');
-      let obj = {value: value.dose, label: timeLabel};
+      let obj = {
+        value: value.dose,
+        label: timeLabel,
+        labelTextStyle: styleObject,
+      };
       data.unshift(obj);
       if (maxValue < 0) {
         maxValue = value.dose;
@@ -159,6 +171,65 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     minValue = minValue - 20 < 0 ? 0 : minValue - 20;
     maxValue += 20;
     console.log('labels and data', minValue, maxValue);
+    this.setState({
+      minMilkDose: minValue,
+      maxMilkDose: maxValue,
+      staticsData: data,
+    });
+  }
+
+  // 按天获取统计数量
+  async _getDayStaticsData() {
+    let lastMonthMoment = moment().subtract(7, 'day').valueOf();
+    let milkData = await getDataListByDateRange(
+      db.database,
+      mainData.babyInfo.babyId,
+      TYPE_ID.MILK,
+      lastMonthMoment,
+      moment().valueOf(),
+    );
+    console.log('statics week data', milkData);
+
+    // 使用map将日期进行统计计算相加
+    let doseMilkMap = new Map();
+    for (let i = 0; i < milkData.length; i++) {
+      let value = milkData[i];
+      let dateStr = moment(value.time).format('MM-DD');
+      if (doseMilkMap.has(dateStr)) {
+        let totalDose = doseMilkMap.get(dateStr) + value.dose;
+        doseMilkMap.set(dateStr, totalDose);
+      } else {
+        doseMilkMap.set(dateStr, value.dose);
+      }
+    }
+
+    console.log('value map ', doseMilkMap);
+
+    let data: any[] = [];
+    let maxValue = -1;
+    let minValue = -1;
+    for (const key of doseMilkMap.keys()) {
+      let value = doseMilkMap.get(key);
+      console.log('key in map', key, value);
+      let obj = {value, label: key, labelTextStyle: styleObject};
+      data.unshift(obj);
+      if (maxValue < 0) {
+        maxValue = value;
+      }
+      if (minValue < 0) {
+        minValue = value;
+      }
+      if (value > maxValue) {
+        maxValue = value;
+      }
+      if (minValue > value) {
+        minValue = value;
+      }
+    }
+
+    minValue = minValue - 20 < 0 ? 0 : minValue - 20;
+    maxValue += 20;
+    console.log('max min value', minValue, maxValue);
     this.setState({
       minMilkDose: minValue,
       maxMilkDose: maxValue,
@@ -181,7 +252,11 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     let minValue = -1;
     milkData.forEach((value: any) => {
       let timeLabel = moment(value.time).format('HH:mm');
-      let obj = {value: value.dose, label: timeLabel};
+      let obj = {
+        value: value.dose,
+        label: timeLabel,
+        labelTextStyle: styleObject,
+      };
       data.unshift(obj);
       if (maxValue < 0) {
         maxValue = value.dose;
@@ -207,12 +282,12 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     });
   }
 
-  _getMotherMilkStaticsData() {}
-
-  _getMixStaticsData() {}
-
   refreshData() {
-    switch (this.state.dateType) {
+    this.getDataListByDate(this.state.dateType);
+  }
+
+  private getDataListByDate(dateType: any) {
+    switch (dateType) {
       case StaticsDate.DAY:
         this._getLast24StaticsData();
         break;
@@ -225,24 +300,21 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       case StaticsDate.RANGE:
         break;
     }
-    this.forceUpdate();
   }
 
   // 母乳统计
   _renderLineChart() {
-    return <LineChart width={ChartWidth} data={this.state.staticsData} />;
-  }
-
-  _renderChart(type: string) {
-    switch (type) {
-      case StaticsDate.DAY:
-        return this._renderLineChart();
-      case StaticsDate.WEEK:
-        return this._renderLineChart();
-      case StaticsDate.MONTH:
-        return this._renderLineChart();
-    }
-    return null;
+    return (
+      <LineChart
+        showVerticalLines
+        height={200}
+        labelsExtraHeight={40}
+        maxValue={this.state.maxMilkDose - this.state.minMilkDose}
+        yAxisOffset={this.state.minMilkDose}
+        width={ChartWidth}
+        data={this.state.staticsData}
+      />
+    );
   }
 
   // 更改统计类型
@@ -298,6 +370,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
                 this.setState({
                   dateType: StaticsDate.DAY,
                 });
+                this.getDataListByDate(StaticsDate.DAY);
               }}>
               天
             </Menu.Item>
@@ -306,6 +379,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
                 this.setState({
                   dateType: StaticsDate.WEEK,
                 });
+                this.getDataListByDate(StaticsDate.WEEK);
               }}>
               周
             </Menu.Item>
@@ -314,6 +388,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
                 this.setState({
                   dateType: StaticsDate.MONTH,
                 });
+                this.getDataListByDate(StaticsDate.MONTH);
               }}>
               月
             </Menu.Item>
@@ -328,9 +403,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
           </Menu>
         </View>
         <View style={styles.dataContainer}>
-          {this.state.staticsData?.length > 0
-            ? this._renderChart(this.state.dateType)
-            : null}
+          {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
         </View>
       </View>
     );
@@ -338,9 +411,11 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
 }
 const styles = StyleSheet.create({
   cardContainer: {
+    height: 360,
     marginHorizontal: Margin.horizontal,
     backgroundColor: Colors.white,
-    padding: Margin.horizontal,
+    paddingHorizontal: Margin.horizontal,
+    paddingTop: Margin.horizontal,
     borderRadius: Margin.bigCorners,
   },
   titleContainer: {
