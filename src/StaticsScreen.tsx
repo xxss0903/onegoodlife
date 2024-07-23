@@ -1,27 +1,13 @@
 // 统计界面，整体的统计数据
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, RefreshControl} from 'react-native';
 import {Colors} from './colors';
 import {commonStyles} from './commonStyle';
 import BaseScreen from './BaseScreen.tsx';
 import {Margin} from './space';
 import DrinkMilkStaticsCard from './components/DrinkMilkStaticsCard.tsx';
-import {getDataListOrderByTime} from './utils/dbService';
-import {db} from './dataBase.ts';
-import {
-  StaticsType,
-  commonActions,
-  mainData,
-  staticsTypeList,
-} from './mainData.ts';
+import {StaticsType, mainData, staticsTypeList} from './mainData.ts';
 import {screenH} from './utils/until';
 import EventBus from './utils/eventBus';
 import {FloatingAction} from 'react-native-floating-action';
@@ -43,7 +29,6 @@ export default class StaticsScreen extends BaseScreen {
       staticsList: [], // 统计列表，统计比如喝奶次数，拉屎次数等，可以自行配置
       dataList: [], // 所有的数据
       dataType: StaticsType.DAY, // 统计类型，按天还是按周统计
-      staticsCardList: [staticsTypeList[0], staticsTypeList[1]],
     };
   }
 
@@ -77,72 +62,21 @@ export default class StaticsScreen extends BaseScreen {
     });
   }
 
-  _changeStaticsDate(type: any) {
-    this.setState({
-      staticsType: type,
+  _addStaticsCard(typeName: string) {
+    staticsTypeList.forEach(value => {
+      if (value.name === typeName) {
+        if (mainData.staticsCardList.indexOf(value) >= 0) {
+        } else {
+          mainData.staticsCardList.push(value);
+        }
+      }
+    });
+    this.forceUpdate(() => {
+      this._getDataList();
     });
   }
 
-  _renderDateRange() {
-    return (
-      <View
-        style={[
-          commonStyles.flexRow,
-          {
-            backgroundColor: Colors.primary1,
-            padding: Margin.horizontal,
-            borderRadius: Margin.bigCorners,
-          },
-        ]}>
-        <TouchableOpacity
-          onPress={() => {
-            this._changeStaticsDate(StaticsType.DAY);
-          }}
-          style={[styles.dateContainer, commonStyles.flexColumn]}>
-          <Text style={[commonStyles.flexRow, {flex: 1}]}>天</Text>
-          {this.state.staticsType === StaticsType.DAY ? (
-            <View style={styles.activeTab} />
-          ) : null}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            this._changeStaticsDate(StaticsType.WEEK);
-          }}
-          style={[styles.dateContainer, commonStyles.flexColumn]}>
-          <Text style={[commonStyles.flexRow, {flex: 1}]}>周</Text>
-          {this.state.staticsType === StaticsType.WEEK ? (
-            <View style={styles.activeTab} />
-          ) : null}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            this._changeStaticsDate(StaticsType.MONTH);
-          }}
-          style={[styles.dateContainer, commonStyles.flexColumn]}>
-          <Text style={[commonStyles.flexRow, {flex: 1}]}>月</Text>
-          {this.state.staticsType === StaticsType.MONTH ? (
-            <View style={styles.activeTab} />
-          ) : null}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            this._changeStaticsDate(StaticsType.RANGE);
-          }}
-          style={[styles.dateContainer, commonStyles.flexColumn]}>
-          <Text style={[commonStyles.flexRow, {flex: 1}]}>年</Text>
-          {this.state.staticsType === StaticsType.RANGE ? (
-            <View style={styles.activeTab} />
-          ) : null}
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   _renderHealthTip() {}
-
-  _renderMixMilkStaticsCard() {
-    return <MixMilkStaticsCard />;
-  }
 
   // 统计卡片列表
   _renderStaticsList() {
@@ -243,15 +177,7 @@ export default class StaticsScreen extends BaseScreen {
           actions={staticsTypeList}
           onPressItem={typeName => {
             console.log('click item', typeName);
-            if (typeName === '全部') {
-              this.props.navigation.navigate('AllTypeScreen');
-            } else {
-              this.isTypeEdit = false;
-              let items = mainData.commonActions.filter(
-                item => item.name === typeName,
-              );
-              items && items.length > 0 && this._addNewLifeline(items[0]);
-            }
+            this._addStaticsCard(typeName);
           }}
         />
       </View>
