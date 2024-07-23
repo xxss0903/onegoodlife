@@ -22,7 +22,7 @@ export default class WeightStaticsCard extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      maxMilkDose: 120,
+      maxMilkDose: 5,
       minMilkDose: 0,
       staticsData: [{value: 4, label: mainData.babyInfo.birthDay}],
     };
