@@ -2,15 +2,13 @@ import React, {Component} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {commonStyles} from '../commonStyle';
 import {Colors} from '../colors';
-import {ChartWidth, screenW} from '../utils/until';
+import {ChartWidth} from '../utils/until';
 import {Margin} from '../space';
 import moment from 'moment';
-import {mainData, StaticsDate, StaticsType, TYPE_ID} from '../mainData.ts';
-import {Menu, Pressable} from 'native-base';
-import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
-import {getDataListByDateRange, getDataListByType} from '../utils/dbService.js';
+import {mainData, TYPE_ID} from '../mainData.ts';
+import {LineChart} from 'react-native-gifted-charts';
+import {getDataListByType} from '../utils/dbService.js';
 import {db} from '../dataBase.ts';
-import EventBus from '../utils/eventBus.js';
 
 const styleObject = {
   transform: [{rotate: '60deg'}],
@@ -18,7 +16,7 @@ const styleObject = {
 };
 
 /**
- * 身高统计
+ * 身高
  */
 export default class HeightStaticsCard extends Component<any, any> {
   constructor(props: any) {
@@ -26,67 +24,76 @@ export default class HeightStaticsCard extends Component<any, any> {
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
-      title: '身高',
-      dateTitle: '',
-      dateType: StaticsDate.DAY,
-      // {value: 250, label: 'M'}
-      staticsData: [], // 统计的数据
-      leftTimeData: [],
-      rightTimeData: [],
+      staticsData: [{value: 55, label: mainData.babyInfo.birthDay}],
     };
   }
 
   componentDidMount() {
-    this._getHeightByMonth();
+    this._getStaticsData();
   }
 
-  async _getDataListFromDb() {
-    const dataList = await getDataListByType(
+  // 体重统计数据
+  async _getStaticsData() {
+    let milkData = await getDataListByType(
       db.database,
       mainData.babyInfo.babyId,
       TYPE_ID.HEIGHT,
     );
-    return dataList;
-  }
-
-  // 根据月份获取高度
-  async _getHeightByMonth() {
-    let heightList = await this._getDataListFromDb();
-    let heightMap = new Map();
-    heightList.forEach(value => {
-      let month = moment(value.time).format('YYYY-MM');
-      if (heightMap.has(month)) {
-        if (value.height > heightMap.get(month)) {
-          heightMap.set(month, value.height); // 将最大的高度作为当前月份最高的更新
-        }
-      } else {
-        heightMap.set(month, value.height);
+    console.log('statics weight data', milkData);
+    let data: any[] = [];
+    let maxValue = -1;
+    let minValue = -1;
+    milkData.forEach((value: any) => {
+      let timeLabel = moment(value.time).format('MM-DD');
+      let height = parseFloat(value.height);
+      let obj = {
+        value: height,
+        label: timeLabel,
+        labelTextStyle: styleObject,
+      };
+      data.unshift(obj);
+      if (maxValue < 0) {
+        maxValue = height;
+      }
+      if (minValue < 0) {
+        minValue = height;
+      }
+      if (height > maxValue) {
+        maxValue = height;
+      }
+      if (minValue > height) {
+        minValue = height;
       }
     });
-    // 高度的值
-    console.log('height map ', heightMap);
+
+    minValue = minValue - 1 < 0 ? 0 : minValue - 1;
+    maxValue += 1;
+    console.log('labels and data', minValue, maxValue);
+    this.setState({
+      minMilkDose: minValue,
+      maxMilkDose: maxValue,
+      staticsData: data,
+    });
   }
 
   refreshData() {
-    this._getHeightByMonth();
+    this._getStaticsData();
   }
 
   // 母乳统计
   _renderLineChart() {
     return (
-      <View style={[commonStyles.flexColumn]}>
-        <LineChart
-          stepValue={2}
-          showVerticalLines
-          height={200}
-          labelsExtraHeight={40}
-          maxValue={this.state.maxMilkDose - this.state.minMilkDose}
-          yAxisOffset={this.state.minMilkDose}
-          color={Colors.primary}
-          width={ChartWidth}
-          data={this.state.staticsData}
-        />
-      </View>
+      <LineChart
+        color={Colors.primary}
+        showVerticalLines
+        height={200}
+        stepValue={1}
+        maxValue={this.state.maxMilkDose - this.state.minMilkDose}
+        yAxisOffset={this.state.minMilkDose}
+        labelsExtraHeight={40}
+        width={ChartWidth}
+        data={this.state.staticsData}
+      />
     );
   }
 
@@ -107,15 +114,12 @@ export default class HeightStaticsCard extends Component<any, any> {
                   marginLeft: Margin.midHorizontal,
                 },
               ]}>
-              生长曲线-{this.state.title}（{this.state.dateTitle}）
+              身高
             </Text>
           </View>
         </View>
         <View style={styles.dataContainer}>
-          {this.state.leftTimeData?.length > 0 ||
-          this.state.rightTimeData.length?.length > 0
-            ? this._renderLineChart()
-            : null}
+          {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
         </View>
       </View>
     );
@@ -123,7 +127,7 @@ export default class HeightStaticsCard extends Component<any, any> {
 }
 const styles = StyleSheet.create({
   cardContainer: {
-    height: 380,
+    height: 360,
     marginHorizontal: Margin.horizontal,
     backgroundColor: Colors.white,
     paddingHorizontal: Margin.horizontal,

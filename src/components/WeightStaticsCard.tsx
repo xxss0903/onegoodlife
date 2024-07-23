@@ -2,19 +2,13 @@ import React, {Component} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {commonStyles} from '../commonStyle';
 import {Colors} from '../colors';
-import {ChartWidth, screenW} from '../utils/until';
+import {ChartWidth} from '../utils/until';
 import {Margin} from '../space';
 import moment from 'moment';
-import {mainData, StaticsDate, StaticsType, TYPE_ID} from '../mainData.ts';
-import {Menu, Pressable} from 'native-base';
-import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
-import {
-  getDataListByDateRange,
-  getDataListByType,
-  getDataListOrderByTime,
-} from '../utils/dbService.js';
+import {mainData, StaticsDate, TYPE_ID} from '../mainData.ts';
+import {LineChart} from 'react-native-gifted-charts';
+import {getDataListByType} from '../utils/dbService.js';
 import {db} from '../dataBase.ts';
-import EventBus from '../utils/eventBus.js';
 
 const styleObject = {
   transform: [{rotate: '60deg'}],
@@ -25,21 +19,12 @@ const styleObject = {
  * 体重统计
  */
 export default class WeightStaticsCard extends Component<any, any> {
-  private chartStyle = {
-    marginVertical: Margin.vertical,
-    borderRadius: 16,
-  };
-
   constructor(props: any) {
     super(props);
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
-      title: '奶粉',
-      dateTitle: '',
-      dateType: StaticsDate.DAY,
-      // {value: 250, label: 'M'}
-      staticsData: [{value: 250, label: 'M'}],
+      staticsData: [{value: 4, label: mainData.babyInfo.birthDay}],
     };
   }
 
