@@ -145,7 +145,7 @@ export const getDataListByDateRange = async (db, babyId, typeId, from, to) => {
     return babyList;
   } catch (error) {
     logi('getDataListByDateRange err', error);
-    throw Error('Failed to get todoItems !!!');
+    return [];
   }
 };
 
@@ -172,7 +172,7 @@ export const getDataListOrderByTime = async (db, babyId) => {
     return babyList;
   } catch (error) {
     logi('get baby timeline data err', error);
-    throw Error('Failed to get todoItems !!!');
+    return [];
   }
 };
 

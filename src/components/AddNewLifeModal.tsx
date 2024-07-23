@@ -85,6 +85,9 @@ export default class AddNewLifeModal extends Component<any, any> {
 
   // 奶粉，是量
   _renderMilkPowderVolume(commonDoseTagView) {
+    if (this.cloneType.dose < 0) {
+      this.cloneType.dose = 30;
+    }
     return (
       <View>
         <View
@@ -215,6 +218,9 @@ export default class AddNewLifeModal extends Component<any, any> {
       false,
     );
     let isMotherMilk = this.cloneType.selectedTags[0] === '母乳'; // 喝奶粉的
+    if (isMotherMilk) {
+      this.cloneType.dose = -1;
+    }
     this.cloneType.isMotherMilk = isMotherMilk;
     let formatTime = moment(this.cloneType.time).format('yyyy-MM-DD HH:mm');
     // 常用的喝奶量，用之前已经输入过的最新的牛奶的量来组成列表

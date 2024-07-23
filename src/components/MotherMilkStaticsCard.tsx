@@ -5,216 +5,372 @@ import {Colors} from '../colors';
 import {ChartWidth, screenW} from '../utils/until';
 import {Margin} from '../space';
 import moment from 'moment';
-import {mainData, StaticsType, TYPE_ID} from '../mainData.ts';
+import {mainData, StaticsDate, StaticsType, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
-import StaticsView from "./StaticsView.tsx";
+import {getDataListByDateRange} from '../utils/dbService.js';
+import {db} from '../dataBase.ts';
+import EventBus from '../utils/eventBus.js';
+
+const styleObject = {
+  transform: [{rotate: '60deg'}],
+  paddingLeft: Margin.horizontal,
+};
 
 /**
- * 母乳统计
+ * 奶粉统计
  */
 export default class MotherMilkStaticsCard extends Component<any, any> {
-  private lineChartConfig = {
-    backgroundColor: Colors.white,
-    backgroundGradientFrom: Colors.white,
-    backgroundGradientTo: Colors.white,
-    color: (opacity = 0.5) => Colors.primary1,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    fillShadowGradientTo: Colors.white,
-    fillShadowGradientFrom: Colors.white,
-    useShadowColorFromDataset: false,
-    propsForLabels: {
-      fontSize: 14,
-    },
-  };
-  private barChartConfig = {
-    strokeWidth: 2, // optional, default 3
-    fillShadowGradientTo: Colors.primary1,
-    fillShadowGradientToOpacity: 1,
-    fillShadowGradientFrom: Colors.primary1,
-    useShadowColorFromDataset: false,
-    backgroundColor: Colors.white,
-    backgroundGradientFrom: Colors.white,
-    backgroundGradientTo: Colors.white,
-    decimalPlaces: 0,
-    color: (opacity = 1) => Colors.primary1,
-  };
-  private pieChartConfig = {
-    backgroundColor: Colors.white,
-    backgroundGradientFrom: Colors.white,
-    backgroundGradientTo: Colors.white,
-    color: (opacity = 0.5) => Colors.primary1,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    fillShadowGradientTo: Colors.white,
-    fillShadowGradientFrom: Colors.white,
-    useShadowColorFromDataset: false, // optional
-    propsForLabels: {
-      fontSize: 14,
-    },
-  };
-
-  private chartStyle = {
-    marginVertical: Margin.vertical,
-    borderRadius: 16,
-  };
-
   constructor(props: any) {
     super(props);
     this.state = {
       maxMilkDose: 120,
       minMilkDose: 0,
       title: '母乳',
-      staticsType: StaticsType.POWDER, // 表格类型: 'line', 'bar', 'pie'
-      dateType: StaticsType.DAY,
+      dateType: StaticsDate.DAY,
       // {value: 250, label: 'M'}
       staticsData: [{value: 250, label: 'M'}],
+      leftTimeData: [],
+      rightTimeData: [],
     };
   }
 
   componentDidMount() {
-    // this._getPowderStaticsData();
-    this._getPowderStaticsData();
+    // this._getLast24StaticsData();
+    this._getLast24StaticsData();
   }
 
-  // 获取过去24小时的数据
-  _getLast24HoursData() {
-    let dataList = [];
-    let tempDataList: any[] = [];
-    // 过去24小时的时间戳
-    let last24HourMoment = moment().subtract(1, 'day').valueOf();
-
-    for (let i = 0; i < dataList.length; i++) {
-      let data = dataList[i];
-      if (data.time > last24HourMoment) {
-        if (data.typeId === TYPE_ID.MILK) {
-          tempDataList.push(data);
-        }
-      }
-    }
-    return JSON.parse(JSON.stringify(tempDataList));
-  }
-
-  _getTodayData() {
-    let dataList = this.props.dataList;
-    let tempDataList: any[] = [];
-    let todayMoment = moment().startOf('day').valueOf();
-    for (let i = 0; i < dataList.length; i++) {
-      let data = dataList[i];
-      if (data.time > todayMoment) {
-        // 常用的数据
-        mainData.commonActions.forEach(value => {
-          if (value.id === data.typeId) {
-            tempDataList.push(data);
-          }
-        });
-      }
-    }
-    return JSON.parse(JSON.stringify(tempDataList));
-  }
-
-  _getPowderStaticsData() {
-    let today = this._getLast24HoursData();
-    let milkData = today.filter((value: any) => value.typeId === TYPE_ID.MILK);
-    console.log(' statics today data', milkData);
+  // 获取上个月数据，就是每天的量然后获取到整个月
+  async _getLastMonthStaticsData() {
+    let last24Moment = moment().subtract(30, 'day').valueOf();
+    let milkData = await this._getDataListFromDb(
+      last24Moment,
+      moment().valueOf(),
+    );
+    console.log('mothermilk today data', milkData);
     let data: any[] = [];
     let maxValue = -1;
     let minValue = -1;
+
+    let leftTimeData: any[] = [];
+    let rightTimeData: any[] = [];
+    let milkLeftDataMap = new Map();
+    let milkRightDataMap = new Map();
     milkData.forEach((value: any) => {
-      let timeLabel = moment(value.time).format('HH:mm');
-      let obj = {value: value.dose, label: timeLabel};
-      data.unshift(obj);
-      if (maxValue < 0) {
-        maxValue = value.dose;
+      let timeLabel = moment(value.time).format('MM-DD');
+      if (milkLeftDataMap.has(timeLabel)) {
+        let tempData = value.leftTime + milkLeftDataMap.get(timeLabel);
+        milkLeftDataMap.set(timeLabel, tempData);
+      } else {
+        milkLeftDataMap.set(timeLabel, value.leftTime);
       }
-      if (minValue < 0) {
-        minValue = value.dose;
-      }
-      if (value.dose > maxValue) {
-        maxValue = value.dose;
-      }
-      if (minValue > value.dose) {
-        minValue = value.dose;
+      if (milkRightDataMap.has(timeLabel)) {
+        let tempData = value.rightTime + milkRightDataMap.get(timeLabel);
+        milkRightDataMap.set(timeLabel, tempData);
+      } else {
+        milkRightDataMap.set(timeLabel, value.rightTime);
       }
     });
 
-    minValue = minValue - 20 < 0 ? 0 : minValue - 20;
-    maxValue += 20;
-    console.log('labels and data', minValue, maxValue);
+    for (const key of milkLeftDataMap.keys()) {
+      let tempLeftTime = milkLeftDataMap.get(key);
+      if (maxValue < 0) {
+        maxValue = tempLeftTime;
+      }
+      if (minValue < 0) {
+        minValue = tempLeftTime;
+      }
+      if (maxValue < tempLeftTime) {
+        maxValue = tempLeftTime;
+      }
+      if (minValue > tempLeftTime) {
+        minValue = tempLeftTime;
+      }
+
+      let leftTimeObj = {
+        value: tempLeftTime,
+        label: key,
+        labelTextStyle: styleObject,
+      };
+      leftTimeData.push(leftTimeObj);
+    }
+    for (const key of milkRightDataMap.keys()) {
+      let tempRightTime = milkRightDataMap.get(key);
+      if (maxValue < 0) {
+        maxValue = tempRightTime;
+      }
+      if (minValue < 0) {
+        minValue = tempRightTime;
+      }
+      if (maxValue < tempRightTime) {
+        maxValue = tempRightTime;
+      }
+      if (minValue > tempRightTime) {
+        minValue = tempRightTime;
+      }
+
+      let rightTimeObj = {
+        value: tempRightTime,
+        label: key,
+        labelTextStyle: styleObject,
+      };
+      rightTimeData.push(rightTimeObj);
+    }
+
+    minValue = minValue - 5 < 0 ? 0 : minValue - 5;
+    maxValue += 5;
+    console.log('labels and data left', leftTimeData);
+    console.log('labels and data right', rightTimeData);
     this.setState({
       minMilkDose: minValue,
       maxMilkDose: maxValue,
       staticsData: data,
+      leftTimeData,
+      rightTimeData,
     });
   }
 
-  _getMotherMilkStaticsData() {}
+  async _getDataListFromDb(from, to) {
+    const milkData = await getDataListByDateRange(
+      db.database,
+      mainData.babyInfo.babyId,
+      TYPE_ID.MILK,
+      from,
+      to,
+    );
+    return milkData.filter(value => value.isMotherMilk);
+  }
 
-  _getMixStaticsData() {}
+  // 按天获取统计数量
+  async _getDayStaticsData() {
+    let last24Moment = moment().subtract(7, 'day').valueOf();
+    let milkData = await this._getDataListFromDb(
+      last24Moment,
+      moment().valueOf(),
+    );
+    console.log('mothermilk today data', milkData);
+    let data: any[] = [];
+    let maxValue = -1;
+    let minValue = -1;
+
+    let leftTimeData: any[] = [];
+    let rightTimeData: any[] = [];
+    let milkLeftDataMap = new Map();
+    let milkRightDataMap = new Map();
+    milkData.forEach((value: any) => {
+      let timeLabel = moment(value.time).format('MM-DD');
+      if (milkLeftDataMap.has(timeLabel)) {
+        let tempData = value.leftTime + milkLeftDataMap.get(timeLabel);
+        milkLeftDataMap.set(timeLabel, tempData);
+      } else {
+        milkLeftDataMap.set(timeLabel, value.leftTime);
+      }
+      if (milkRightDataMap.has(timeLabel)) {
+        let tempData = value.rightTime + milkRightDataMap.get(timeLabel);
+        milkRightDataMap.set(timeLabel, tempData);
+      } else {
+        milkRightDataMap.set(timeLabel, value.rightTime);
+      }
+    });
+
+    for (const key of milkLeftDataMap.keys()) {
+      let tempLeftTime = milkLeftDataMap.get(key);
+      if (maxValue < 0) {
+        maxValue = tempLeftTime;
+      }
+      if (minValue < 0) {
+        minValue = tempLeftTime;
+      }
+      if (maxValue < tempLeftTime) {
+        maxValue = tempLeftTime;
+      }
+      if (minValue > tempLeftTime) {
+        minValue = tempLeftTime;
+      }
+
+      let leftTimeObj = {
+        value: tempLeftTime,
+        label: key,
+        labelTextStyle: styleObject,
+      };
+      leftTimeData.push(leftTimeObj);
+    }
+    for (const key of milkRightDataMap.keys()) {
+      let tempRightTime = milkRightDataMap.get(key);
+      if (maxValue < 0) {
+        maxValue = tempRightTime;
+      }
+      if (minValue < 0) {
+        minValue = tempRightTime;
+      }
+      if (maxValue < tempRightTime) {
+        maxValue = tempRightTime;
+      }
+      if (minValue > tempRightTime) {
+        minValue = tempRightTime;
+      }
+
+      let rightTimeObj = {
+        value: tempRightTime,
+        label: key,
+        labelTextStyle: styleObject,
+      };
+      rightTimeData.push(rightTimeObj);
+    }
+
+    minValue = minValue - 5 < 0 ? 0 : minValue - 5;
+    maxValue += 5;
+    console.log('labels and data left', leftTimeData);
+    console.log('labels and data right', rightTimeData);
+    this.setState({
+      minMilkDose: minValue,
+      maxMilkDose: maxValue,
+      staticsData: data,
+      leftTimeData,
+      rightTimeData,
+    });
+  }
+
+  async _getLast24StaticsData() {
+    let last24Moment = moment().subtract(1, 'day').valueOf();
+    let milkData = await this._getDataListFromDb(
+      last24Moment,
+      moment().valueOf(),
+    );
+    console.log('mothermilk today data', milkData);
+    let data: any[] = [];
+    let maxValue = -1;
+    let minValue = -1;
+
+    let leftTimeData: any[] = [];
+    let rightTimeData: any[] = [];
+    milkData.forEach((value: any) => {
+      let timeLabel = moment(value.time).format('HH:mm');
+      let leftTime = value.leftTime;
+      let rightTime = value.rightTime;
+      let leftTimeObj = {
+        value: leftTime,
+        label: timeLabel,
+        labelTextStyle: styleObject,
+      };
+      let rightTimeObj = {
+        value: rightTime,
+        label: timeLabel,
+        labelTextStyle: styleObject,
+      };
+      leftTimeData.push(leftTimeObj);
+      rightTimeData.push(rightTimeObj);
+
+      if (maxValue < 0) {
+        if (leftTime > rightTime) {
+          maxValue = leftTime;
+        } else {
+          maxValue = rightTime;
+        }
+      }
+
+      if (minValue < 0) {
+        if (leftTime < rightTime) {
+          minValue = leftTime;
+        } else {
+          minValue = rightTime;
+        }
+      }
+      let tempMaxValue = leftTime;
+      let tempMinValue = leftTime;
+      if (leftTime > rightTime) {
+        tempMaxValue = leftTime;
+        tempMinValue = rightTime;
+      } else {
+        tempMaxValue = leftTime;
+        tempMinValue = rightTime;
+      }
+      if (tempMaxValue > maxValue) {
+        maxValue = tempMaxValue;
+      }
+      if (tempMinValue < minValue) {
+        minValue = tempMinValue;
+      }
+    });
+
+    minValue = minValue - 5 < 0 ? 0 : minValue - 5;
+    maxValue += 5;
+    console.log('labels and data left', leftTimeData);
+    console.log('labels and data right', rightTimeData);
+    this.setState({
+      minMilkDose: minValue,
+      maxMilkDose: maxValue,
+      staticsData: data,
+      leftTimeData,
+      rightTimeData,
+    });
+  }
 
   refreshData() {
-    switch (this.state.staticsType) {
-      case StaticsType.POWDER:
-        this._getPowderStaticsData();
-        break;
-      case StaticsType.MOTHERMILK:
-        this._getMotherMilkStaticsData();
-        break;
-      case StaticsType.MIX:
-        this._getMixStaticsData();
-        break;
-      case StaticsType.RANGE:
-        break;
-    }
-    this.forceUpdate();
+    this.getDataListByDate(this.state.dateType);
   }
 
-  _editCard() {}
+  private getDataListByDate(dateType: any) {
+    switch (dateType) {
+      case StaticsDate.DAY:
+        this._getLast24StaticsData();
+        break;
+      case StaticsDate.WEEK:
+        this._getDayStaticsData();
+        break;
+      case StaticsDate.MONTH:
+        this._getLastMonthStaticsData();
+        break;
+      case StaticsDate.RANGE:
+        break;
+    }
+  }
 
   // 母乳统计
-  _renderMotherMilkChart() {
-    return <LineChart width={ChartWidth} data={this.state.staticsData} />;
-  }
-
-  _renderPieChart() {
-    return <PieChart data={this.state.staticsData} />;
-  }
-
-  // 奶粉统计
-  _renderPowderChart() {
+  _renderLineChart() {
     return (
-      <BarChart
-        width={ChartWidth}
-        barWidth={22}
-        noOfSections={3}
-        barBorderRadius={4}
-        frontColor="lightgray"
-        data={this.state.staticsData}
-        yAxisThickness={0}
-        xAxisThickness={0}
-      />
+      <View style={[commonStyles.flexColumn]}>
+        <LineChart
+          stepValue={2}
+          showVerticalLines
+          height={200}
+          labelsExtraHeight={40}
+          maxValue={this.state.maxMilkDose - this.state.minMilkDose}
+          yAxisOffset={this.state.minMilkDose}
+          color={Colors.primary}
+          color1={Colors.primary1}
+          width={ChartWidth}
+          data={this.state.leftTimeData}
+          data2={this.state.rightTimeData}
+        />
+        <View
+          style={[
+            commonStyles.flexRow,
+            {alignItems: 'center', justifyContent: 'center'},
+          ]}>
+          <View
+            style={[commonStyles.flexColumn, commonStyles.center, {width: 60}]}>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: Colors.primary,
+              }}></View>
+            <Text>左边</Text>
+          </View>
+          <View
+            style={[commonStyles.flexColumn, commonStyles.center, {width: 60}]}>
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: Colors.primary1,
+              }}></View>
+            <Text>右边</Text>
+          </View>
+        </View>
+      </View>
     );
-  }
-
-  _renderChart(type: string) {
-    switch (type) {
-      case StaticsType.MIX:
-        return this._renderPieChart();
-      case StaticsType.MOTHERMILK:
-        return this._renderMotherMilkChart();
-      case StaticsType.POWDER:
-        return this._renderPowderChart();
-    }
-    return null;
-  }
-
-  // 更改统计类型
-  _changeStaticsType(type: string) {
-    this.setState({
-      staticsType: type,
-      title: ''
-    });
   }
 
   render() {
@@ -224,7 +380,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
           <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
             <Image
               style={styles.titleIcon}
-              source={require('../assets/ic_milk.png')}
+              source={require('../assets/ic_powder.png')}
             />
             <Text
               style={[
@@ -260,35 +416,44 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
             <Menu.Item
               onPress={() => {
                 this.setState({
-                  staticsType: StaticsType.POWDER,
-                  title: '奶粉'
+                  dateType: StaticsDate.DAY,
                 });
+                this.getDataListByDate(StaticsDate.DAY);
               }}>
-              奶粉
+              天
             </Menu.Item>
             <Menu.Item
               onPress={() => {
                 this.setState({
-                  staticsType: StaticsType.MOTHERMILK,
-                  title: '母乳'
+                  dateType: StaticsDate.WEEK,
                 });
+                this.getDataListByDate(StaticsDate.WEEK);
               }}>
-              母乳
+              周
             </Menu.Item>
             <Menu.Item
               onPress={() => {
                 this.setState({
-                  staticsType: StaticsType.MIX,
-                  title: '母乳/奶粉'
+                  dateType: StaticsDate.MONTH,
                 });
+                this.getDataListByDate(StaticsDate.MONTH);
               }}>
-              奶粉/母乳
+              月
+            </Menu.Item>
+            <Menu.Item
+              style={{}}
+              onPress={() => {
+                // 移除当前统计卡片
+                EventBus.sendEvent(EventBus.REMOVE_CARD, StaticsType.POWDER);
+              }}>
+              移除
             </Menu.Item>
           </Menu>
         </View>
         <View style={styles.dataContainer}>
-          {this.state.staticsData?.length > 0
-            ? this._renderChart(this.state.staticsType)
+          {this.state.leftTimeData?.length > 0 ||
+          this.state.rightTimeData.length?.length > 0
+            ? this._renderLineChart()
             : null}
         </View>
       </View>
@@ -297,9 +462,11 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
 }
 const styles = StyleSheet.create({
   cardContainer: {
+    height: 380,
     marginHorizontal: Margin.horizontal,
     backgroundColor: Colors.white,
-    padding: Margin.horizontal,
+    paddingHorizontal: Margin.horizontal,
+    paddingTop: Margin.horizontal,
     borderRadius: Margin.bigCorners,
   },
   titleContainer: {

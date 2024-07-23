@@ -114,24 +114,6 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     return JSON.parse(JSON.stringify(tempDataList));
   }
 
-  _getTodayData() {
-    let dataList = this.props.dataList;
-    let tempDataList: any[] = [];
-    let todayMoment = moment().startOf('day').valueOf();
-    for (let i = 0; i < dataList.length; i++) {
-      let data = dataList[i];
-      if (data.time > todayMoment) {
-        // 常用的数据
-        mainData.commonActions.forEach(value => {
-          if (value.id === data.typeId) {
-            tempDataList.push(data);
-          }
-        });
-      }
-    }
-    return JSON.parse(JSON.stringify(tempDataList));
-  }
-
   // 获取上个月数据，就是每天的量然后获取到整个月
   async _getLastMonthStaticsData() {
     let lastMonthMoment = moment().subtract(30, 'day').valueOf();
@@ -237,12 +219,20 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
     });
   }
 
-  async _getLast24StaticsData() {
-    let last24Moment = moment().subtract(1, 'day').valueOf();
-    let milkData = await getDataListByDateRange(
+  async _getDataListFromDb(from, to) {
+    const milkData = await getDataListByDateRange(
       db.database,
       mainData.babyInfo.babyId,
       TYPE_ID.MILK,
+      from,
+      to,
+    );
+    return milkData.filter(value => !value.isMotherMilk);
+  }
+
+  async _getLast24StaticsData() {
+    let last24Moment = moment().subtract(1, 'day').valueOf();
+    let milkData = await this._getDataListFromDb(
       last24Moment,
       moment().valueOf(),
     );
@@ -308,6 +298,7 @@ export default class DrinkMilkStaticsCard extends Component<any, any> {
       <LineChart
         showVerticalLines
         height={200}
+        stepValue={10}
         labelsExtraHeight={40}
         maxValue={this.state.maxMilkDose - this.state.minMilkDose}
         yAxisOffset={this.state.minMilkDose}
