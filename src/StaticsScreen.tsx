@@ -11,15 +11,12 @@ import {StaticsType, mainData, staticsTypeList} from './mainData.ts';
 import {screenH} from './utils/until';
 import EventBus from './utils/eventBus';
 import {FloatingAction} from 'react-native-floating-action';
-import MixMilkStaticsCard from './components/MixMilkStaticsCard.tsx';
 import MotherMilkStaticsCard from './components/MotherMilkStaticsCard.tsx';
 import WeightStaticsCard from './components/WeightStaticsCard.tsx';
 import HeightStaticsCard from './components/HeightStaticsCard.tsx';
 
 export default class StaticsScreen extends BaseScreen {
-  private milkCardRef = null; // 喝奶统计卡片
-  private growthCardRef = null; // 成长统计
-  private cardRefList: any[] = []; // 统计卡片的引用列表
+  private cardRefMap = new Map(); // 卡片的类型引用map
 
   constructor(props) {
     super(props);
@@ -45,6 +42,17 @@ export default class StaticsScreen extends BaseScreen {
         this.forceUpdate();
       },
     );
+    EventBus.addEventListener(EventBus.REMOVE_CARD, type => {
+      let removeIndex = -1;
+      mainData.staticsCardList.forEach((value, index) => {
+        if (type === value.type) {
+          removeIndex = index;
+        }
+      });
+      mainData.staticsCardList.splice(removeIndex, 1);
+
+      this.forceUpdate();
+    });
     console.log('statics listen color change ', colorListener);
   }
 
@@ -57,9 +65,9 @@ export default class StaticsScreen extends BaseScreen {
         refreshing: false,
       });
     }, 1000);
-    this.cardRefList.forEach(ref => {
+    for (let ref of this.cardRefMap.values()) {
       ref.refreshData();
-    });
+    }
   }
 
   _addStaticsCard(typeName: string) {
@@ -83,19 +91,13 @@ export default class StaticsScreen extends BaseScreen {
     let staticsListView = mainData.staticsCardList.map((value, index) => {
       let view = null;
       switch (value.type) {
-        case StaticsType.MIX:
-          view = (
-            <MixMilkStaticsCard
-              key={`id_${value.id}`}
-              ref={ref => this.cardRefList.push(ref)}
-            />
-          );
-          break;
         case StaticsType.MOTHERMILK:
           view = (
             <MotherMilkStaticsCard
               key={`id_${value.id}`}
-              ref={ref => this.cardRefList.push(ref)}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.MOTHERMILK, ref);
+              }}
             />
           );
           break;
@@ -103,7 +105,9 @@ export default class StaticsScreen extends BaseScreen {
           view = (
             <DrinkMilkStaticsCard
               key={`id_${value.id}`}
-              ref={ref => this.cardRefList.push(ref)}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.POWDER, ref);
+              }}
             />
           );
           break;
@@ -111,7 +115,9 @@ export default class StaticsScreen extends BaseScreen {
           view = (
             <WeightStaticsCard
               key={`id_${value.id}`}
-              ref={ref => this.cardRefList.push(ref)}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.WEIGHT, ref);
+              }}
             />
           );
           break;
@@ -119,7 +125,9 @@ export default class StaticsScreen extends BaseScreen {
           view = (
             <HeightStaticsCard
               key={`id_${value.id}`}
-              ref={ref => this.cardRefList.push(ref)}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.HEIGHT, ref);
+              }}
             />
           );
           break;

@@ -5,10 +5,12 @@ import {Colors} from '../colors';
 import {ChartWidth} from '../utils/until';
 import {Margin} from '../space';
 import moment from 'moment';
-import {mainData, StaticsDate, TYPE_ID} from '../mainData.ts';
+import {mainData, StaticsDate, StaticsType, TYPE_ID} from '../mainData.ts';
 import {LineChart} from 'react-native-gifted-charts';
 import {getDataListByType} from '../utils/dbService.js';
 import {db} from '../dataBase.ts';
+import {Menu, Pressable} from 'native-base';
+import EventBus from '../utils/eventBus';
 
 const styleObject = {
   transform: [{rotate: '60deg'}],
@@ -117,6 +119,35 @@ export default class WeightStaticsCard extends Component<any, any> {
               体重
             </Text>
           </View>
+          <Menu
+            w={120}
+            style={{}}
+            trigger={triggerProps => {
+              return (
+                <Pressable
+                  style={{
+                    padding: Margin.midHorizontal,
+                    backgroundColor: Colors.loginTouch,
+                    borderRadius: Margin.bigCorners,
+                  }}
+                  accessibilityLabel="More options menu"
+                  {...triggerProps}>
+                  <Image
+                    style={styles.titleIcon}
+                    source={require('../assets/ic_edit_white.png')}
+                  />
+                </Pressable>
+              );
+            }}>
+            <Menu.Item
+              style={{}}
+              onPress={() => {
+                // 移除当前统计卡片
+                EventBus.sendEvent(EventBus.REMOVE_CARD, StaticsType.WEIGHT);
+              }}>
+              移除
+            </Menu.Item>
+          </Menu>
         </View>
         <View style={styles.dataContainer}>
           {this.state.staticsData?.length > 0 ? this._renderLineChart() : null}
