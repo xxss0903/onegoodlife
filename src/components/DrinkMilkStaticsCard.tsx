@@ -24,52 +24,6 @@ const styleObject = {
  * 奶粉统计
  */
 export default class DrinkMilkStaticsCard extends Component<any, any> {
-  private lineChartConfig = {
-    backgroundColor: Colors.white,
-    backgroundGradientFrom: Colors.white,
-    backgroundGradientTo: Colors.white,
-    color: (opacity = 0.5) => Colors.primary1,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    fillShadowGradientTo: Colors.white,
-    fillShadowGradientFrom: Colors.white,
-    useShadowColorFromDataset: false,
-    propsForLabels: {
-      fontSize: 14,
-    },
-  };
-  private barChartConfig = {
-    strokeWidth: 2, // optional, default 3
-    fillShadowGradientTo: Colors.primary1,
-    fillShadowGradientToOpacity: 1,
-    fillShadowGradientFrom: Colors.primary1,
-    useShadowColorFromDataset: false,
-    backgroundColor: Colors.white,
-    backgroundGradientFrom: Colors.white,
-    backgroundGradientTo: Colors.white,
-    decimalPlaces: 0,
-    color: (opacity = 1) => Colors.primary1,
-  };
-  private pieChartConfig = {
-    backgroundColor: Colors.white,
-    backgroundGradientFrom: Colors.white,
-    backgroundGradientTo: Colors.white,
-    color: (opacity = 0.5) => Colors.primary1,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
-    fillShadowGradientTo: Colors.white,
-    fillShadowGradientFrom: Colors.white,
-    useShadowColorFromDataset: false, // optional
-    propsForLabels: {
-      fontSize: 14,
-    },
-  };
-
-  private chartStyle = {
-    marginVertical: Margin.vertical,
-    borderRadius: 16,
-  };
-
   constructor(props: any) {
     super(props);
     this.state = {

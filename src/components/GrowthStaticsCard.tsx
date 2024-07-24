@@ -3,19 +3,11 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {commonStyles} from '../commonStyle';
 import {Colors} from '../colors';
 import {Margin} from '../space';
-import {mainData, TYPE_ID} from '../mainData.ts';
+import {mainData, StaticsType, TYPE_ID} from '../mainData.ts';
 import {Menu, Pressable} from 'native-base';
 import {BarChart, LineChart, PieChart} from 'react-native-gifted-charts';
 import {ChartWidth} from '../utils/until';
 import girlsHeight from '../data/girls-height.json';
-
-// 统计类型
-export const StaticsType = {
-  DAY: 'day', // 按天统计
-  WEEK: 'week',
-  MONTH: 'month',
-  RANGE: 'range',
-};
 
 const dashData = [2, 1];
 
@@ -360,7 +352,14 @@ export default class GrowthStaticsCard extends Component<any, any> {
             },
           ]}>
           <Image
-            style={{resizeMode: 'contain', width: 16, height: 16, transform: [{rotate: this.state.showStaticsChart ? '180deg' : '0deg'}]}}
+            style={{
+              resizeMode: 'contain',
+              width: 16,
+              height: 16,
+              transform: [
+                {rotate: this.state.showStaticsChart ? '180deg' : '0deg'},
+              ],
+            }}
             source={require('../assets/ic_down_white.png')}
           />
         </TouchableOpacity>

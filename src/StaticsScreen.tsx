@@ -34,7 +34,9 @@ export default class StaticsScreen extends BaseScreen {
   }
 
   componentDidMount() {
-    this._getDataList();
+    if (mainData.staticsCardList.length > 0) {
+      this._getDataList();
+    }
     this._initListeners();
   }
 
@@ -47,12 +49,16 @@ export default class StaticsScreen extends BaseScreen {
       },
     );
     EventBus.addEventListener(EventBus.REMOVE_CARD, type => {
+      console.log('remove type', mainData.staticsCardList);
       let removeIndex = -1;
       mainData.staticsCardList.forEach((value, index) => {
+        console.log('loop card list ', value);
         if (type === value.type) {
           removeIndex = index;
+          return;
         }
       });
+      console.log('remove index', removeIndex);
       mainData.staticsCardList.splice(removeIndex, 1);
       DeviceStorage.refreshMainData();
       this.forceUpdate();
@@ -83,10 +89,11 @@ export default class StaticsScreen extends BaseScreen {
         }
       }
     });
+    console.log('add card', mainData.staticsCardList);
     DeviceStorage.refreshMainData();
-    this.forceUpdate(() => {
+    setTimeout(() => {
       this._getDataList();
-    });
+    }, 500);
   }
 
   _renderHealthTip() {}
