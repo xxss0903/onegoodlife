@@ -14,6 +14,10 @@ import {FloatingAction} from 'react-native-floating-action';
 import MotherMilkStaticsCard from './components/MotherMilkStaticsCard.tsx';
 import WeightStaticsCard from './components/WeightStaticsCard.tsx';
 import HeightStaticsCard from './components/HeightStaticsCard.tsx';
+import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
+import GrowthWeightStaticsCard from './components/GrowthWeightStaticsCard.tsx';
+import GrowthHeightStaticsCard from './components/GrowthHeightStaticsCard.tsx';
+import {DeviceStorage} from './utils/deviceStorage';
 
 export default class StaticsScreen extends BaseScreen {
   private cardRefMap = new Map(); // 卡片的类型引用map
@@ -50,7 +54,7 @@ export default class StaticsScreen extends BaseScreen {
         }
       });
       mainData.staticsCardList.splice(removeIndex, 1);
-
+      DeviceStorage.refreshMainData();
       this.forceUpdate();
     });
     console.log('statics listen color change ', colorListener);
@@ -79,6 +83,7 @@ export default class StaticsScreen extends BaseScreen {
         }
       }
     });
+    DeviceStorage.refreshMainData();
     this.forceUpdate(() => {
       this._getDataList();
     });
@@ -127,6 +132,26 @@ export default class StaticsScreen extends BaseScreen {
               key={`id_${value.id}`}
               ref={ref => {
                 this.cardRefMap.set(StaticsType.HEIGHT, ref);
+              }}
+            />
+          );
+          break;
+        case StaticsType.GROW_WEIGHT:
+          view = (
+            <GrowthWeightStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.GROW_WEIGHT, ref);
+              }}
+            />
+          );
+          break;
+        case StaticsType.GROW_HEIGHT:
+          view = (
+            <GrowthHeightStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.GROW_HEIGHT, ref);
               }}
             />
           );
