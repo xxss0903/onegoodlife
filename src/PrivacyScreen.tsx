@@ -3,6 +3,7 @@ import {View, StyleSheet} from 'react-native';
 import {commonStyles} from './commonStyle';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
+import WebView from "react-native-webview";
 
 export default class PrivacyScreen extends BaseScreen {
   constructor(props) {
@@ -19,7 +20,9 @@ export default class PrivacyScreen extends BaseScreen {
           styles.container,
           commonStyles.flexColumn,
           {flex: 1},
-        ]}></View>
+        ]}>
+          <WebView source={require("./assets/privacy.html")}/>
+      </View>
     );
   }
 }
