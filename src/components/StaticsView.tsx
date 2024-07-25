@@ -65,7 +65,6 @@ export default class StaticsView extends Component<any, any> {
 
   // 获取类型最新的数据
   async _initLastData() {
-    console.log('init last data begin');
     let lastMilkData = await getLastData(
       db.database,
       this.props.babyId,
@@ -92,6 +91,7 @@ export default class StaticsView extends Component<any, any> {
 
   refreshData() {
     let todayData = this._getTodayData();
+    console.log("statics view get today data", todayData)
     this._initLastData();
     this._getStaticsDataView(todayData, data => {
       this.setState(
@@ -117,17 +117,23 @@ export default class StaticsView extends Component<any, any> {
     // 上次喝奶
     let lastDrinkMilk = lastData.lastMilkData;
     if (lastDrinkMilk && lastDrinkMilk.length > 0) {
-      this.state.lastDataMap.set(lastDrinkMilk[0].typeId, lastDrinkMilk[0]);
+      this.state.lastDataMap.set(TYPE_ID.MILK, lastDrinkMilk[0]);
+    } else {
+      this.state.lastDataMap.delete(TYPE_ID.MILK)
     }
     // 上次拉屎
     let lastPoop = lastData.lastPoopData;
     if (lastPoop && lastPoop.length > 0) {
       this.state.lastDataMap.set(lastPoop[0].typeId, lastPoop[0]);
+    } else {
+      this.state.lastDataMap.delete(TYPE_ID.POOP)
     }
     // 上次换尿布
     let lastDiaper = lastData.lastDiaperData;
     if (lastDiaper && lastDiaper.length > 0) {
       this.state.lastDataMap.set(lastDiaper[0].typeId, lastDiaper[0]);
+    } else {
+      this.state.lastDataMap.delete(TYPE_ID.DIAPER)
     }
     this.forceUpdate();
   }
@@ -189,7 +195,6 @@ export default class StaticsView extends Component<any, any> {
 
   _renderLastDataMap(dataMap: any) {
     let keyArray = Array.from(dataMap.keys());
-    console.log('last keys ', keyArray);
     let mapView = keyArray.map((key, index) => {
       let data = dataMap.get(key);
       return (

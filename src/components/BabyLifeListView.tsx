@@ -30,7 +30,7 @@ import {
   TooltipComponent,
 } from 'echarts/components';
 import {isIOS, screenW} from '../utils/until';
-import {mainData, commonTypeList, TYPE_ID} from '../mainData';
+import {mainData, commonTypeList, TYPE_ID, staticsTypeList} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
 import {
@@ -369,11 +369,11 @@ export default class BabyLifeListView extends React.Component<any, any> {
           // 进入详情
           this._gotoItemDetail(item);
         }}
-        key={item.time + '_' + item.typeId}
+        key={ item.typeId + "_" + item.time}
         style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
-            <Image
+            <Image key={ item.typeId + "_" + item.time}
               style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
               source={type.icon}
             />
@@ -443,17 +443,22 @@ export default class BabyLifeListView extends React.Component<any, any> {
   }
 
   _renderTypeItem(item, index) {
+    commonTypeList.forEach(value => {
+      if (item.typeId === value.id) {
+        item.icon = value.icon
+        return
+      }
+    })
+    console.log("render baby item ", item)
+
     switch (item.typeId) {
       case TYPE_ID.MILK:
         return this._renderMilkItem(item, index);
-        break;
       case TYPE_ID.WEIGHT:
       case TYPE_ID.HEIGHT:
         return this._renderGrowthItem(item, index);
-        break;
       default:
         return this._renderDefaultItem(item, index);
-        break;
     }
   }
 
@@ -590,6 +595,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this.setState({
       refreshing: true,
     });
+    this._refreshStaticsCharts()
     this.currentPage = 0;
     this._getDBData(this.currentPage);
   }
