@@ -7,48 +7,49 @@
       "size" : "20x20"
     },
     {
-      "filename" : "ic_launcher_60.png",
+      "filename" : "ic_launcher_60.jpeg",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
-      "filename" : "ic_launcher_58.png",
+      "filename" : "ic_launcher_58.jpeg",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
+      "filename" : "ic_launcher_87.jpeg",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "ic_launcher_80.png",
+      "filename" : "ic_launcher_80.jpeg",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "ic_launcher_120.png",
+      "filename" : "ic_launcher_120.jpeg",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "ic_launcher_120 1.png",
+      "filename" : "ic_launcher_120 1.jpeg",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "ic_launcher_180.png",
+      "filename" : "ic_launcher_180.jpeg",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
-      "filename" : "ic_launcher_1024.png",
+      "filename" : "ic_launcher_1024.jpeg",
       "idiom" : "ios-marketing",
       "scale" : "1x",
       "size" : "1024x1024"
