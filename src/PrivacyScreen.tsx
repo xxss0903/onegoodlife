@@ -4,6 +4,7 @@ import {commonStyles} from './commonStyle';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
 import WebView from "react-native-webview";
+import {isIOS} from "./utils/until.js";
 
 export default class PrivacyScreen extends BaseScreen {
   constructor(props) {
@@ -14,14 +15,14 @@ export default class PrivacyScreen extends BaseScreen {
   }
 
   renderScreen() {
-    return (
+      return (
       <View
         style={[
           styles.container,
           commonStyles.flexColumn,
           {flex: 1},
         ]}>
-          <WebView source={require("./assets/privacy.html")}/>
+          <WebView source={require('./assets/privacy.html')}/>
       </View>
     );
   }
