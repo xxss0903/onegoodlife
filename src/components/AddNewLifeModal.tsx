@@ -878,8 +878,10 @@ export default class AddNewLifeModal extends Component<any, any> {
     logi('check type ', typeData);
     switch (typeData.typeId) {
       case mainData.typeMapList[0].id:
-        // 牛奶必须输入毫升数量
-        return typeData.dose > 0;
+        if (!typeData.isMotherMilk) {
+          // 牛奶必须输入毫升数量
+          return typeData.dose > 0;
+        }
     }
     return true;
   }
