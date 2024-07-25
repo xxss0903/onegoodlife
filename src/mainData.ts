@@ -46,6 +46,7 @@ export const StaticsType = {
   MOTHERMILK: 'mothermilk',
   HEIGHT: 'height',
   GROW_HEIGHT: 'grow_height',
+  JAUNDICE: 'jaundice',
   GROW_WEIGHT: 'grow_weight',
   WEIGHT: 'weight',
   MIX: 'mix',
@@ -100,24 +101,14 @@ export const staticsTypeList = [
     type: StaticsType.WEIGHT,
   },
   {
-    id: 6,
-    name: '生长曲线-体重',
-    value: 'type_6',
-    text: '生长曲线-体重',
-    position: 5,
-    icon: require('./assets/ic_weight.png'),
-    bgColor: Colors.primary4,
-    type: StaticsType.GROW_WEIGHT,
-  },
-  {
     id: 7,
-    name: '生长曲线-身高',
+    name: '测黄疸',
     value: 'type_7',
-    text: '生长曲线-身高',
-    position: 6,
-    icon: require('./assets/ic_height.png'),
-    bgColor: Colors.primary4,
-    type: StaticsType.GROW_HEIGHT,
+    text: '测黄疸',
+    position: 5,
+    icon: require('./assets/ic_jaundice.png'),
+    bgColor: Colors.primary1,
+    type: StaticsType.JAUNDICE,
   },
 ];
 
@@ -139,6 +130,7 @@ export const TYPE_ID = {
 export const commonTypeList = [
   {
     id: 1,
+    typeId: 1,
     name: '喝奶',
     value: 'type_1',
     text: '喝奶',
@@ -148,6 +140,7 @@ export const commonTypeList = [
   },
   {
     id: 2,
+    typeId: 2,
     name: '拉屎',
     value: 'type_2',
     text: '拉屎',
@@ -157,6 +150,7 @@ export const commonTypeList = [
   },
   {
     id: 3,
+    typeId: 3,
     name: '撒尿',
     value: 'type_3',
     text: '撒尿',
@@ -166,6 +160,7 @@ export const commonTypeList = [
   },
   {
     id: 4,
+    typeId: 4,
     name: '测黄疸',
     value: 'type_4',
     text: '测黄疸',
@@ -175,6 +170,7 @@ export const commonTypeList = [
   },
   {
     id: 5,
+    typeId: 5,
     name: '吐奶',
     value: 'type_5',
     text: '吐奶',
@@ -184,6 +180,7 @@ export const commonTypeList = [
   },
   {
     id: 6,
+    typeId: 6,
     name: '其他',
     value: 'type_6',
     text: '其他',
@@ -193,6 +190,7 @@ export const commonTypeList = [
   },
   {
     id: 7,
+    typeId: 7,
     name: '身高',
     value: 'type_7',
     text: '身高',
@@ -202,6 +200,7 @@ export const commonTypeList = [
   },
   {
     id: 8,
+    typeId: 8,
     name: '体重',
     value: 'type_8',
     text: '体重',
@@ -211,6 +210,7 @@ export const commonTypeList = [
   },
   {
     id: 9,
+    typeId: 9,
     name: '换尿布',
     value: 'type_9',
     text: '换尿布',
@@ -220,6 +220,7 @@ export const commonTypeList = [
   },
   {
     id: 10,
+    typeId: 10,
     name: '打疫苗',
     value: 'type_10',
     text: '打疫苗',

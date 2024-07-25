@@ -5,7 +5,7 @@ import moment from 'moment';
 import {mainData} from './mainData';
 import AddNewLifeModal from './components/AddNewLifeModal';
 import EventBus from './utils/eventBus';
-import {screenW} from './utils/until';
+import {getIconByTypeId, screenW} from './utils/until';
 import {Margin} from './space';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
@@ -44,10 +44,7 @@ export default class AllTypeScreen extends BaseScreen {
           commonStyles.center,
         ]}>
         <View style={[commonStyles.flexRow]}>
-          <Image
-            style={{width: 22, height: 22, marginRight: Margin.midHorizontal}}
-            source={value.icon}
-          />
+          {getIconByTypeId(value.id, 22)}
           <Text
             style={[{color: Colors.white, fontWeight: 'bold', fontSize: 16}]}>
             {value.name}
@@ -120,27 +117,27 @@ export default class AllTypeScreen extends BaseScreen {
 
   renderScreen() {
     return (
-        <View style={styles.container}>
-          <View>
-            <Text style={[commonStyles.commonContentText]}>常用类型</Text>
-            <View style={{marginTop: Margin.vertical}}>
-              {this._renderCommonItem()}
-            </View>
+      <View style={styles.container}>
+        <View>
+          <Text style={[commonStyles.commonContentText]}>常用类型</Text>
+          <View style={{marginTop: Margin.vertical}}>
+            {this._renderCommonItem()}
           </View>
-          <View>
-            <Text style={[commonStyles.commonContentText]}>全部类型</Text>
-            <View style={{marginTop: Margin.vertical}}>
-              {this._renderOtherItem()}
-            </View>
-          </View>
-          <AddNewLifeModal
-            addNewLifeline={item => {
-              this._insertNewlifeLineImpl(item);
-            }}
-            currentAddType={this.currentAddType}
-            ref={ref => (this.newlifeModalRef = ref)}
-          />
         </View>
+        <View>
+          <Text style={[commonStyles.commonContentText]}>全部类型</Text>
+          <View style={{marginTop: Margin.vertical}}>
+            {this._renderOtherItem()}
+          </View>
+        </View>
+        <AddNewLifeModal
+          addNewLifeline={item => {
+            this._insertNewlifeLineImpl(item);
+          }}
+          currentAddType={this.currentAddType}
+          ref={ref => (this.newlifeModalRef = ref)}
+        />
+      </View>
     );
   }
 }

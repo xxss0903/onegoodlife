@@ -6,38 +6,31 @@ import React from 'react';
 import moment from 'moment';
 import {
   Alert,
-  FlatList,
-  Image,
   RefreshControl,
   StyleSheet,
   Text,
   TouchableHighlight,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import {logi} from '../utils/logutil';
 import DatePicker from 'react-native-date-picker';
-import {DeviceStorage} from '../utils/deviceStorage';
 import {AndroidPermissions} from '../utils/permissionUtils';
 import {BarChart, LineChart} from 'echarts/charts';
 import * as echarts from 'echarts/core';
 import {SVGRenderer} from '@wuba/react-native-echarts/svgChart';
-import {EChartsType} from 'echarts/core';
 import {
   GridComponent,
   TitleComponent,
   TooltipComponent,
 } from 'echarts/components';
-import {isIOS, screenW} from '../utils/until';
+import {getIconByTypeId, isIOS, screenW} from '../utils/until';
 import {mainData, commonTypeList, TYPE_ID, staticsTypeList} from '../mainData';
 import StaticsView from './StaticsView';
 import EventBus from '../utils/eventBus';
 import {
   deleteDataByRowId,
   getDataList,
-  getDataListOrderByTime,
-  getLastData,
   insertData,
   updateData,
 } from '../utils/dbService';
@@ -197,10 +190,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
         style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
-            <Image
-              style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
-              source={type.icon}
-            />
+            {getIconByTypeId(item.typeId, 30)}
           </View>
           <View style={styles.timelineItemContent}>
             <Text style={[styles.rowTitleText]}>宝宝{item.name}啦</Text>
@@ -275,10 +265,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
         style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
-            <Image
-              style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
-              source={type.icon}
-            />
+            {getIconByTypeId(item.typeId, 30)}
           </View>
           <View style={styles.timelineItemContent}>
             <Text style={[styles.rowTitleText]}>宝宝{item.name}</Text>
@@ -369,14 +356,11 @@ export default class BabyLifeListView extends React.Component<any, any> {
           // 进入详情
           this._gotoItemDetail(item);
         }}
-        key={ item.typeId + "_" + item.time}
+        key={item.typeId + '_' + item.time}
         style={[styles.timelineItemContainer, {marginBottom: Margin.vertical}]}>
         <View style={[commonStyles.flexRow]}>
           <View style={styles.timelineItemType}>
-            <Image key={ item.typeId + "_" + item.time}
-              style={{width: 30, height: 30, padding: Margin.smalHorizontal}}
-              source={type.icon}
-            />
+            {getIconByTypeId(item.typeId, 30)}
           </View>
           <View style={styles.timelineItemContent}>
             <Text style={[styles.rowTitleText]}>宝宝{item.name}啦</Text>
@@ -445,11 +429,11 @@ export default class BabyLifeListView extends React.Component<any, any> {
   _renderTypeItem(item, index) {
     commonTypeList.forEach(value => {
       if (item.typeId === value.id) {
-        item.icon = value.icon
-        return
+        item.icon = value.icon;
+        return;
       }
-    })
-    console.log("render baby item ", item)
+    });
+    console.log('render baby item ', item);
 
     switch (item.typeId) {
       case TYPE_ID.MILK:
@@ -595,7 +579,7 @@ export default class BabyLifeListView extends React.Component<any, any> {
     this.setState({
       refreshing: true,
     });
-    this._refreshStaticsCharts()
+    this._refreshStaticsCharts();
     this.currentPage = 0;
     this._getDBData(this.currentPage);
   }

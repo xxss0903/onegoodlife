@@ -18,6 +18,7 @@ import GrowthStaticsCard from './components/GrowthStaticsCard.tsx';
 import GrowthWeightStaticsCard from './components/GrowthWeightStaticsCard.tsx';
 import GrowthHeightStaticsCard from './components/GrowthHeightStaticsCard.tsx';
 import {DeviceStorage} from './utils/deviceStorage';
+import JaundiceStaticsCard from './components/JaundiceStaticsCard.tsx';
 
 export default class StaticsScreen extends BaseScreen {
   private cardRefMap = new Map(); // 卡片的类型引用map
@@ -156,6 +157,16 @@ export default class StaticsScreen extends BaseScreen {
         case StaticsType.GROW_HEIGHT:
           view = (
             <GrowthHeightStaticsCard
+              key={`id_${value.id}`}
+              ref={ref => {
+                this.cardRefMap.set(StaticsType.GROW_HEIGHT, ref);
+              }}
+            />
+          );
+          break;
+        case StaticsType.JAUNDICE:
+          view = (
+            <JaundiceStaticsCard
               key={`id_${value.id}`}
               ref={ref => {
                 this.cardRefMap.set(StaticsType.GROW_HEIGHT, ref);

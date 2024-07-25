@@ -5,7 +5,7 @@ import moment from 'moment';
 import {mainData} from './mainData';
 import AddNewLifeModal from './components/AddNewLifeModal';
 import EventBus from './utils/eventBus';
-import {screenW} from './utils/until';
+import {getIconByTypeId, screenW} from './utils/until';
 import {Margin} from './space';
 import {Colors} from './colors';
 import BaseScreen from './BaseScreen.tsx';
@@ -90,11 +90,7 @@ export default class TypeManageScreen extends BaseScreen {
           commonStyles.center,
         ]}>
         <View style={[commonStyles.flexRow]}>
-          <Image
-            key={`${value.name}_${index}`}
-            style={{width: 22, height: 22, marginRight: Margin.midHorizontal}}
-            source={value.icon}
-          />
+          {getIconByTypeId(value.typeId, 22)}
           <Text
             style={[{color: Colors.white, fontWeight: 'bold', fontSize: 16}]}>
             {value.name}
