@@ -288,10 +288,6 @@ export default class GrowthWeightStaticsCard extends Component<any, any> {
     return (
       <View style={[styles.titleContainer, commonStyles.flexRow]}>
         <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
-          <Image
-            style={styles.titleIcon}
-            source={require('../assets/ic_baby_girl.png')}
-          />
           <Text
             style={[
               {

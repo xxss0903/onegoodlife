@@ -384,7 +384,7 @@ export default class MotherMilkStaticsCard extends Component<any, any> {
           <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
             <Image
               style={styles.titleIcon}
-              source={require('../assets/ic_powder.png')}
+              source={require('../assets/ic_milk.png')}
             />
             <Text
               style={[

@@ -106,7 +106,7 @@ export default class WeightStaticsCard extends Component<any, any> {
           <View style={[commonStyles.flexRow, {alignItems: 'center'}]}>
             <Image
               style={styles.titleIcon}
-              source={require('../assets/ic_powder.png')}
+              source={require('../assets/ic_weight.png')}
             />
             <Text
               style={[
