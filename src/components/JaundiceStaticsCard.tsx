@@ -18,15 +18,14 @@ const styleObject = {
 };
 
 /**
- * 黄疸
+ * 黄疸统计
  */
 export default class JaundiceStaticsCard extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      maxMilkDose: 120,
+      maxMilkDose: 15,
       minMilkDose: 0,
-      staticsData: [{value: 55, label: mainData.babyInfo.birthDay}],
       chestData: [], // 胸
       headerData: [], // 头
     };
@@ -86,7 +85,6 @@ export default class JaundiceStaticsCard extends Component<any, any> {
     this.setState({
       minMilkDose: minValue,
       maxMilkDose: maxValue,
-      staticsData: data,
       headerData,
       chestData,
     });
