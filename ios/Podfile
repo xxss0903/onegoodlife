@@ -42,7 +42,8 @@ target 'OneGoodLife' do
   )
   
   pod 'UMCommon'
-
+  pod 'UMDevice'
+  
   target 'OneGoodLifeTests' do
     inherit! :complete
     # Pods for testing
