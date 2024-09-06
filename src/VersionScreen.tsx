@@ -79,18 +79,18 @@ export default class VersionScreen extends BaseScreen {
             '1.0.0',
             () => {},
           )}
-          {ItemRow(
-            <Image
-              style={styles.titleImg}
-              source={require('./assets/ic_update.png')}
-            />,
-            '检查升级',
-            '>',
-            () => {
-              // 检查最新版本
-              this._checkLatestVersion();
-            },
-          )}
+          {/*{ItemRow(*/}
+          {/*  <Image*/}
+          {/*    style={styles.titleImg}*/}
+          {/*    source={require('./assets/ic_update.png')}*/}
+          {/*  />,*/}
+          {/*  '检查升级',*/}
+          {/*  '>',*/}
+          {/*  () => {*/}
+          {/*    // 检查最新版本*/}
+          {/*    this._checkLatestVersion();*/}
+          {/*  },*/}
+          {/*)}*/}
         </View>
       </View>
     );

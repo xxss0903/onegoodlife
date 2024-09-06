@@ -22,7 +22,9 @@ export default class PrivacyScreen extends BaseScreen {
           commonStyles.flexColumn,
           {flex: 1},
         ]}>
-          <WebView source={require('./assets/privacy.html')}/>
+          <WebView
+              originWhitelist={['*']}
+              source={require('./assets/privacy.html')}/>
       </View>
     );
   }

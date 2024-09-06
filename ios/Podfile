@@ -40,7 +40,10 @@ target 'OneGoodLife' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
+  
+  pod 'UMCommon'
+  pod 'UMDevice'
+  
   target 'OneGoodLifeTests' do
     inherit! :complete
     # Pods for testing

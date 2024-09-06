@@ -66,7 +66,40 @@ export default class HomeScreen extends BaseScreen {
   componentDidMount() {
     this._initListeners();
     this._initBabies();
+    this._showPrivacy();
   }
+
+  _initUmeng(){
+      // 呼叫本地的初始化协议方法
+
+  }
+
+
+  // 判断显示隐私弹窗
+    _showPrivacy(){
+      if (mainData.isFirstOpen) {
+          Alert.alert("隐私协议", "感谢您使用一好生活，我们非常重视您的隐私保护。为了更好的保障您的个人权利，" +
+              "请务必阅读《隐私协议》内所有条款，谢谢！尤其是关于对您设备使用的部分。", [
+                  {
+                      text: '取消',
+                      onPress: () => {},
+                  },
+                  {
+                      text: '确认',
+                      onPress: () => {
+                          this._initUmeng()
+                          // 确认隐私，使用umeng的隐私初始化
+                          mainData.isFirstOpen = false
+                          DeviceStorage.refreshMainData()
+                      },
+                  },
+              ],
+              {
+                  cancelable: false,
+                  onDismiss: () => {},
+              })
+      }
+    }
 
   _initBabies() {
     mainData.refreshBabies = false;
