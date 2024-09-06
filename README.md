@@ -48,8 +48,10 @@
    ```
 3. 运行应用：
    - iOS: `npx react-native run-ios`
-   - Android: `npx react-native run-android`
-
+   - Android: `npx react-native run-android`<br>
+`注意：Android的安装因为网络问题使用了下载的本地的gradle-8.3-all.zip文件，放在gradle/wrapper文件夹下面，因为这个文件比较大没有上传上来，所以需要自行下载这个文件，然后放在gradle/wrapper文件夹下面`
+<br>
+   - gradle-8.3-all下载地址[gradle-8.3-all.zip](https://services.gradle.org/distributions/gradle-8.3-all.zip)
 ## 使用说明
 
 [这里可以添加一些基本的使用说明或链接到更详细的文档]
@@ -75,11 +77,11 @@
 
 ## 许可证
 
-本项目采用 MIT 许可证。详情请见 [LICENSE](LICENSE) 文件。
+本项目采用 Apache 2.0 许可证。详情请见 [LICENSE](LICENSE) 文件。
 
 ## 联系方式
 
 如有任何问题或建议，请通过以下方式联系我们：
 
 - 邮箱：[xxss0903@example.com]
-- 项目Issues：[GitHub Issues链接]
+- 项目Issues：[GitHub Issues链接](https://github.com/xxss0903/onegoodlife/issues)
